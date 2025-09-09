@@ -301,8 +301,8 @@
             } catch(error) {
                 console.error("Full API Call Error:", error);
                 loaderContainer.classList.add('hidden');
-                if (error.message.includes('Failed to fetch')) {
-                    showToast("API से कनेक्ट नहीं हो सका। कृपया अपनी API Gateway CORS सेटिंग्स दोबारा जांचें।");
+                if (error.message.includes('Failed to fetch') || error.message.includes('ERR_NAME_NOT_RESOLVED')) {
+                     showToast("API से कनेक्ट नहीं हो सका। कृपया सुनिश्चित करें कि API Gateway डिप्लॉय है।");
                 } else {
                     showToast(`एक त्रुटि हुई: ${error.message}`);
                 }
