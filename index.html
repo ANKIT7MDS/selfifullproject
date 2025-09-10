@@ -247,6 +247,7 @@
             }
         });
 
+        // --- UPDATED FUNCTION STARTS HERE ---
         async function findMyPhotos(imageDataBase64, name, mobile, email) {
             mainContent.classList.add('hidden');
             loaderContainer.classList.remove('hidden');
@@ -255,36 +256,44 @@
             loaderText.textContent = "आपकी तस्वीर का विश्लेषण किया जा रहा है...";
             
             try {
+                // base64 स्ट्रिंग से डेटा का हिस्सा निकालें (जैसे, "data:image/jpeg;base64,")
                 const base64Data = imageDataBase64.split(',')[1];
 
+                // --- महत्वपूर्ण बदलाव यहाँ है ---
+                // Lambda को डेटा JSON फॉर्मेट में भेजें
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
-                      'Content-Type': 'text/plain'
+                      // 1. Content-Type को 'application/json' में बदला गया
+                      'Content-Type': 'application/json'
                     },
-                    body: base64Data
+                    // 2. body को एक JSON ऑब्जेक्ट में रैप किया गया
+                    body: JSON.stringify({
+                        image: base64Data
+                    })
                 });
                 
                 loaderText.textContent = "परिणाम तैयार किए जा रहे हैं...";
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`API से जवाब नहीं मिला (HTTP ${response.status}). सर्वर लॉग्स जांचें।`);
+                    // सर्वर से मिले एरर को अधिक विस्तार से दिखाने का प्रयास करें
+                    const errorData = await response.json().catch(() => ({ message: `HTTP Error: ${response.status}` }));
+                    throw new Error(errorData.message || `API से जवाब नहीं मिला। सर्वर लॉग्स जांचें।`);
                 }
 
                 const matches = await response.json();
                 
                 loaderContainer.classList.add('hidden');
 
-                if (matches.length > 0) {
+                if (matches && matches.length > 0) {
                     searchResults.innerHTML = '';
                     matches.forEach(match => {
                         const imageUrl = `${S3_BUCKET_URL}/${match.externalImageId}`;
                         const item = document.createElement('div');
-                        item.className = 'image-result-item';
+                        item.className = 'image-result-item group'; // 'group' क्लास जोड़ी गई
                         item.innerHTML = `
-                            <img src="${imageUrl}" class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105">
+                            <img src="${imageUrl}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt="Event Photo">
                             <div class="download-overlay p-2 flex justify-end">
                                 <a href="${imageUrl}" download target="_blank" class="p-2 bg-white/20 rounded-full hover:bg-white/40 transition-colors">
                                     <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
@@ -301,14 +310,15 @@
             } catch(error) {
                 console.error("Full API Call Error:", error);
                 loaderContainer.classList.add('hidden');
-                if (error.message.includes('Failed to fetch') || error.message.includes('ERR_NAME_NOT_RESOLVED')) {
-                     showToast("API से कनेक्ट नहीं हो सका। कृपया सुनिश्चित करें कि API Gateway डिप्लॉय है।");
+                if (error.message.includes('Failed to fetch')) {
+                     showToast("API से कनेक्ट नहीं हो सका। कृपया अपनी इंटरनेट कनेक्टिविटी जांचें।");
                 } else {
                     showToast(`एक त्रुटि हुई: ${error.message}`);
                 }
-                resetApp();
+                resetApp(); // एरर होने पर ऐप को रीसेट करें
             }
         }
+        // --- UPDATED FUNCTION ENDS HERE ---
 
         function resetApp() {
             resultsContainer.classList.add('hidden');
@@ -330,4 +340,3 @@
     </script>
 </body>
 </html>
-
