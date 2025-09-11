@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin | Event Memory Experience</title>
   <!-- Tailwind (CDN) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://esm.sh" crossorigin>
+  <link rel="preconnect" href="https://esm.run" crossorigin>
+  <link rel="preconnect" href="https://cdn.skypack.dev" crossorigin>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .admin-section { display: none; }
@@ -14,6 +19,9 @@
     .toast.success { background: #065f46; }
     .toast.error { background: #991b1b; }
     .toast.info { background: #1f2937; }
+    .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border: 1px solid #e5e7eb; border-bottom-width: 3px; border-radius: .5rem; background:#f9fafb}
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-900">
@@ -26,13 +34,21 @@
     <header class="flex items-center justify-between pb-4 border-b border-gray-200">
       <h1 class="text-2xl font-semibold tracking-tight">इवेंट गैलरी एडमिन</h1>
       <div class="flex items-center gap-2">
+        <button id="diagBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">डायग्नोस्टिक्स</button>
         <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">लॉग आउट</button>
       </div>
     </header>
 
+    <!-- Diagnostics panel -->
+    <details id="diagPanel" class="mt-4">
+      <summary class="cursor-pointer text-sm text-gray-600">Self‑tests और नेटवर्क डायग्नोस्टिक्स</summary>
+      <div id="diagOut" class="mt-3 text-sm bg-white rounded-2xl shadow p-4 whitespace-pre-wrap"></div>
+      <div class="mt-2 text-xs text-gray-500">नोट: अगर आप <span class="kbd">file://</span> से चला रहे हैं तो कुछ ब्राउज़र सीमाएँ लागू हो सकती हैं। बेहतर है कि <span class="kbd">http://localhost</span> पर सर्व करें।</div>
+    </details>
+
     <!-- Login Section -->
     <section id="loginSection" class="admin-section active">
-      <div class="grid gap-6 max-w-md mt-8">
+      <div class="grid gap-6 max-w-md mt-6">
         <div class="bg-white rounded-2xl shadow p-6">
           <h2 class="text-lg font-medium mb-4">लॉगिन</h2>
           <div class="grid gap-3">
@@ -41,7 +57,7 @@
             <label class="text-sm mt-2">पासवर्ड</label>
             <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
             <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
-            <p class="text-xs text-gray-500">ध्यान दें: यदि आपके यूज़र पूल में ईमेल साइन-इन सक्षम नहीं है, तो यह फ़ील्ड <em>यूज़रनेम</em> की तरह काम करेगा।</p>
+            <p class="text-xs text-gray-500">ध्यान दें: यदि आपके यूज़र पूल में ईमेल साइन‑इन सक्षम नहीं है, तो यह फ़ील्ड <em>यूज़रनेम</em> की तरह काम करेगा।</p>
           </div>
         </div>
       </div>
@@ -77,11 +93,10 @@
     </section>
   </div>
 
-  <!-- AWS Amplify UMD (fallbacks) -->
-  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5.3.21/dist/aws-amplify.min.js" integrity="sha384-l7k8mY9+" crossorigin="anonymous"></script>
+  <!-- No static Amplify tag here. We'll load it dynamically with multi‑CDN fallbacks. -->
   <script>
     (function(){
-      // Simple helper: toast
+      // ===== Utilities =====
       function showToast(msg, type = 'info', ms = 3500) {
         const el = document.getElementById('toast-container');
         if (!el) return;
@@ -90,6 +105,7 @@
         requestAnimationFrame(() => el.classList.add('show'));
         setTimeout(() => el.classList.remove('show'), ms);
       }
+      const isFileProto = location.protocol === 'file:';
 
       // Sections
       const sectionIds = ['loginSection', 'dashboardSection', 'uploadSection'];
@@ -114,6 +130,8 @@
       const passwordInput = document.getElementById('password');
       const loginBtn = document.getElementById('loginBtn');
       const logoutBtn = document.getElementById('logoutBtn');
+      const diagBtn = document.getElementById('diagBtn');
+      const diagOut = document.getElementById('diagOut');
 
       const eventList = document.getElementById('eventList');
       const refreshEvents = document.getElementById('refreshEvents');
@@ -125,9 +143,324 @@
       const uploadStatus = document.getElementById('uploadStatus');
 
       // Enter-to-submit
-      [emailInput, passwordInput].forEach(inp => inp && inp.addEventListener('keydown', e => {
+      ;[emailInput, passwordInput].forEach(inp => inp && inp.addEventListener('keydown', e => {
         if (e.key === 'Enter') loginBtn.click();
       }));
 
-      // Amplify guard
-      const amp
+      // ===== Robust AWS Amplify Loader (UMD + ESM fallbacks + smarter timeouts) =====
+      const fallbackAttemptLog = [];
+      const AMPLIFY_URLS_UMD = [
+        // jsDelivr (pinned, major, latest)
+        'https://cdn.jsdelivr.net/npm/aws-amplify@5.3.21/dist/aws-amplify.min.js',
+        'https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js',
+        'https://cdn.jsdelivr.net/npm/aws-amplify/dist/aws-amplify.min.js',
+        // unpkg (pinned, major, latest)
+        'https://unpkg.com/aws-amplify@5.3.21/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify@5/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify/dist/aws-amplify.min.js',
+        // local/self-host fallbacks (place the file here if CDNs blocked)
+        '/libs/aws-amplify-5.min.js',
+        '/vendor/aws-amplify.min.js'
+      ];
+      const AMPLIFY_URLS_ESM = [
+        // ESM mirrors; we'll bind to window.aws_amplify after import
+        'https://cdn.skypack.dev/aws-amplify@5',
+        'https://esm.run/aws-amplify@5',
+        'https://esm.sh/aws-amplify@5?bundle',
+        'https://esm.sh/aws-amplify@5.3.21?bundle'
+      ];
+
+      function withTimeout(promise, ms, label){
+        let t; const err = new Error('Timeout: '+label);
+        const timer = new Promise((_, reject)=> t = setTimeout(()=>reject(err), ms));
+        return Promise.race([promise.finally(()=>clearTimeout(t)), timer]);
+      }
+
+      function scriptLoad(url){
+        return new Promise((resolve, reject)=>{
+          const s = document.createElement('script');
+          s.src = url; s.async = false;
+          s.onload = () => { fallbackAttemptLog.push(`UMD ok: ${url}`); resolve(url); };
+          s.onerror = () => { fallbackAttemptLog.push(`UMD fail: ${url}`); reject(new Error('Failed to load: '+url)); };
+          document.head.appendChild(s);
+        });
+      }
+
+      function moduleImport(url){
+        return new Promise((resolve, reject)=>{
+          const s = document.createElement('script');
+          s.type = 'module';
+          s.textContent = `import * as pkg from '${url}'; window.aws_amplify = window.aws_amplify || pkg;`;
+          s.onload = () => { fallbackAttemptLog.push(`ESM ok: ${url}`); resolve(url); };
+          s.onerror = () => { fallbackAttemptLog.push(`ESM fail: ${url}`); reject(new Error('Failed to import: '+url)); };
+          document.head.appendChild(s);
+        });
+      }
+
+      async function ensureAmplify(){
+        if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true;
+        let lastErr;
+        // Try UMDs with per-attempt timeout (4s)
+        for (const url of AMPLIFY_URLS_UMD){
+          try{
+            await withTimeout(scriptLoad(url), 4000, url);
+            if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true;
+          }catch(e){ lastErr = e; }
+        }
+        // Try ESMs (6s each, since module transforms can be slower)
+        for (const url of AMPLIFY_URLS_ESM){
+          try{
+            await withTimeout(moduleImport(url), 6000, url);
+            if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true;
+          }catch(e){ lastErr = e; }
+        }
+        throw (lastErr || new Error('Amplify UMD not loaded'));
+      }
+
+      function resolveAmplify(){
+        const ns = window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify;
+        const Amplify = ns?.Amplify || ns?.default || ns;
+        const Auth = ns?.Auth || Amplify?.Auth;
+        const Storage = ns?.Storage || Amplify?.Storage;
+        return { Amplify, Auth, Storage };
+      }
+
+      // ===== App Logic =====
+      async function configureAmplify(){
+        const { Amplify } = resolveAmplify();
+        if (!Amplify?.configure) throw new Error('Amplify.configure not available');
+        Amplify.configure({
+          Auth: {
+            region: 'ap-southeast-1',
+            userPoolId: 'ap-southeast-1_YGZSUnSf5',
+            userPoolWebClientId: '1mecg9v8gfau80k08arpofgl4l',
+            authenticationFlowType: 'USER_SRP_AUTH'
+          }
+        });
+      }
+
+      async function checkUserSession() {
+        const { Auth } = resolveAmplify();
+        try {
+          const user = await Auth.currentAuthenticatedUser();
+          if (user) {
+            logoutBtn.classList.remove('hidden');
+            showSection(dashboardSection);
+            await loadEvents();
+          } else {
+            showSection(loginSection);
+          }
+        } catch (err) {
+          showSection(loginSection);
+        }
+      }
+
+      async function doLogin() {
+        const { Auth } = resolveAmplify();
+        const username = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!username || !password) {
+          showToast('ईमेल/पासवर्ड भरें', 'error');
+          return;
+        }
+        loginBtn.disabled = true;
+        try {
+          const res = await Auth.signIn(username, password);
+          showToast('लॉगिन सफल', 'success');
+          logoutBtn.classList.remove('hidden');
+          emailInput.value = '';
+          passwordInput.value = '';
+          showSection(dashboardSection);
+          await loadEvents();
+          console.debug('SignIn result:', res);
+        } catch (error) {
+          console.error('SignIn error', error);
+          const map = {
+            UserNotFoundException: 'यूज़र नहीं मिला — ईमेल/यूज़रनेम जाँचें',
+            NotAuthorizedException: 'गलत पासवर्ड या यूज़र निष्क्रिय',
+            UserNotConfirmedException: 'एकाउंट वेरीफिकेशन पेंडिंग',
+            PasswordResetRequiredException: 'पासवर्ड रीसेट आवश्यक',
+          };
+          const hint = map[error?.name] || (error?.message || 'लॉगिन में त्रुटि');
+          showToast(`${error?.name ? error.name+': ' : ''}${hint}`, 'error', 5000);
+        } finally {
+          loginBtn.disabled = false;
+        }
+      }
+
+      async function doLogout() {
+        const { Auth } = resolveAmplify();
+        try { await Auth.signOut(); } catch (e) {}
+        showToast('लॉग आउट किया गया', 'info');
+        logoutBtn.classList.add('hidden');
+        showSection(loginSection);
+      }
+
+      // Dummy events loader (replace with real API later)
+      async function loadEvents() {
+        const items = [
+          { id: 'evt_1', name: 'Diwali Night 2024', photos: 0 },
+          { id: 'evt_2', name: 'Wedding - A&V', photos: 120 },
+          { id: 'evt_3', name: 'Corporate Meetup', photos: 58 },
+        ];
+        renderEvents(items);
+      }
+
+      function renderEvents(items) {
+        eventList.innerHTML = '';
+        if (!items || !items.length) {
+          eventList.innerHTML = '<div class="text-sm text-gray-600">कोई इवेंट नहीं मिला</div>';
+          return;
+        }
+        for (const it of items) {
+          const card = document.createElement('div');
+          card.className = 'bg-white rounded-2xl shadow p-5 flex flex-col gap-3';
+          card.innerHTML = `
+            <div class="flex-1">
+              <div class="text-base font-semibold">${it.name}</div>
+              <div class="text-sm text-gray-500 mt-1">फ़ोटो: ${it.photos}</div>
+            </div>
+            <div class="flex gap-2">
+              <button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${it.id}" data-event-name="${it.name}">फ़ोटो अपलोड</button>
+              <button class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm" disabled>मैनेज</button>
+            </div>`;
+          eventList.appendChild(card);
+        }
+      }
+
+      eventList.addEventListener('click', (e) => {
+        const btn = e.target.closest('.upload-btn');
+        if (!btn) return;
+        const eventName = btn.dataset.eventName;
+        const eventId = btn.dataset.eventId;
+        uploadTitle.textContent = `"${eventName}" में तस्वीरें अपलोड करें`;
+        uploadSection.dataset.eventId = eventId;
+        showSection(uploadSection);
+      });
+
+      fileInput.addEventListener('change', () => {
+        startUpload.disabled = !(fileInput.files && fileInput.files.length);
+        uploadStatus.textContent = '';
+      });
+
+      async function uploadFilesForEvent(eventId) {
+        if (!fileInput.files?.length) return;
+        // Placeholder: implement presigned URL flow via API Gateway + Lambda
+        const files = Array.from(fileInput.files);
+        let uploaded = 0;
+        for (const file of files) {
+          try {
+            await new Promise(r => setTimeout(r, 300)); // demo delay
+            uploaded++;
+            uploadStatus.textContent = `${uploaded}/${files.length} अपलोड हो गया`;
+          } catch (e) {
+            console.error('Upload failed', e);
+            showToast('किसी फ़ाइल का अपलोड विफल', 'error');
+          }
+        }
+        if (uploaded === files.length) {
+          showToast('सभी फ़ाइलें अपलोड हो गईं', 'success');
+          fileInput.value = '';
+          startUpload.disabled = true;
+        }
+      }
+
+      // ===== Wire handlers =====
+      loginBtn.addEventListener('click', doLogin);
+      logoutBtn.addEventListener('click', doLogout);
+      refreshEvents.addEventListener('click', loadEvents);
+      backToDashboard.addEventListener('click', () => showSection(dashboardSection));
+      startUpload.addEventListener('click', async () => {
+        const eventId = uploadSection.dataset.eventId;
+        if (!eventId) { showToast('इवेंट चयन करें', 'error'); return; }
+        await uploadFilesForEvent(eventId);
+      });
+
+      diagBtn.addEventListener('click', runDiagnostics);
+
+      // ===== Boot =====
+      (async function boot(){
+        try {
+          if (isFileProto) {
+            showToast('बेहतर अनुभव हेतु localhost से चलाएँ', 'info', 4500);
+          }
+          showToast('Amplify लोड हो रहा है…', 'info');
+          await ensureAmplify();
+          const { Amplify, Auth } = resolveAmplify();
+          if (!Amplify || !Auth) throw new Error('Amplify globals missing after load');
+          await configureAmplify();
+          showToast('Amplify तैयार', 'success');
+          await checkUserSession();
+        } catch (e) {
+          console.error(e);
+          showToast('Amplify लोड नहीं हुआ — नेटवर्क/CDN чेक करें', 'error');
+          showSection(loginSection);
+        }
+      })();
+
+      // ===== Self‑tests ("test cases") =====
+      function logDiag(line){ diagOut.textContent += (line + '\n'); }
+      function clearDiag(){ diagOut.textContent = ''; }
+      function assertTest(name, cond){ logDiag(`${cond ? '✅' : '❌'} ${name}`); return !!cond; }
+
+      async function runDiagnostics(){
+        clearDiag();
+        logDiag('— रनिंग Self‑tests —');
+        logDiag(`URL: ${location.href}`);
+        logDiag(`Protocol: ${location.protocol}`);
+
+        if (fallbackAttemptLog.length){
+          logDiag('Loader attempts:');
+          fallbackAttemptLog.forEach(x=>logDiag('  • '+x));
+        } else {
+          logDiag('Loader attempts: (none recorded — library may have been cached/present)');
+        }
+
+        // Test 1: Amplify presence (after boot it should be there)
+        let ampNS = window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify;
+        assertTest('Amplify namespace detected', !!ampNS);
+
+        const { Amplify, Auth } = resolveAmplify();
+        assertTest('Amplify.configure उपलब्ध', !!Amplify?.configure);
+        assertTest('Auth.signIn उपलब्ध', typeof Auth?.signIn === 'function');
+        assertTest('Auth.currentAuthenticatedUser उपलब्ध', typeof Auth?.currentAuthenticatedUser === 'function');
+
+        // Test 2: UI toggling
+        const before = document.querySelector('.admin-section.active');
+        showSection(document.getElementById('dashboardSection'));
+        const dashActive = document.getElementById('dashboardSection').classList.contains('active');
+        assertTest('Dashboard दिख रहा है', dashActive);
+        showSection(before || document.getElementById('loginSection'));
+
+        // Test 3: Events render & upload button routing
+        renderEvents([{id:'t_evt', name:'Test Event', photos: 1}]);
+        const btn = document.querySelector('.upload-btn');
+        const hadBtn = assertTest('Upload बटन मौजूद', !!btn);
+        if (hadBtn){
+          btn.click();
+          const upActive = document.getElementById('uploadSection').classList.contains('active');
+          assertTest('Upload सेक्शन खुलता है', upActive);
+          backToDashboard.click();
+        }
+
+        // Test 4: File input default state
+        assertTest('Start Upload disabled by default', startUpload.disabled === true);
+
+        // New Test 5: Loader attempted at least one URL
+        assertTest('Loader attempted ≥ 1 URL', fallbackAttemptLog.length > 0);
+
+        // Network reachability hints
+        try {
+          await fetch('https://cdn.jsdelivr.net', { method:'HEAD', mode:'no-cors' });
+          logDiag('CDN reachability check: attempted (no-cors)');
+        } catch(e){
+          logDiag('CDN reachability check: blocked');
+        }
+
+        logDiag('— Self‑tests complete —');
+        document.getElementById('diagPanel').open = true;
+      }
+    })();
+  </script>
+</body>
+</html>
