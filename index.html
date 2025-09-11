@@ -145,7 +145,7 @@
                         <video id="camera-feed" width="640" height="480" autoplay playsinline class="mx-auto w-full max-w-lg rounded-lg hidden aspect-video object-cover"></video>
                         <canvas id="snapshot-canvas" class="hidden w-full max-w-lg mx-auto rounded-lg"></canvas>
                          <div id="upload-placeholder" class="border-2 border-dashed border-gray-600 rounded-lg p-8 flex flex-col items-center justify-center">
-                            <svg class="w-12 h-12 text-gray-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0" 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            <svg class="w-12 h-12 text-gray-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             <p class="text-gray-400">कैमरा शुरू करें या अपनी फाइल अपलोड करें</p>
                         </div>
                         <div id="controls" class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -294,22 +294,31 @@
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-                
-                const tempCanvas = document.createElement('canvas');
-                const tempContext = tempCanvas.getContext('2d');
+                video.classList.remove('hidden');
+                uploadPlaceholder.classList.add('hidden');
 
+                // Ek baar click karne par hi photo le lo
                 const captureFrame = () => {
                     if (!video.srcObject) return;
+                    const tempCanvas = document.createElement('canvas');
                     tempCanvas.width = video.videoWidth;
                     tempCanvas.height = video.videoHeight;
-                    tempContext.drawImage(video, 0, 0);
+                    tempCanvas.getContext('2d').drawImage(video, 0, 0);
                     handlePhotoProvided(tempCanvas.toDataURL());
                 };
                 
-                // Ek baar click karne par hi photo le lo
-                video.onloadedmetadata = () => {
-                   setTimeout(captureFrame, 500); // Camera ko start hone ke liye thoda samay do
-                };
+                // Add a button to capture the photo
+                const snapButton = document.createElement('button');
+                snapButton.textContent = 'फोटो खींचें';
+                snapButton.className = 'btn btn-primary mt-4';
+                snapButton.onclick = captureFrame;
+                
+                // Remove old snap button if exists
+                const oldSnapButton = document.querySelector('#camera-container > button');
+                if(oldSnapButton) oldSnapButton.remove();
+
+                video.parentElement.appendChild(snapButton);
+
 
             } catch (err) { showToast("कैमरा एक्सेस नहीं हो सका। कृपया अनुमति दें।"); }
         });
@@ -334,6 +343,11 @@
 
         changePhotoBtn.addEventListener('click', () => {
             capturedImageData = null;
+            if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+            const oldSnapButton = document.querySelector('#camera-container > button');
+            if(oldSnapButton) oldSnapButton.remove();
+            video.classList.add('hidden');
+            uploadPlaceholder.classList.remove('hidden');
             showStep(photoStep);
         });
 
@@ -356,10 +370,18 @@
                 loaderText.textContent = "परिणाम तैयार किए जा रहे हैं...";
 
                 if (!response.ok) {
-                    throw new Error(`Server error (HTTP ${response.status})`);
+                    const errorData = await response.json().catch(() => ({ body: `{"message": "Server error (HTTP ${response.status})"}` }));
+                    throw new Error(JSON.parse(errorData.body).message || `Server error (HTTP ${response.status})`);
                 }
 
                 const responseBody = await response.json();
+                
+                // Error handling ko behtar banaya gaya hai
+                if (!responseBody || typeof responseBody.body === 'undefined') {
+                    console.error("Server response did not contain a 'body':", responseBody);
+                    throw new Error("सर्वर से अमान्य जवाब मिला।");
+                }
+
                 const matches = JSON.parse(responseBody.body);
                 
                 if (matches && matches.length > 0) {
@@ -421,7 +443,14 @@
             userMobileInput.value = '';
             userEmailInput.value = '';
             capturedImageData = null;
-            if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            const oldSnapButton = document.querySelector('#camera-container > button');
+            if(oldSnapButton) oldSnapButton.remove();
+            video.classList.add('hidden');
+            uploadPlaceholder.classList.remove('hidden');
             showStep(photoStep);
         }
 
