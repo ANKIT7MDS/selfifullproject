@@ -138,117 +138,115 @@
     <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js"></script>
 
     <script>
-        // --- AWS Amplify Configuration ---
-        // Yahan महत्वपूर्ण बदलाव hai. Ab hum 'aws_amplify' object ko seedhe istemal kar rahe hain.
-        aws_amplify.Amplify.configure({
-            Auth: {
-                // REQUIRED - Amazon Cognito Region
-                region: 'ap-southeast-1',
+        // --- महत्वपूर्ण बदलाव: अब सारा कोड इस 'DOMContentLoaded' इवेंट के अंदर है ---
+        // यह सुनिश्चित करता है कि हमारा कोड तभी चले जब पूरा पेज और लाइब्रेरी लोड हो चुकी हो।
+        window.addEventListener('DOMContentLoaded', () => {
+            
+            // --- AWS Amplify Configuration ---
+            aws_amplify.Amplify.configure({
+                Auth: {
+                    region: 'ap-southeast-1',
+                    userPoolId: 'ap-southeast-1_YGZSUnSf5',
+                    userPoolWebClientId: '1mecg9v8gfau80k08arpofgl4l',
+                }
+            });
 
-                // REQUIRED - Amazon Cognito User Pool ID
-                userPoolId: 'ap-southeast-1_YGZSUnSf5',
+            // --- DOM Elements ---
+            const loginSection = document.getElementById('login-section');
+            const dashboardSection = document.getElementById('dashboard-section');
+            const uploadSection = document.getElementById('upload-section');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const welcomeMessage = document.getElementById('welcome-message');
 
-                // REQUIRED - Amazon Cognito Web Client ID
-                userPoolWebClientId: '1mecg9v8gfau80k08arpofgl4l',
+            // --- Toast Notification Logic ---
+            const toastContainer = document.getElementById('toast-container');
+            function showToast(message, type = 'error') {
+                toastContainer.textContent = message;
+                toastContainer.className = `toast ${type} show`;
+                setTimeout(() => {
+                    toastContainer.classList.remove('show');
+                }, 3000);
             }
+
+            // --- Main App Logic ---
+            function showSection(sectionToShow) {
+                document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+                sectionToShow.classList.add('active');
+            }
+
+            async function handleLogin() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                if (!email || !password) {
+                    showToast('कृपया ईमेल और पासवर्ड दर्ज करें।');
+                    return;
+                }
+                try {
+                    loginBtn.disabled = true;
+                    loginBtn.textContent = 'लॉग इन हो रहा है...';
+                    const user = await aws_amplify.Auth.signIn(email, password);
+                    console.log('Authentication successful:', user);
+                    welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
+                    showSection(dashboardSection);
+                } catch (error) {
+                    console.error('Authentication error:', error);
+                    showToast(error.message || 'लॉग इन करने में त्रुटि हुई।');
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'लॉग इन करें';
+                }
+            }
+
+            async function handleLogout() {
+                try {
+                    await aws_amplify.Auth.signOut();
+                    emailInput.value = '';
+                    passwordInput.value = '';
+                    showSection(loginSection);
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    showToast(error.message || 'लॉग आउट करने में त्रुटि हुई।');
+                }
+            }
+            
+            async function checkUserSession() {
+                try {
+                    const user = await aws_amplify.Auth.currentAuthenticatedUser();
+                    console.log('User is already signed in:', user);
+                    welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
+                    showSection(dashboardSection);
+                } catch (error) {
+                    console.log('User is not signed in.');
+                    showSection(loginSection);
+                }
+            }
+
+            // --- Event Listeners for other sections (for demonstration) ---
+            const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+            const uploadTitle = document.getElementById('upload-title');
+            const eventList = document.getElementById('event-list');
+            const createEventBtn = document.getElementById('create-event-btn');
+
+            eventList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('upload-btn')) {
+                    const eventName = e.target.dataset.eventName;
+                    uploadTitle.textContent = `"${eventName}" में तस्वीरें अपलोड करें`;
+                    showSection(uploadSection);
+                }
+            });
+            backToDashboardBtn.addEventListener('click', () => showSection(dashboardSection));
+            createEventBtn.addEventListener('click', () => alert('यह सुविधा जल्द ही जोड़ी जाएगी!'));
+
+            // --- Event Listeners ---
+            loginBtn.addEventListener('click', handleLogin);
+            logoutBtn.addEventListener('click', handleLogout);
+
+            // --- Initial Load ---
+            checkUserSession(); // पेज लोड होते ही सेशन की जाँच करें
         });
-
-        // --- DOM Elements ---
-        const loginSection = document.getElementById('login-section');
-        const dashboardSection = document.getElementById('dashboard-section');
-        const uploadSection = document.getElementById('upload-section');
-        const loginBtn = document.getElementById('login-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const welcomeMessage = document.getElementById('welcome-message');
-
-        // --- Toast Notification Logic ---
-        const toastContainer = document.getElementById('toast-container');
-        function showToast(message, type = 'error') {
-            toastContainer.textContent = message;
-            toastContainer.className = `toast ${type} show`;
-            setTimeout(() => {
-                toastContainer.classList.remove('show');
-            }, 3000);
-        }
-
-        // --- Main App Logic ---
-        function showSection(sectionToShow) {
-            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-            sectionToShow.classList.add('active');
-        }
-
-        async function handleLogin() {
-            const email = emailInput.value.trim();
-            const password = passwordInput.value.trim();
-            if (!email || !password) {
-                showToast('कृपया ईमेल और पासवर्ड दर्ज करें।');
-                return;
-            }
-            try {
-                loginBtn.disabled = true;
-                loginBtn.textContent = 'लॉग इन हो रहा है...';
-                const user = await aws_amplify.Auth.signIn(email, password); // Yahan bhi badlav
-                console.log('Authentication successful:', user);
-                welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
-                showSection(dashboardSection);
-            } catch (error) {
-                console.error('Authentication error:', error);
-                showToast(error.message || 'लॉग इन करने में त्रुटि हुई।');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'लॉग इन करें';
-            }
-        }
-
-        async function handleLogout() {
-            try {
-                await aws_amplify.Auth.signOut(); // Yahan bhi badlav
-                emailInput.value = '';
-                passwordInput.value = '';
-                showSection(loginSection);
-            } catch (error) {
-                console.error('Logout error:', error);
-                showToast(error.message || 'लॉग आउट करने में त्रुटि हुई।');
-            }
-        }
-        
-        async function checkUserSession() {
-            try {
-                const user = await aws_amplify.Auth.currentAuthenticatedUser(); // Yahan bhi badlav
-                console.log('User is already signed in:', user);
-                welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
-                showSection(dashboardSection);
-            } catch (error) {
-                console.log('User is not signed in.');
-                showSection(loginSection);
-            }
-        }
-
-        // --- Event Listeners for other sections (for demonstration) ---
-        const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-        const uploadTitle = document.getElementById('upload-title');
-        const eventList = document.getElementById('event-list');
-        const createEventBtn = document.getElementById('create-event-btn');
-
-        eventList.addEventListener('click', (e) => {
-            if (e.target.classList.contains('upload-btn')) {
-                const eventName = e.target.dataset.eventName;
-                uploadTitle.textContent = `"${eventName}" में तस्वीरें अपलोड करें`;
-                showSection(uploadSection);
-            }
-        });
-        backToDashboardBtn.addEventListener('click', () => showSection(dashboardSection));
-        createEventBtn.addEventListener('click', () => alert('यह सुविधा जल्द ही जोड़ी जाएगी!'));
-
-        // --- Event Listeners ---
-        loginBtn.addEventListener('click', handleLogin);
-        logoutBtn.addEventListener('click', handleLogout);
-
-        // --- Initial Load ---
-        checkUserSession(); // पेज लोड होते ही सेशन की जाँच करें
-
     </script>
 
 </body>
