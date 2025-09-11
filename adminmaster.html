@@ -14,11 +14,6 @@
     .toast.success { background: #065f46; }
     .toast.error { background: #991b1b; }
     .toast.info { background: #1f2937; }
-    .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border: 1px solid #e5e7eb; border-bottom-width: 3px; border-radius: .5rem; background:#f9fafb}
-    details > summary { list-style: none; }
-    details > summary::-webkit-details-marker { display: none; }
-    .badge { padding: .2rem .5rem; border-radius: .5rem; font-size: .75rem; border: 1px solid #e5e7eb; background: #fff; }
-    .linklike { text-decoration: underline; color: #111827; }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-900">
@@ -31,25 +26,11 @@
     <header class="flex items-center justify-between pb-4 border-b border-gray-200">
       <div class="flex items-center gap-3">
         <h1 class="text-2xl font-semibold tracking-tight">इवेंट गैलरी एडमिन</h1>
-        <span id="regionBadge" class="badge hidden"></span>
-        <span id="flowBadge" class="badge hidden"></span>
       </div>
       <div class="flex items-center gap-2">
-        <button id="diagBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">डायग्नोस्टिक्स</button>
         <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">लॉग आउट</button>
       </div>
     </header>
-
-    <!-- Master notice -->
-    <div id="masterNotice" class="hidden mt-3 text-sm p-3 rounded-2xl border border-amber-300 bg-amber-50 text-amber-900">
-      आप <strong>Master Admin</strong> हैं — आप यहाँ से सभी यूज़र्स मैनेज कर सकते हैं।
-    </div>
-
-    <!-- Diagnostics panel -->
-    <details id="diagPanel" class="mt-4">
-      <summary class="cursor-pointer text-sm text-gray-600">Self-tests और नेटवर्क/कन्फ़िग डायग्नोस्टिक्स</summary>
-      <div id="diagOut" class="mt-3 text-sm bg-white rounded-2xl shadow p-4 whitespace-pre-wrap"></div>
-    </details>
 
     <!-- Login Section -->
     <section id="loginSection" class="admin-section active">
@@ -58,94 +39,10 @@
           <h2 class="text-lg font-medium mb-4">लॉगिन</h2>
           <div class="grid gap-3">
             <label class="text-sm">ईमेल/यूज़रनेम</label>
-            <input id="email" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com या username" />
+            <input id="email" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
             <label class="text-sm mt-2">पासवर्ड</label>
             <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
             <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
-            <div class="flex items-center gap-3 mt-2">
-              <button id="goToSignUp" class="text-sm text-gray-700 underline">नया अकाउंट बनाएँ</button>
-              <button id="goToForgot" class="text-sm linklike">पासवर्ड भूल गए?</button>
-              <button id="hostedUiBtn" class="hidden text-sm linklike">Hosted UI से लॉगिन</button>
-            </div>
-            <p id="signupDisabledMsg" class="hidden text-xs text-red-600">इस User Pool में self-signup बंद है। कृपया एडमिन से अकाउंट बनवाएँ।</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Sign Up Section -->
-    <section id="signUpSection" class="admin-section">
-      <div class="grid gap-6 max-w-md mt-6">
-        <div class="bg-white rounded-2xl shadow p-6">
-          <h2 class="text-lg font-medium mb-4">साइन-अप</h2>
-          <div class="grid gap-3">
-            <label class="text-sm">ईमेल</label>
-            <input id="suEmail" type="email" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
-            <label class="text-sm mt-2">पासवर्ड</label>
-            <input id="suPassword" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="कम से कम 8 कैरेक्टर्स" />
-            <button id="signUpBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">खाता बनाएँ</button>
-            <button id="backToLoginFromSignUp" class="mt-2 text-sm text-gray-700 underline">लॉगिन पर वापस</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Confirm Section -->
-    <section id="confirmSection" class="admin-section">
-      <div class="grid gap-6 max-w-md mt-6">
-        <div class="bg-white rounded-2xl shadow p-6">
-          <h2 class="text-lg font-medium mb-2">ईमेल सत्यापन</h2>
-          <p class="text-sm text-gray-600">हमने आपके ईमेल पर एक कोड भेजा है। कृपया नीचे दर्ज करें।</p>
-          <div class="grid gap-3 mt-3">
-            <label class="text-sm">ईमेल</label>
-            <input id="cfEmail" type="email" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
-            <label class="text-sm mt-2">कोड</label>
-            <input id="cfCode" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="123456" />
-            <div class="flex gap-2 mt-2">
-              <button id="confirmBtn" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">कन्फ़र्म करें</button>
-              <button id="resendBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">कोड फिर भेजें</button>
-              <button id="backToLoginFromConfirm" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">लॉगिन</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Forgot Password Section -->
-    <section id="forgotSection" class="admin-section">
-      <div class="grid gap-6 max-w-md mt-6">
-        <div class="bg-white rounded-2xl shadow p-6">
-          <h2 class="text-lg font-medium mb-2">पासवर्ड रीसेट</h2>
-          <div class="grid gap-3 mt-3">
-            <label class="text-sm">ईमेल/यूज़रनेम</label>
-            <input id="fpEmail" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com या username" />
-            <div class="flex gap-2 mt-1">
-              <button id="fpSend" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रीसेट कोड भेजें</button>
-              <button id="fpBackToLogin" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">लॉगिन</button>
-            </div>
-            <label class="text-sm mt-3">रीसेट कोड</label>
-            <input id="fpCode" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="123456" />
-            <label class="text-sm mt-2">नया पासवर्ड</label>
-            <input id="fpNew" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
-            <button id="fpConfirm" class="mt-2 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">पासवर्ड बदलें</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- New Password Required Section (first-time login) -->
-    <section id="newPasswordSection" class="admin-section">
-      <div class="grid gap-6 max-w-md mt-6">
-        <div class="bg-white rounded-2xl shadow p-6">
-          <h2 class="text-lg font-medium mb-2">पहली बार लॉगिन — नया पासवर्ड सेट करें</h2>
-          <p class="text-sm text-gray-600">एडमिन के बनाए अकाउंट्स पर पहली बार लॉगिन में यह स्टेप आता है।</p>
-          <div class="grid gap-3 mt-3">
-            <label class="text-sm">नया पासवर्ड</label>
-            <input id="npwInput" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
-            <div class="flex gap-2 mt-2">
-              <button id="npwSubmit" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">सेव करें और आगे बढ़ें</button>
-              <button id="npwCancel" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रद्द करें</button>
-            </div>
           </div>
         </div>
       </div>
@@ -154,81 +51,11 @@
     <!-- Dashboard Section -->
     <section id="dashboardSection" class="admin-section">
       <div class="mt-8">
-        <div id="masterAdminBar" class="hidden mb-4 flex items-center gap-2">
-          <button id="openUserMgmt" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">यूज़र मैनेजमेंट</button>
-          <span class="text-xs text-gray-500">(API सेट न होने पर यह डेमो मोड में चलेगा)</span>
-        </div>
-
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-medium">इवेंट्स</h2>
           <button id="refreshEvents" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
         </div>
         <div id="eventList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-      </div>
-    </section>
-
-    <!-- User Management Section (Master Admin only) -->
-    <section id="userMgmtSection" class="admin-section">
-      <div class="mt-8 bg-white rounded-2xl shadow p-6">
-        <div class="flex items-start justify-between">
-          <div>
-            <h2 class="text-lg font-medium">यूज़र मैनेजमेंट</h2>
-            <p class="text-sm text-gray-500 mt-1">यह सेक्शन केवल <span class="font-semibold">master-admin</span> ग्रुप के यूज़र देख/बना सकते हैं।</p>
-          </div>
-          <div class="flex gap-2">
-            <button id="backFromUserMgmt" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
-          </div>
-        </div>
-
-        <div id="userApiWarn" class="hidden mt-4 text-sm p-3 rounded-2xl border border-blue-300 bg-blue-50 text-blue-900">
-          Admin API सेट नहीं मिला। URL में <span class="kbd">?api=&lt;API_BASE_URL&gt;</span> जोड़ें।
-        </div>
-
-        <div class="mt-4 grid lg:grid-cols-3 gap-6">
-          <!-- Create user card -->
-          <div class="lg:col-span-1 bg-gray-50 rounded-2xl p-4 border border-gray-200">
-            <h3 class="font-semibold mb-2">नया यूज़र बनाएँ</h3>
-            <label class="text-xs">ईमेल</label>
-            <input id="umEmail" type="email" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" placeholder="user@example.com" />
-            <label class="text-xs">पासवर्ड (वैकल्पिक)</label>
-            <input id="umPassword" type="password" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" />
-            <label class="text-xs">ग्रुप्स (comma सेपरेटेड)</label>
-            <input id="umGroups" type="text" class="w-full mb-3 px-3 py-2 rounded-xl border border-gray-300" />
-            <div class="flex items-center gap-2 mb-3">
-              <input id="umVerifyEmail" type="checkbox" class="h-4 w-4" />
-              <span class="text-xs">ईमेल verified मार्क करें</span>
-            </div>
-            <button id="umCreateBtn" class="px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">यूज़र बनाएँ</button>
-          </div>
-
-          <!-- Users table -->
-          <div class="lg:col-span-2">
-            <div class="flex items-center justify-between mb-2">
-              <h3 class="font-semibold">यूज़र लिस्ट</h3>
-              <div class="flex gap-2">
-                <input id="umSearch" type="text" class="px-3 py-2 rounded-xl border border-gray-300 text-sm" placeholder="ईमेल से खोजें" />
-                <button id="umRefresh" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
-              </div>
-            </div>
-            <div class="overflow-auto border border-gray-200 rounded-2xl">
-              <table class="min-w-full text-sm">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="text-left px-3 py-2">Username</th>
-                    <th class="text-left px-3 py-2">Email</th>
-                    <th class="text-left px-3 py-2">Status</th>
-                    <th class="text-left px-3 py-2">Groups</th>
-                    <th class="text-left px-3 py-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="umTbody" class="divide-y divide-gray-100"></tbody>
-              </table>
-            </div>
-            <div class="flex justify-end mt-2">
-              <button id="umNext" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm hidden">अगला पेज</button>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -254,101 +81,142 @@
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js"></script>
   
   <script>
-    (function(){
-      // ===== Config (editable) =====
-      const DEFAULT_COGNITO = { REGION: 'ap-southeast-1', USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5', USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l' };
-      const S3_CONFIG = { BUCKET: 'abstudios-photoapp-820345', REGION: 'ap-southeast-1' };
-      const FEATURES = { allowSignUp: false, allowHostedUI: false };
+    // ===== 1. Configuration (editable) =====
+    const COGNITO_CONFIG = { 
+        region: 'ap-southeast-1', 
+        userPoolId: 'ap-southeast-1_YGZSUnSf5', 
+        userPoolWebClientId: '1mecg9v8gfau80k08arpofgl4l' 
+    };
+    const S3_CONFIG = { 
+        bucket: 'abstudios-photoapp-820345', 
+        region: 'ap-southeast-1' 
+    };
 
-      const qp = new URLSearchParams(location.search);
-      const COGNITO = { REGION: qp.get('region') || DEFAULT_COGNITO.REGION, USER_POOL_ID: qp.get('userPoolId') || DEFAULT_COGNITO.USER_POOL_ID, USER_POOL_WEB_CLIENT_ID: qp.get('clientId') || DEFAULT_COGNITO.USER_POOL_WEB_CLIENT_ID, };
-      const API_BASE = qp.get('api') || '';
+    // ===== 2. Define ALL functions first =====
+    function showToast(msg, type = 'info', ms = 3500) {
+        const el = document.getElementById('toast-container');
+        if (!el) return;
+        el.className = `toast ${type} show`;
+        el.textContent = msg;
+        setTimeout(() => el.classList.remove('show'), ms);
+    }
 
-      // ===== The Main Application Logic =====
-      async function boot() {
-        try {
-          const { Amplify, Auth, Storage } = window.aws_amplify;
+    function showSection(sectionId) {
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        const sectionToShow = document.getElementById(sectionId);
+        if (sectionToShow) {
+            sectionToShow.classList.add('active');
+        }
+    }
+    
+    // ===== 3. The Main Application Code, wrapped in window.onload =====
+    window.onload = function() {
+        console.log("Page fully loaded. Starting app...");
+        
+        // Now it's safe to get Amplify and DOM elements
+        const { Amplify, Auth, Storage } = window.aws_amplify;
 
-          // Define all functions and variables that will be needed
-          const showToast = (msg, type = 'info', ms = 3500) => { const el = document.getElementById('toast-container'); el.className = `toast ${type} show`; el.textContent = msg; setTimeout(() => el.classList.remove('show'), ms); };
-          const sectionIds = ['loginSection', 'signUpSection', 'confirmSection', 'forgotSection', 'newPasswordSection', 'dashboardSection', 'userMgmtSection', 'uploadSection'];
-          const showSection = (el) => { 
-            const sectionElement = typeof el === 'string' ? document.getElementById(el) : el;
-            if(sectionElement) {
-              sectionIds.forEach(id => document.getElementById(id).classList.remove('active'));
-              sectionElement.classList.add('active'); 
-            }
-          };
+        // Get all DOM elements
+        const loginSection = document.getElementById('loginSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const uploadSection = document.getElementById('uploadSection');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const eventList = document.getElementById('eventList');
+        const refreshEventsBtn = document.getElementById('refreshEvents');
+        const fileInput = document.getElementById('fileInput');
+        const startUploadBtn = document.getElementById('startUpload');
+        const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+        const backToDashboardBtn = document.getElementById('backToDashboard');
+        const uploadTitle = document.getElementById('uploadTitle');
 
-          // Get all DOM elements
-          const loginSection = document.getElementById('loginSection'), dashboardSection = document.getElementById('dashboardSection'), uploadSection = document.getElementById('uploadSection');
-          const emailInput = document.getElementById('email'), passwordInput = document.getElementById('password'), loginBtn = document.getElementById('loginBtn');
-          const logoutBtn = document.getElementById('logoutBtn'), eventList = document.getElementById('eventList');
-          const fileInput = document.getElementById('fileInput'), startUpload = document.getElementById('startUpload'), uploadProgressContainer = document.getElementById('uploadProgressContainer'), backToDashboard = document.getElementById('backToDashboard');
-          
-          // Configure Amplify
-          Amplify.configure({ 
-              Auth: { region: COGNITO.REGION, userPoolId: COGNITO.USER_POOL_ID, userPoolWebClientId: COGNITO.USER_POOL_WEB_CLIENT_ID },
-              Storage: { AWSS3: { bucket: S3_CONFIG.BUCKET, region: S3_CONFIG.REGION } }
-          });
-          showToast('Amplify तैयार', 'success');
+        if (!loginBtn) {
+            console.error("FATAL: loginBtn not found. Script cannot continue.");
+            alert("Application failed to load critical components.");
+            return;
+        }
 
-          // Define all event handlers and app logic
-          const checkUserSession = async () => {
+        // Configure Amplify
+        Amplify.configure({ 
+            Auth: COGNITO_CONFIG,
+            Storage: { AWSS3: S3_CONFIG }
+        });
+        showToast('Amplify तैयार', 'success');
+
+        // --- Application Logic Functions ---
+        
+        async function checkUserSession() {
             try {
-              await Auth.currentAuthenticatedUser();
-              showSection(dashboardSection);
-              logoutBtn.classList.remove('hidden');
-              await loadEvents();
+                await Auth.currentAuthenticatedUser();
+                showSection('dashboardSection');
+                logoutBtn.classList.remove('hidden');
+                loadEvents();
             } catch {
-              showSection(loginSection);
-              logoutBtn.classList.add('hidden');
+                showSection('loginSection');
+                logoutBtn.classList.add('hidden');
             }
-          };
-          
-          const doLogin = async () => {
-              console.log("[DEBUG] Login button was clicked!"); // Debug log
-              const username = (emailInput.value || '').trim();
-              const password = passwordInput.value;
-              if (!username || !password) { showToast('ईमेल और पासवर्ड भरें', 'error'); return; }
-              loginBtn.disabled = true;
-              try {
-                  await Auth.signIn(username, password);
-                  await checkUserSession();
-              } catch (error) {
-                  showToast(error.message || 'लॉगिन में त्रुटि', 'error');
-              } finally {
-                  loginBtn.disabled = false;
-              }
-          };
-          
-          const doLogout = async () => {
+        }
+
+        async function doLogin() {
+            const username = emailInput.value.trim();
+            const password = passwordInput.value;
+            if (!username || !password) {
+                showToast('ईमेल और पासवर्ड भरें', 'error');
+                return;
+            }
+            loginBtn.disabled = true;
+            try {
+                await Auth.signIn(username, password);
+                await checkUserSession();
+            } catch (error) {
+                showToast(error.message || 'लॉगिन में त्रुटि', 'error');
+            } finally {
+                loginBtn.disabled = false;
+            }
+        }
+
+        async function doLogout() {
             try { await Auth.signOut(); } catch {}
             showToast('लॉग आउट किया गया', 'info');
             await checkUserSession();
-          };
-          
-          const renderEvents = (items) => {
+        }
+        
+        function renderEvents(items) {
             eventList.innerHTML = '';
-            if (!items || !items.length) { eventList.innerHTML = '<div class="text-sm text-gray-600">कोई इवेंट नहीं मिला</div>'; return; }
-            for (const it of items) {
-              const card = document.createElement('div');
-              card.className = 'bg-white rounded-2xl shadow p-5 flex flex-col gap-3';
-              card.innerHTML = `<div class="flex-1"><div class="text-base font-semibold">${it.name}</div><div class="text-sm text-gray-500 mt-1">फ़ोटो: ${it.photos}</div></div><div class="flex gap-2"><button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${it.id}" data-event-name="${it.name}">फ़ोटो अपलोड</button></div>`;
-              eventList.appendChild(card);
+            if (!items || !items.length) {
+                eventList.innerHTML = '<div class="text-sm text-gray-600">कोई इवेंट नहीं मिला</div>';
+                return;
             }
-          };
+            items.forEach(it => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl shadow p-5 flex flex-col gap-3';
+                card.innerHTML = `
+                    <div class="flex-1">
+                        <div class="text-base font-semibold">${it.name}</div>
+                        <div class="text-sm text-gray-500 mt-1">फ़ोटो: ${it.photos}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${it.id}" data-event-name="${it.name}">फ़ोटो अपलोड</button>
+                    </div>`;
+                eventList.appendChild(card);
+            });
+        }
 
-          const loadEvents = async () => {
+        async function loadEvents() {
+            // Using dummy data for now
             const items = [{ id: 'evt_1', name: 'Diwali Night 2024', photos: 0 }, { id: 'evt_2', name: 'Wedding - A&V', photos: 120 }];
             renderEvents(items);
-          };
+        }
 
-          const uploadFilesForEvent = async (eventId) => {
+        async function uploadFilesForEvent(eventId) {
             if (!fileInput.files?.length) return;
             const files = Array.from(fileInput.files);
-            startUpload.disabled = true; startUpload.textContent = 'अपलोड हो रहा है...';
+            startUploadBtn.disabled = true;
+            startUploadBtn.textContent = 'अपलोड हो रहा है...';
             uploadProgressContainer.innerHTML = '';
+            
             for (const file of files) {
                 const fileName = `${eventId}/${Date.now()}-${file.name}`;
                 const progressElement = document.createElement('div');
@@ -370,46 +238,42 @@
                 }
             }
             showToast('सभी चयनित फ़ाइलें प्रोसेस हो गईं।', 'success');
-            fileInput.value = ''; startUpload.textContent = 'अपलोड शुरू करें';
-          };
-          
-          // Attach event listeners
-          console.log("[DEBUG] Attaching event listeners...");
-          loginBtn.addEventListener('click', doLogin);
-          logoutBtn.addEventListener('click', doLogout);
-          fileInput.addEventListener('change', () => { startUpload.disabled = !(fileInput.files && fileInput.files.length > 0); });
-          startUpload.addEventListener('click', () => { const eventId = uploadSection.dataset.eventId; if (eventId) uploadFilesForEvent(eventId); });
-          eventList.addEventListener('click', (e) => {
-              const btn = e.target.closest('.upload-btn');
-              if (btn) {
-                  uploadSection.dataset.eventId = btn.dataset.eventId;
-                  document.getElementById('uploadTitle').textContent = `"${btn.dataset.eventName}" में तस्वीरें अपलोड करें`;
-                  showSection(uploadSection);
-              }
-          });
-          backToDashboard.addEventListener('click', () => showSection(dashboardSection));
-          console.log("[DEBUG] Event listeners attached.");
-
-          // Check user session to start
-          await checkUserSession();
-
-        } catch(e) {
-          console.error("Boot Error:", e);
-          document.body.innerHTML = `<div style="color: red; padding: 2rem; font-family: sans-serif;"><h2>Application Failed to Start</h2><p>${e.message}</p></div>`;
+            fileInput.value = '';
+            startUploadBtn.textContent = 'अपलोड शुरू करें';
         }
-      }
 
-      // ===== The Bulletproof Starter =====
-      function startWhenReady() {
-        if (window.aws_amplify && window.aws_amplify.Amplify) {
-          boot();
-        } else {
-          setTimeout(startWhenReady, 50);
-        }
-      }
-      startWhenReady();
+        // --- Attach all Event Listeners ---
+        console.log("Attaching event listeners...");
+        loginBtn.addEventListener('click', doLogin);
+        logoutBtn.addEventListener('click', doLogout);
+        refreshEventsBtn.addEventListener('click', loadEvents);
 
-    })();
+        fileInput.addEventListener('change', () => {
+            startUploadBtn.disabled = !(fileInput.files && fileInput.files.length > 0);
+        });
+        
+        startUploadBtn.addEventListener('click', () => {
+            const eventId = uploadSection.dataset.eventId;
+            if (eventId) {
+                uploadFilesForEvent(eventId);
+            }
+        });
+
+        eventList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.upload-btn');
+            if (btn) {
+                uploadSection.dataset.eventId = btn.dataset.eventId;
+                uploadTitle.textContent = `"${btn.dataset.eventName}" में तस्वीरें अपलोड करें`;
+                showSection('uploadSection');
+            }
+        });
+        
+        backToDashboardBtn.addEventListener('click', () => showSection('dashboardSection'));
+        console.log("Event listeners attached successfully.");
+
+        // --- Initial Start ---
+        checkUserSession();
+    };
   </script>
 </body>
 </html>
