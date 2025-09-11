@@ -75,180 +75,164 @@
 <body class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
 
     <div class="w-full max-w-5xl mx-auto">
-        
-        <!-- Login Section -->
-        <section id="login-section" class="admin-section">
-            <div class="max-w-md mx-auto">
-                <h1 class="text-3xl font-bold text-center mb-2">एडमिन पैनल</h1>
-                <p class="text-center text-gray-400 mb-8">लॉग इन करने के लिए अपना विवरण दर्ज करें।</p>
-                <div class="bg-slate-800 p-8 rounded-lg shadow-lg">
-                    <div class="space-y-4">
-                        <input id="email" type="email" placeholder="ईमेल" class="input-field">
-                        <input id="password" type="password" placeholder="पासवर्ड" class="input-field">
-                    </div>
-                    <button id="login-btn" class="btn btn-primary w-full mt-6">लॉग इन करें</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Dashboard Section -->
-        <section id="dashboard-section" class="admin-section">
-            <header class="flex flex-col sm:flex-row justify-between items-center mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold">आपके इवेंट्स</h1>
-                    <p id="welcome-message" class="text-gray-400"></p>
-                </div>
-                <div>
-                    <button id="create-event-btn" class="btn btn-primary">नया इवेंट बनाएँ</button>
-                    <button id="logout-btn" class="btn bg-red-600 hover:bg-red-700 text-white ml-2">लॉग आउट</button>
-                </div>
-            </header>
-            <div id="event-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Example Event Card -->
-                <div class="bg-slate-800 p-6 rounded-lg shadow-lg flex flex-col justify-between">
-                    <div>
-                        <h2 class="text-xl font-bold">पूजा और राहुल की शादी</h2>
-                        <p class="text-sm text-gray-400 mb-4">15 अक्टूबर, 2025</p>
-                        <p class="text-gray-300">कुल तस्वीरें: <span class="font-bold">256</span></p>
-                    </div>
-                    <button class="btn bg-slate-600 hover:bg-slate-700 w-full mt-4 upload-btn" data-event-name="पूजा और राहुल की शादी">तस्वीरें अपलोड करें</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Upload Section (Abhi ke liye samaan) -->
-        <section id="upload-section" class="admin-section">
-            <header class="mb-8">
-                <button id="back-to-dashboard-btn" class="btn bg-slate-600 hover:bg-slate-700 mb-4">&larr; डैशबोर्ड पर वापस जाएँ</button>
-                <h1 id="upload-title" class="text-3xl font-bold">तस्वीरें अपलोड करें</h1>
-            </header>
-            <div id="drop-zone">
-                <p class="text-gray-400">तस्वीरों को यहाँ खींचकर छोड़ें या</p>
-                <label for="file-input" class="text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">ब्राउज़ करें</label>
-                <input type="file" id="file-input" multiple class="hidden">
-            </div>
-            <div id="upload-progress" class="mt-4 space-y-2"></div>
-        </section>
-
+        <!-- Sections will be filled by script -->
     </div>
     
     <div id="toast-container" class="toast"></div>
 
-    <!-- महत्वपूर्ण बदलाव: स्क्रिप्ट्स को body के अंत में ले जाया गया है -->
     <!-- AWS Amplify JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js"></script>
+    
     <!-- हमारी अपनी स्क्रिप्ट -->
     <script>
-        
-        // --- AWS Amplify Configuration ---
-        const { Amplify, Auth } = aws_amplify; 
+        // --- महत्वपूर्ण बदलाव: हमारा सारा कोड अब 'window.onload' के अंदर है ---
+        window.addEventListener('load', function() {
+            
+            // अब यह निश्चित है कि 'aws_amplify' लाइब्रेरी लोड हो चुकी है।
+            const { Amplify, Auth } = aws_amplify; 
 
-        Amplify.configure({
-            Auth: {
-                region: 'ap-southeast-1',
-                userPoolId: 'ap-southeast-1_YGZSUnSf5',
-                userPoolWebClientId: '1mecg9v8gfau80k08arpofgl4l',
+            Amplify.configure({
+                Auth: {
+                    region: 'ap-southeast-1',
+                    userPoolId: 'ap-southeast-1_YGZSUnSf5',
+                    userPoolWebClientId: '1mecg9v8gfau80k08arpofgl4l',
+                }
+            });
+
+            // HTML content ko script mein define karna
+            const mainContainer = document.querySelector('.w-full.max-w-5xl.mx-auto');
+            mainContainer.innerHTML = `
+                <!-- Login Section -->
+                <section id="login-section" class="admin-section">
+                    <div class="max-w-md mx-auto">
+                        <h1 class="text-3xl font-bold text-center mb-2">एडमिन पैनल</h1>
+                        <p class="text-center text-gray-400 mb-8">लॉग इन करने के लिए अपना विवरण दर्ज करें।</p>
+                        <div class="bg-slate-800 p-8 rounded-lg shadow-lg">
+                            <div class="space-y-4">
+                                <input id="email" type="email" placeholder="ईमेल" class="input-field">
+                                <input id="password" type="password" placeholder="पासवर्ड" class="input-field">
+                            </div>
+                            <button id="login-btn" class="btn btn-primary w-full mt-6">लॉग इन करें</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="admin-section">
+                    <header class="flex flex-col sm:flex-row justify-between items-center mb-8">
+                        <div>
+                            <h1 class="text-3xl font-bold">आपके इवेंट्स</h1>
+                            <p id="welcome-message" class="text-gray-400"></p>
+                        </div>
+                        <div>
+                            <button id="create-event-btn" class="btn btn-primary">नया इवेंट बनाएँ</button>
+                            <button id="logout-btn" class="btn bg-red-600 hover:bg-red-700 text-white ml-2">लॉग आउट</button>
+                        </div>
+                    </header>
+                    <div id="event-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-slate-800 p-6 rounded-lg shadow-lg flex flex-col justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold">पूजा और राहुल की शादी</h2>
+                                <p class="text-sm text-gray-400 mb-4">15 अक्टूबर, 2025</p>
+                                <p class="text-gray-300">कुल तस्वीरें: <span class="font-bold">256</span></p>
+                            </div>
+                            <button class="btn bg-slate-600 hover:bg-slate-700 w-full mt-4 upload-btn" data-event-name="पूजा और राहुल की शादी">तस्वीरें अपलोड करें</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Upload Section -->
+                <section id="upload-section" class="admin-section">
+                    <header class="mb-8">
+                        <button id="back-to-dashboard-btn" class="btn bg-slate-600 hover:bg-slate-700 mb-4">&larr; डैशबोर्ड पर वापस जाएँ</button>
+                        <h1 id="upload-title" class="text-3xl font-bold">तस्वीरें अपलोड करें</h1>
+                    </header>
+                    <div id="drop-zone"><p class="text-gray-400">तस्वीरों को यहाँ खींचकर छोड़ें या</p><label for="file-input" class="text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">ब्राउज़ करें</label><input type="file" id="file-input" multiple class="hidden"></div>
+                    <div id="upload-progress" class="mt-4 space-y-2"></div>
+                </section>
+            `;
+            
+            // DOM Elements ko abhi access karna
+            const loginSection = document.getElementById('login-section');
+            const dashboardSection = document.getElementById('dashboard-section');
+            const uploadSection = document.getElementById('upload-section');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const welcomeMessage = document.getElementById('welcome-message');
+            const toastContainer = document.getElementById('toast-container');
+
+            function showToast(message, type = 'error') {
+                toastContainer.textContent = message;
+                toastContainer.className = `toast ${type} show`;
+                setTimeout(() => { toastContainer.classList.remove('show'); }, 3000);
             }
+
+            function showSection(sectionToShow) {
+                document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+                sectionToShow.classList.add('active');
+            }
+
+            async function handleLogin() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                if (!email || !password) { showToast('कृपया ईमेल और पासवर्ड दर्ज करें।'); return; }
+                try {
+                    loginBtn.disabled = true;
+                    loginBtn.textContent = 'लॉग इन हो रहा है...';
+                    const user = await Auth.signIn(email, password);
+                    welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
+                    showSection(dashboardSection);
+                } catch (error) {
+                    showToast(error.message || 'लॉग इन करने में त्रुटि हुई।');
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'लॉग इन करें';
+                }
+            }
+
+            async function handleLogout() {
+                try {
+                    await Auth.signOut();
+                    emailInput.value = '';
+                    passwordInput.value = '';
+                    showSection(loginSection);
+                } catch (error) {
+                    showToast(error.message || 'लॉग आउट करने में त्रुटि हुई।');
+                }
+            }
+            
+            async function checkUserSession() {
+                try {
+                    const user = await Auth.currentAuthenticatedUser();
+                    welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
+                    showSection(dashboardSection);
+                } catch (error) {
+                    showSection(loginSection);
+                }
+            }
+            
+            const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+            const uploadTitle = document.getElementById('upload-title');
+            const eventList = document.getElementById('event-list');
+            const createEventBtn = document.getElementById('create-event-btn');
+
+            eventList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('upload-btn')) {
+                    const eventName = e.target.dataset.eventName;
+                    uploadTitle.textContent = `"${eventName}" में तस्वीरें अपलोड करें`;
+                    showSection(uploadSection);
+                }
+            });
+            backToDashboardBtn.addEventListener('click', () => showSection(dashboardSection));
+            createEventBtn.addEventListener('click', () => alert('यह सुविधा जल्द ही जोड़ी जाएगी!'));
+            loginBtn.addEventListener('click', handleLogin);
+            logoutBtn.addEventListener('click', handleLogout);
+
+            checkUserSession(); // Initial Load
         });
-
-        // --- DOM Elements ---
-        const loginSection = document.getElementById('login-section');
-        const dashboardSection = document.getElementById('dashboard-section');
-        const uploadSection = document.getElementById('upload-section');
-        const loginBtn = document.getElementById('login-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const welcomeMessage = document.getElementById('welcome-message');
-
-        // --- Toast Notification Logic ---
-        const toastContainer = document.getElementById('toast-container');
-        function showToast(message, type = 'error') {
-            toastContainer.textContent = message;
-            toastContainer.className = `toast ${type} show`;
-            setTimeout(() => {
-                toastContainer.classList.remove('show');
-            }, 3000);
-        }
-
-        // --- Main App Logic ---
-        function showSection(sectionToShow) {
-            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-            sectionToShow.classList.add('active');
-        }
-
-        async function handleLogin() {
-            const email = emailInput.value.trim();
-            const password = passwordInput.value.trim();
-            if (!email || !password) {
-                showToast('कृपया ईमेल और पासवर्ड दर्ज करें।');
-                return;
-            }
-            try {
-                loginBtn.disabled = true;
-                loginBtn.textContent = 'लॉग इन हो रहा है...';
-                const user = await Auth.signIn(email, password); 
-                console.log('Authentication successful:', user);
-                welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
-                showSection(dashboardSection);
-            } catch (error) {
-                console.error('Authentication error:', error);
-                showToast(error.message || 'लॉग इन करने में त्रुटि हुई।');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'लॉग इन करें';
-            }
-        }
-
-        async function handleLogout() {
-            try {
-                await Auth.signOut(); 
-                emailInput.value = '';
-                passwordInput.value = '';
-                showSection(loginSection);
-            } catch (error) {
-                console.error('Logout error:', error);
-                showToast(error.message || 'लॉग आउट करने में त्रुटि हुई।');
-            }
-        }
-        
-        async function checkUserSession() {
-            try {
-                const user = await Auth.currentAuthenticatedUser(); 
-                console.log('User is already signed in:', user);
-                welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
-                showSection(dashboardSection);
-            } catch (error) {
-                console.log('User is not signed in.');
-                showSection(loginSection);
-            }
-        }
-
-        // --- Event Listeners for other sections (for demonstration) ---
-        const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-        const uploadTitle = document.getElementById('upload-title');
-        const eventList = document.getElementById('event-list');
-        const createEventBtn = document.getElementById('create-event-btn');
-
-        eventList.addEventListener('click', (e) => {
-            if (e.target.classList.contains('upload-btn')) {
-                const eventName = e.target.dataset.eventName;
-                uploadTitle.textContent = `"${eventName}" में तस्वीरें अपलोड करें`;
-                showSection(uploadSection);
-            }
-        });
-        backToDashboardBtn.addEventListener('click', () => showSection(dashboardSection));
-        createEventBtn.addEventListener('click', () => alert('यह सुविधा जल्द ही जोड़ी जाएगी!'));
-
-        // --- Event Listeners ---
-        loginBtn.addEventListener('click', handleLogin);
-        logoutBtn.addEventListener('click', handleLogout);
-
-        // --- Initial Load ---
-        checkUserSession(); // पेज लोड होते ही सेशन की जाँच करें
-        
     </script>
-
 </body>
 </html>
 
