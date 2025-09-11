@@ -316,8 +316,7 @@
       function resolveAmplify(){ 
         const ns = window.aws_amplify; 
         if (!ns) {
-          showToast('Amplify लाइब्रेरी लोड नहीं हुई!', 'error');
-          throw new Error('Amplify global object not found.');
+          throw new Error('Amplify global object not found. The Amplify library may not have loaded yet.');
         }
         return { Amplify: ns.Amplify, Auth: ns.Auth, Storage: ns.Storage }; 
       }
@@ -385,7 +384,7 @@
 
       // Delegation & Upload
       eventList.addEventListener('click', (e)=>{ const btn=e.target.closest('.upload-btn'); if(!btn) return; const eventName=btn.dataset.eventName; const eventId=btn.dataset.eventId; uploadTitle.textContent=`"${eventName}" में तस्वीरें अपलोड करें`; uploadSection.dataset.eventId=eventId; showSection(uploadSection); });
-      fileInput.addEventListener('change', ()=>{ startUpload.disabled=!(fileInput.files&&fileInput.files.length); uploadProgressContainer.innerHTML=''; });
+      fileInput.addEventListener('change', ()=>{ startUpload.disabled=!(fileInput.files && fileInput.files.length); uploadProgressContainer.innerHTML=''; });
       
       async function uploadFilesForEvent(eventId){
         const { Storage } = resolveAmplify(); if (!fileInput.files?.length || !Storage) return;
@@ -468,8 +467,9 @@
       }
       
       // ===== Boot =====
-      (async function boot(){
-        try{
+      // This is the main boot function that starts the application.
+      async function boot() {
+        try {
           showToast('एप्लिकेशन शुरू हो रहा है...', 'info');
           const { Amplify, Auth } = resolveAmplify();
           if(!Amplify || !Auth) throw new Error('Amplify components missing');
@@ -477,11 +477,16 @@
           showToast('Amplify तैयार', 'success');
           setupHandlers();
           await checkUserSession();
-        } catch(e){
+        } catch(e) {
           console.error("Boot Error:", e);
           showToast(e.message || 'एप्लिकेशन शुरू करने में विफल रहा।', 'error');
         }
-      })();
+      }
+
+      // We wait for the DOM to be fully loaded before running our boot function.
+      // This ensures that the Amplify script has been loaded and is available.
+      document.addEventListener('DOMContentLoaded', boot);
+
     })();
   </script>
 </body>
