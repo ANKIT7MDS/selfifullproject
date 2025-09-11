@@ -134,14 +134,14 @@
     
     <div id="toast-container" class="toast"></div>
 
+    <!-- महत्वपूर्ण बदलाव: स्क्रिप्ट्स को body के अंत में ले जाया गया है -->
     <!-- AWS Amplify JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js"></script>
-
+    <!-- हमारी अपनी स्क्रिप्ट -->
     <script>
-        // --- महत्वपूर्ण बदलाव: DOMContentLoaded को हटा दिया गया है ---
         
         // --- AWS Amplify Configuration ---
-        const { Amplify, Auth } = aws_amplify; // लाइब्रेरी से ज़रूरी टूल निकालें
+        const { Amplify, Auth } = aws_amplify; 
 
         Amplify.configure({
             Auth: {
@@ -187,7 +187,7 @@
             try {
                 loginBtn.disabled = true;
                 loginBtn.textContent = 'लॉग इन हो रहा है...';
-                const user = await Auth.signIn(email, password); // अब Auth का सीधा उपयोग करें
+                const user = await Auth.signIn(email, password); 
                 console.log('Authentication successful:', user);
                 welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
                 showSection(dashboardSection);
@@ -202,7 +202,7 @@
 
         async function handleLogout() {
             try {
-                await Auth.signOut(); // अब Auth का सीधा उपयोग करें
+                await Auth.signOut(); 
                 emailInput.value = '';
                 passwordInput.value = '';
                 showSection(loginSection);
@@ -214,7 +214,7 @@
         
         async function checkUserSession() {
             try {
-                const user = await Auth.currentAuthenticatedUser(); // अब Auth का सीधा उपयोग करें
+                const user = await Auth.currentAuthenticatedUser(); 
                 console.log('User is already signed in:', user);
                 welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
                 showSection(dashboardSection);
