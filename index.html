@@ -297,7 +297,6 @@
                 video.classList.remove('hidden');
                 uploadPlaceholder.classList.add('hidden');
 
-                // Ek baar click karne par hi photo le lo
                 const captureFrame = () => {
                     if (!video.srcObject) return;
                     const tempCanvas = document.createElement('canvas');
@@ -307,18 +306,15 @@
                     handlePhotoProvided(tempCanvas.toDataURL());
                 };
                 
-                // Add a button to capture the photo
                 const snapButton = document.createElement('button');
                 snapButton.textContent = 'फोटो खींचें';
                 snapButton.className = 'btn btn-primary mt-4';
                 snapButton.onclick = captureFrame;
                 
-                // Remove old snap button if exists
                 const oldSnapButton = document.querySelector('#camera-container > button');
                 if(oldSnapButton) oldSnapButton.remove();
 
                 video.parentElement.appendChild(snapButton);
-
 
             } catch (err) { showToast("कैमरा एक्सेस नहीं हो सका। कृपया अनुमति दें।"); }
         });
@@ -343,7 +339,10 @@
 
         changePhotoBtn.addEventListener('click', () => {
             capturedImageData = null;
-            if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
             const oldSnapButton = document.querySelector('#camera-container > button');
             if(oldSnapButton) oldSnapButton.remove();
             video.classList.add('hidden');
@@ -370,19 +369,27 @@
                 loaderText.textContent = "परिणाम तैयार किए जा रहे हैं...";
 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ body: `{"message": "Server error (HTTP ${response.status})"}` }));
-                    throw new Error(JSON.parse(errorData.body).message || `Server error (HTTP ${response.status})`);
+                    // Try to get a more specific error message from the server if possible
+                    const errorText = await response.text();
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        // If the server sends a JSON with a 'message' key
+                        if (errorJson.message) throw new Error(errorJson.message);
+                    } catch (e) {
+                        // If the error response is not JSON, or doesn't have a 'message' key
+                        throw new Error(`सर्वर से त्रुटि (HTTP ${response.status})`);
+                    }
                 }
-
-                const responseBody = await response.json();
                 
-                // Error handling ko behtar banaya gaya hai
-                if (!responseBody || typeof responseBody.body === 'undefined') {
-                    console.error("Server response did not contain a 'body':", responseBody);
-                    throw new Error("सर्वर से अमान्य जवाब मिला।");
-                }
+                const responseBody = await response.json();
+                // --- YAHAN BADLAV KIYA GAYA HAI ---
+                // Ab hum seedhe response ko 'matches' maante hain, agar woh ek array hai.
+                const matches = responseBody;
 
-                const matches = JSON.parse(responseBody.body);
+                if (!Array.isArray(matches)) {
+                     console.error("Server response was not in the expected format (array):", matches);
+                     throw new Error("सर्वर से अमान्य जवाब मिला।");
+                }
                 
                 if (matches && matches.length > 0) {
                     resultsTitle.textContent = `आपके ${matches.length} परिणाम मिले`;
