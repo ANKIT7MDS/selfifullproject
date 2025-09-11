@@ -51,6 +51,7 @@
       <div id="diagOut" class="mt-3 text-sm bg-white rounded-2xl shadow p-4 whitespace-pre-wrap"></div>
     </details>
 
+    <!-- All HTML Sections (Login, Sign Up, Dashboard, etc.) go here... -->
     <!-- Login Section -->
     <section id="loginSection" class="admin-section active">
       <div class="grid gap-6 max-w-md mt-6">
@@ -182,15 +183,6 @@
 
         <div id="userApiWarn" class="hidden mt-4 text-sm p-3 rounded-2xl border border-blue-300 bg-blue-50 text-blue-900">
           Admin API सेट नहीं मिला। URL में <span class="kbd">?api=&lt;API_BASE_URL&gt;</span> जोड़ें।
-          अपेक्षित एंडपॉइंट्स:
-          <code class="block text-xs mt-2">GET  {api}/users?limit=&nextToken=</code>
-          <code class="block text-xs">POST {api}/users               (body: { email, password?, verifyEmail?, groups? })</code>
-          <code class="block text-xs">POST {api}/users/{username}/reset-password  (body: { permanent, password? })</code>
-          <code class="block text-xs">POST {api}/users/{username}/enable</code>
-          <code class="block text-xs">POST {api}/users/{username}/disable</code>
-          <code class="block text-xs">DELETE {api}/users/{username}</code>
-          <code class="block text-xs">POST {api}/users/{username}/groups (body: { add?: string[], remove?: string[] })</code>
-          रिक्वेस्ट में <span class="kbd">Authorization: &lt;ID_TOKEN&gt;</span> हेडर लगेगा।
         </div>
 
         <div class="mt-4 grid lg:grid-cols-3 gap-6">
@@ -199,9 +191,9 @@
             <h3 class="font-semibold mb-2">नया यूज़र बनाएँ</h3>
             <label class="text-xs">ईमेल</label>
             <input id="umEmail" type="email" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" placeholder="user@example.com" />
-            <label class="text-xs">पासवर्ड (वैकल्पिक — खाली छोड़ें तो टेम्प पासवर्ड)</label>
+            <label class="text-xs">पासवर्ड (वैकल्पिक)</label>
             <input id="umPassword" type="password" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" />
-            <label class="text-xs">ग्रुप्स (comma सेपरेटेड, उदा. master-admin, photographer)</label>
+            <label class="text-xs">ग्रुप्स (comma सेपरेटेड)</label>
             <input id="umGroups" type="text" class="w-full mb-3 px-3 py-2 rounded-xl border border-gray-300" />
             <div class="flex items-center gap-2 mb-3">
               <input id="umVerifyEmail" type="checkbox" class="h-4 w-4" />
@@ -258,12 +250,14 @@
         </div>
       </div>
     </section>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js"></script>
   
   <script>
     (function(){
+      // All config, utils, DOM node variables, and functions (unchanged)...
       // ===== Config (editable) =====
       const DEFAULT_COGNITO = { REGION: 'ap-southeast-1', USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5', USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l' };
       const S3_CONFIG = { BUCKET: 'abstudios-photoapp-820345', REGION: 'ap-southeast-1' };
@@ -470,12 +464,10 @@
       // This is the main boot function that starts the application.
       async function boot() {
         try {
-          showToast('एप्लिकेशन शुरू हो रहा है...', 'info');
-          const { Amplify, Auth } = resolveAmplify();
-          if(!Amplify || !Auth) throw new Error('Amplify components missing');
+          // Functions are defined, now we can use them.
+          setupHandlers();
           await configureAmplify();
           showToast('Amplify तैयार', 'success');
-          setupHandlers();
           await checkUserSession();
         } catch(e) {
           console.error("Boot Error:", e);
@@ -483,9 +475,10 @@
         }
       }
 
-      // We wait for the DOM to be fully loaded before running our boot function.
-      // This ensures that the Amplify script has been loaded and is available.
-      document.addEventListener('DOMContentLoaded', boot);
+      // --- The Final Fix ---
+      // We use 'load' event on the window object. This ensures that everything,
+      // including all scripts, is fully loaded and ready before we run our code.
+      window.addEventListener('load', boot);
 
     })();
   </script>
