@@ -135,6 +135,24 @@
       </div>
     </section>
 
+    <!-- New Password Required Section (first-time login) -->
+    <section id="newPasswordSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">पहली बार लॉगिन — नया पासवर्ड सेट करें</h2>
+          <p class="text-sm text-gray-600">एडमिन के बनाए अकाउंट्स पर पहली बार लॉगिन में यह स्टेप आता है।</p>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">नया पासवर्ड</label>
+            <input id="npwInput" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
+            <div class="flex gap-2 mt-2">
+              <button id="npwSubmit" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">सेव करें और आगे बढ़ें</button>
+              <button id="npwCancel" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रद्द करें</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Dashboard Section -->
     <section id="dashboardSection" class="admin-section">
       <div class="mt-8">
