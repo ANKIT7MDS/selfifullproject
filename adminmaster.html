@@ -272,7 +272,13 @@
           // Define all functions and variables that will be needed
           const showToast = (msg, type = 'info', ms = 3500) => { const el = document.getElementById('toast-container'); el.className = `toast ${type} show`; el.textContent = msg; setTimeout(() => el.classList.remove('show'), ms); };
           const sectionIds = ['loginSection', 'signUpSection', 'confirmSection', 'forgotSection', 'newPasswordSection', 'dashboardSection', 'userMgmtSection', 'uploadSection'];
-          const showSection = (el) => { sectionIds.forEach(id => document.getElementById(id).classList.remove('active')); el.classList.add('active'); };
+          const showSection = (el) => { 
+            const sectionElement = typeof el === 'string' ? document.getElementById(el) : el;
+            if(sectionElement) {
+              sectionIds.forEach(id => document.getElementById(id).classList.remove('active'));
+              sectionElement.classList.add('active'); 
+            }
+          };
 
           // Get all DOM elements
           const loginSection = document.getElementById('loginSection'), dashboardSection = document.getElementById('dashboardSection'), uploadSection = document.getElementById('uploadSection');
