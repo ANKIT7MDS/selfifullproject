@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>एडमिन पैनल</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --brand-color: #4f46e5; /* Indigo */
+            --brand-color-hover: #4338ca; 
+            --bg-dark: #0f172a; /* Slate-900 */
+            --bg-card: #1e293b; /* Slate-800 */
+            --border-color: #334155; /* Slate-700 */
+            --text-light: #f1f5f9; /* Slate-100 */
+            --text-muted: #94a3b8; /* Slate-400 */
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: var(--text-light);
+        }
+        .admin-section { display: none; }
+        .admin-section.active { display: block; animation: fadeIn 0.5s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .input-field { 
+            background-color: #334155; border: 1px solid #475569;
+            border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%;
+            color: var(--text-light); transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-field:focus {
+            outline: none; border-color: var(--brand-color);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+        }
+        .btn { 
+            display: inline-flex; align-items: center; justify-content: center; 
+            gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: none;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { 
+            background-color: var(--brand-color); color: white;
+            box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.39);
+        }
+        .btn-primary:hover:not(:disabled) { 
+            background-color: var(--brand-color-hover); transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(79, 70, 229, 0.23);
+        }
+        #drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        #drop-zone.dragover {
+            background-color: rgba(79, 70, 229, 0.1);
+            border-color: var(--brand-color);
+        }
+        .toast {
+            position: fixed; top: 1.25rem; right: 1.25rem;
+            padding: 0.75rem 1.25rem; border-radius: 0.5rem;
+            color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transform: translateX(120%); transition: transform 0.3s ease-in-out;
+            z-index: 50;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.error { background-color: #dc2626; } /* red-600 */
+        .toast.success { background-color: #16a34a; } /* green-600 */
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
+
+    <div class="w-full max-w-5xl mx-auto">
+        
+        <!-- Login Section -->
+        <section id="login-section" class="admin-section">
+            <div class="max-w-md mx-auto">
+                <h1 class="text-3xl font-bold text-center mb-2">एडमिन पैनल</h1>
+                <p class="text-center text-gray-400 mb-8">लॉग इन करने के लिए अपना विवरण दर्ज करें।</p>
+                <div class="bg-slate-800 p-8 rounded-lg shadow-lg">
+                    <div class="space-y-4">
+                        <input id="email" type="email" placeholder="ईमेल" class="input-field">
+                        <input id="password" type="password" placeholder="पासवर्ड" class="input-field">
+                    </div>
+                    <button id="login-btn" class="btn btn-primary w-full mt-6">लॉग इन करें</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="admin-section">
+            <header class="flex flex-col sm:flex-row justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold">आपके इवेंट्स</h1>
+                    <p id="welcome-message" class="text-gray-400"></p>
+                </div>
+                <div>
+                    <button id="create-event-btn" class="btn btn-primary">नया इवेंट बनाएँ</button>
+                    <button id="logout-btn" class="btn bg-red-600 hover:bg-red-700 text-white ml-2">लॉग आउट</button>
+                </div>
+            </header>
+            <div id="event-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Example Event Card -->
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold">पूजा और राहुल की शादी</h2>
+                        <p class="text-sm text-gray-400 mb-4">15 अक्टूबर, 2025</p>
+                        <p class="text-gray-300">कुल तस्वीरें: <span class="font-bold">256</span></p>
+                    </div>
+                    <button class="btn bg-slate-600 hover:bg-slate-700 w-full mt-4 upload-btn" data-event-name="पूजा और राहुल की शादी">तस्वीरें अपलोड करें</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Section (Abhi ke liye samaan) -->
+        <section id="upload-section" class="admin-section">
+            <header class="mb-8">
+                <button id="back-to-dashboard-btn" class="btn bg-slate-600 hover:bg-slate-700 mb-4">&larr; डैशबोर्ड पर वापस जाएँ</button>
+                <h1 id="upload-title" class="text-3xl font-bold">तस्वीरें अपलोड करें</h1>
+            </header>
+            <div id="drop-zone">
+                <p class="text-gray-400">तस्वीरों को यहाँ खींचकर छोड़ें या</p>
+                <label for="file-input" class="text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer">ब्राउज़ करें</label>
+                <input type="file" id="file-input" multiple class="hidden">
+            </div>
+            <div id="upload-progress" class="mt-4 space-y-2"></div>
+        </section>
+
+    </div>
+    
+    <div id="toast-container" class="toast"></div>
+
+    <!-- AWS Amplify JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js"></script>
+
+    <script>
+        // --- AWS Amplify Configuration ---
+        const { Amplify, Auth } = aws_amplify;
+
+        Amplify.configure({
+            Auth: {
+                // REQUIRED - Amazon Cognito Region
+                region: 'ap-southeast-1',
+
+                // REQUIRED - Amazon Cognito User Pool ID
+                userPoolId: 'ap-southeast-1_YGZSUnSf5',
+
+                // REQUIRED - Amazon Cognito Web Client ID
+                userPoolWebClientId: '1mecg9v8gfau80k08arpofgl4l',
+            }
+        });
+
+        // --- DOM Elements ---
+        const loginSection = document.getElementById('login-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const uploadSection = document.getElementById('upload-section');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const welcomeMessage = document.getElementById('welcome-message');
+
+        // --- Toast Notification Logic ---
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'error') {
+            toastContainer.textContent = message;
+            toastContainer.className = `toast ${type} show`;
+            setTimeout(() => {
+                toastContainer.classList.remove('show');
+            }, 3000);
+        }
+
+        // --- Main App Logic ---
+        function showSection(sectionToShow) {
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            sectionToShow.classList.add('active');
+        }
+
+        async function handleLogin() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (!email || !password) {
+                showToast('कृपया ईमेल और पासवर्ड दर्ज करें।');
+                return;
+            }
+            try {
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'लॉग इन हो रहा है...';
+                const user = await Auth.signIn(email, password);
+                console.log('Authentication successful:', user);
+                welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
+                showSection(dashboardSection);
+            } catch (error) {
+                console.error('Authentication error:', error);
+                showToast(error.message || 'लॉग इन करने में त्रुटि हुई।');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'लॉग इन करें';
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await Auth.signOut();
+                emailInput.value = '';
+                passwordInput.value = '';
+                showSection(loginSection);
+            } catch (error) {
+                console.error('Logout error:', error);
+                showToast(error.message || 'लॉग आउट करने में त्रुटि हुई।');
+            }
+        }
+        
+        async function checkUserSession() {
+            try {
+                const user = await Auth.currentAuthenticatedUser();
+                console.log('User is already signed in:', user);
+                welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
+                showSection(dashboardSection);
+            } catch (error) {
+                console.log('User is not signed in.');
+                showSection(loginSection);
+            }
+        }
+
+        // --- Event Listeners for other sections (for demonstration) ---
+        const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        const uploadTitle = document.getElementById('upload-title');
+        const eventList = document.getElementById('event-list');
+        const createEventBtn = document.getElementById('create-event-btn');
+
+        eventList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('upload-btn')) {
+                const eventName = e.target.dataset.eventName;
+                uploadTitle.textContent = `"${eventName}" में तस्वीरें अपलोड करें`;
+                showSection(uploadSection);
+            }
+        });
+        backToDashboardBtn.addEventListener('click', () => showSection(dashboardSection));
+        createEventBtn.addEventListener('click', () => alert('यह सुविधा जल्द ही जोड़ी जाएगी!'));
+
+        // --- Event Listeners ---
+        loginBtn.addEventListener('click', handleLogin);
+        logoutBtn.addEventListener('click', handleLogout);
+
+        // --- Initial Load ---
+        checkUserSession(); // पेज लोड होते ही सेशन की जाँच करें
+
+    </script>
+
+</body>
+</html>
+
