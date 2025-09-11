@@ -117,9 +117,6 @@
         const { Amplify, Auth, Storage } = window.aws_amplify;
 
         // Get all DOM elements
-        const loginSection = document.getElementById('loginSection');
-        const dashboardSection = document.getElementById('dashboardSection');
-        const uploadSection = document.getElementById('uploadSection');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const loginBtn = document.getElementById('loginBtn');
@@ -131,6 +128,7 @@
         const uploadProgressContainer = document.getElementById('uploadProgressContainer');
         const backToDashboardBtn = document.getElementById('backToDashboard');
         const uploadTitle = document.getElementById('uploadTitle');
+        const uploadSection = document.getElementById('uploadSection');
 
         if (!loginBtn) {
             console.error("FATAL: loginBtn not found. Script cannot continue.");
