@@ -139,9 +139,8 @@
 
     <script>
         // --- AWS Amplify Configuration ---
-        const { Amplify, Auth } = aws_amplify;
-
-        Amplify.configure({
+        // Yahan महत्वपूर्ण बदलाव hai. Ab hum 'aws_amplify' object ko seedhe istemal kar rahe hain.
+        aws_amplify.Amplify.configure({
             Auth: {
                 // REQUIRED - Amazon Cognito Region
                 region: 'ap-southeast-1',
@@ -190,7 +189,7 @@
             try {
                 loginBtn.disabled = true;
                 loginBtn.textContent = 'लॉग इन हो रहा है...';
-                const user = await Auth.signIn(email, password);
+                const user = await aws_amplify.Auth.signIn(email, password); // Yahan bhi badlav
                 console.log('Authentication successful:', user);
                 welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
                 showSection(dashboardSection);
@@ -205,7 +204,7 @@
 
         async function handleLogout() {
             try {
-                await Auth.signOut();
+                await aws_amplify.Auth.signOut(); // Yahan bhi badlav
                 emailInput.value = '';
                 passwordInput.value = '';
                 showSection(loginSection);
@@ -217,7 +216,7 @@
         
         async function checkUserSession() {
             try {
-                const user = await Auth.currentAuthenticatedUser();
+                const user = await aws_amplify.Auth.currentAuthenticatedUser(); // Yahan bhi badlav
                 console.log('User is already signed in:', user);
                 welcomeMessage.textContent = `नमस्ते, ${user.attributes.email}!`;
                 showSection(dashboardSection);
