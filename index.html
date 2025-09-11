@@ -3,33 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>फेस से फोटो खोजें (लाइव)</title>
+    <title>AI फेस से फोटो खोजें</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --brand-color: #2563eb; --brand-color-hover: #1d4ed8; }
-        body { font-family: 'Inter', sans-serif; background-color: #111827; color: #f3f4f6; }
-        .container { max-width: 800px; width: 100%; transition: all 0.5s ease-in-out; }
-        .step-card { background-color: #1f2937; border: 1px solid #374151; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1.5rem; }
+        :root { 
+            --brand-color: #4f46e5; /* Indigo */
+            --brand-color-hover: #4338ca; 
+            --bg-dark: #0f172a; /* Slate-900 */
+            --bg-card: #1e293b; /* Slate-800 */
+            --border-color: #334155; /* Slate-700 */
+            --text-light: #f1f5f9; /* Slate-100 */
+            --text-muted: #94a3b8; /* Slate-400 */
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: var(--text-light);
+        }
+        .container { 
+            max-width: 800px; 
+            width: 100%; 
+            transition: all 0.5s ease-in-out; 
+        }
+        .step-card { 
+            background-color: var(--bg-card); 
+            border: 1px solid var(--border-color); 
+            border-radius: 0.75rem; 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
         @media (min-width: 768px) { .step-card { padding: 2rem; } }
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: none; }
-        .btn-primary { background-color: var(--brand-color); color: white; box-shadow: 0 4px 14px 0 rgb(0 118 255 / 39%); }
-        .btn-primary:hover { background-color: var(--brand-color-hover); transform: translateY(-2px); box-shadow: 0 6px 20px 0 rgb(0 118 255 / 23%); }
-        .loader-container .loader { border: 4px solid #4b5563; border-top: 4px solid var(--brand-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        .btn { 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 0.5rem; 
+            padding: 0.75rem 1.5rem; 
+            border-radius: 0.5rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            border: none;
+            text-align: center;
+        }
+        .btn-primary { 
+            background-color: var(--brand-color); 
+            color: white; 
+            box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.39);
+        }
+        .btn-primary:hover:not(:disabled) { 
+            background-color: var(--brand-color-hover); 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px 0 rgba(79, 70, 229, 0.23);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background-color: #374151;
+            color: var(--text-light);
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        .loader { 
+            border: 4px solid #4b5563; 
+            border-top: 4px solid var(--brand-color); 
+            border-radius: 50%; 
+            width: 50px; 
+            height: 50px; 
+            animation: spin 1s linear infinite; 
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .input-wrapper { position: relative; }
-        .input-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #6b7280; }
-        .input-field { padding-left: 2.5rem !important; }
-        .image-result-item { position: relative; overflow: hidden; border-radius: 0.5rem; }
-        .download-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); transform: translateY(100%); transition: transform 0.3s ease; }
+        .input-field { 
+            background-color: #334155;
+            border: 1px solid #475569;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            color: var(--text-light);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--brand-color);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+        }
+        .image-result-item { 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: 0.5rem; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .image-result-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+        }
+        .download-overlay { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            transform: translateY(100%); 
+            transition: transform 0.3s ease; 
+            padding: 1rem;
+        }
         .image-result-item:hover .download-overlay { transform: translateY(0); }
+        .folder-group h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
     
     <header class="w-full max-w-5xl mx-auto py-4">
         <h2 class="text-2xl font-bold text-gray-300 text-center sm:text-left">[ग्राहक का लोगो यहाँ]</h2>
@@ -37,53 +135,45 @@
 
     <main class="flex-grow flex items-center justify-center w-full">
         <div class="container text-center">
-            <!-- Main Content Area -->
-            <div id="main-content" class="fade-in">
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-3">अपनी यादगार तस्वीरें खोजें</h1>
-                <p class="text-gray-400 mb-8 max-w-2xl mx-auto">बस अपना विवरण दर्ज करें और अपना चेहरा स्कैन करें। हमारा AI बाकी काम कर देगा।</p>
 
-                <!-- Step 1: User Details -->
-                <div class="step-card text-left">
-                    <h3 class="text-xl font-semibold mb-4">चरण 1: अपना विवरण दर्ज करें</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="input-wrapper">
-                            <span class="input-icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg></span>
-                            <input type="text" id="user-name" placeholder="पूरा नाम" class="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 input-field">
-                            <p id="name-error" class="text-red-400 text-sm mt-1 hidden">कृपया अपना नाम दर्ज करें।</p>
-                        </div>
-                        <div class="input-wrapper">
-                           <span class="input-icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg></span>
-                            <input type="tel" id="user-mobile" placeholder="मोबाइल नंबर (10 अंक)" maxlength="10" class="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 input-field">
-                            <p id="mobile-error" class="text-red-400 text-sm mt-1 hidden">कृपया मान्य 10 अंकों का नंबर दर्ज करें।</p>
-                        </div>
-                    </div>
-                     <div class="mt-4 input-wrapper">
-                        <span class="input-icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></span>
-                        <input type="email" id="user-email" placeholder="ईमेल" class="w-full bg-gray-800 border border-gray-600 rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 input-field">
-                        <p id="email-error" class="text-red-400 text-sm mt-1 hidden">कृपया मान्य ईमेल दर्ज करें।</p>
-                    </div>
-                </div>
-
-                <!-- Step 2: Provide Photo -->
+            <!-- Step 1: Provide Photo (Ab yeh pehla step hai) -->
+            <div id="photo-step" class="fade-in">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-500">अपनी यादगार तस्वीरें खोजें</h1>
+                <p class="text-gray-400 mb-8 max-w-2xl mx-auto">शुरू करने के लिए, कृपया अपनी एक तस्वीर प्रदान करें।</p>
                 <div class="step-card">
-                    <h3 class="text-xl font-semibold mb-4 text-left">चरण 2: अपनी तस्वीर प्रदान करें</h3>
                     <div id="camera-container">
-                        <video id="camera-feed" width="640" height="480" autoplay playsinline class="mx-auto w-full max-w-lg rounded-lg hidden"></video>
+                        <video id="camera-feed" width="640" height="480" autoplay playsinline class="mx-auto w-full max-w-lg rounded-lg hidden aspect-video object-cover"></video>
                         <canvas id="snapshot-canvas" class="hidden w-full max-w-lg mx-auto rounded-lg"></canvas>
                          <div id="upload-placeholder" class="border-2 border-dashed border-gray-600 rounded-lg p-8 flex flex-col items-center justify-center">
-                            <svg class="w-12 h-12 text-gray-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            <svg class="w-12 h-12 text-gray-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0" 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             <p class="text-gray-400">कैमरा शुरू करें या अपनी फाइल अपलोड करें</p>
                         </div>
                         <div id="controls" class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <button id="start-camera" class="btn btn-secondary w-full sm:w-auto"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 4.372A1 1 0 0116 5.175V15a1 1 0 01-1.447.894l-4-3A1 1 0 0110 12V8a1 1 0 01.553-.894l4-3z" /></svg><span>कैमरा शुरू करें</span></button>
+                            <button id="start-camera" class="btn btn-secondary w-full sm:w-auto"><span>कैमरा शुरू करें</span></button>
                             <span class="text-sm text-gray-500">या</span>
-                            <label for="upload-file" class="btn btn-secondary w-full sm:w-auto cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg><span>फाइल अपलोड करें</span></label>
+                            <label for="upload-file" class="btn btn-secondary w-full sm:w-auto cursor-pointer"><span>फाइल अपलोड करें</span></label>
                             <input type="file" id="upload-file" accept="image/*" class="hidden"/>
                         </div>
-                        <div id="live-controls" class="hidden mt-4 flex items-center justify-center gap-4">
-                            <button id="snap-photo" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V4a2 2 0 00-2-2H4zm10 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg><span>फोटो खींचें</span></button>
-                            <button id="retry-photo" class="btn btn-secondary">पुनः प्रयास करें</button>
-                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: User Details (Ab yeh doosra step hai) -->
+            <div id="details-step" class="hidden fade-in">
+                <h1 class="text-3xl sm:text-4xl font-bold mb-3">बस एक और कदम!</h1>
+                <p class="text-gray-400 mb-8 max-w-2xl mx-auto">खोज शुरू करने के लिए अपना विवरण दर्ज करें।</p>
+                <div class="step-card text-left">
+                    <h3 class="text-xl font-semibold mb-4">आपका विवरण</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="user-name" placeholder="पूरा नाम" class="input-field">
+                        <input type="tel" id="user-mobile" placeholder="मोबाइल नंबर (10 अंक)" maxlength="10" class="input-field">
+                    </div>
+                    <div class="mt-4">
+                        <input type="email" id="user-email" placeholder="ईमेल" class="input-field">
+                    </div>
+                    <div class="mt-6 flex flex-col sm:flex-row gap-4">
+                         <button id="change-photo" class="btn btn-secondary w-full sm:w-auto">फोटो बदलें</button>
+                         <button id="submit-search" class="btn btn-primary w-full sm:w-auto flex-1">मेरी तस्वीरें खोजें</button>
                     </div>
                 </div>
             </div>
@@ -97,10 +187,10 @@
             <!-- Results State -->
             <div id="results-container" class="hidden fade-in w-full">
                  <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                     <h2 class="text-3xl font-bold text-left">आपके परिणाम</h2>
-                     <button id="download-all" class="btn btn-primary w-full sm:w-auto"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg><span>सभी डाउनलोड करें</span></button>
+                     <h2 id="results-title" class="text-3xl font-bold text-left">आपके परिणाम</h2>
+                     <button id="download-all" class="btn btn-primary w-full sm:w-auto"><span>सभी डाउनलोड करें</span></button>
                  </div>
-                <div id="search-results" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+                <div id="search-results" class="space-y-8"></div>
                 <button id="reset-search-results" class="btn btn-secondary mt-8 mx-auto">नई खोज शुरू करें</button>
             </div>
             
@@ -129,210 +219,210 @@
         const S3_BUCKET_URL = "https://abstudios-photoapp-820345.s3.ap-southeast-1.amazonaws.com";
         // ---------------------
 
-        // DOM Elements
-        const mainContent = document.getElementById('main-content');
+        let capturedImageData = null;
+        
+        const photoStep = document.getElementById('photo-step');
+        const detailsStep = document.getElementById('details-step');
         const loaderContainer = document.getElementById('loader-container');
         const resultsContainer = document.getElementById('results-container');
         const notFoundContainer = document.getElementById('not-found-container');
+        
         const video = document.getElementById('camera-feed');
         const canvas = document.getElementById('snapshot-canvas');
         const context = canvas.getContext('2d');
         const startCameraBtn = document.getElementById('start-camera');
-        const snapPhotoBtn = document.getElementById('snap-photo');
-        const retryPhotoBtn = document.getElementById('retry-photo');
         const uploadFile = document.getElementById('upload-file');
         const searchResults = document.getElementById('search-results');
         const uploadPlaceholder = document.getElementById('upload-placeholder');
         const controls = document.getElementById('controls');
-        const liveControls = document.getElementById('live-controls');
+        
         const userNameInput = document.getElementById('user-name');
         const userMobileInput = document.getElementById('user-mobile');
         const userEmailInput = document.getElementById('user-email');
         const userEmailConfirm = document.getElementById('user-email-confirm');
-        const nameError = document.getElementById('name-error');
-        const mobileError = document.getElementById('mobile-error');
-        const emailError = document.getElementById('email-error');
+
+        const submitSearchBtn = document.getElementById('submit-search');
+        const changePhotoBtn = document.getElementById('change-photo');
+        
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toast-message');
+        const resultsTitle = document.getElementById('results-title');
+        
         const resetResultsBtn = document.getElementById('reset-search-results');
         const resetNotFoundBtn = document.getElementById('reset-search-notfound');
-
         const MAX_WIDTH = 800;
 
         function showToast(message, isError = true) {
             toastMessage.textContent = message;
             toast.className = `fixed top-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg transition-transform duration-300 transform ${isError ? 'bg-red-600' : 'bg-green-600'}`;
             toast.classList.remove('hidden', 'translate-x-full');
-            setTimeout(() => {
-                toast.classList.add('translate-x-full');
-                setTimeout(() => toast.classList.add('hidden'), 300);
-            }, 3000);
+            setTimeout(() => { toast.classList.add('translate-x-full'); setTimeout(() => toast.classList.add('hidden'), 300); }, 3000);
         }
 
         function validateInputs() {
-            let isValid = true;
-            if (userNameInput.value.trim() === '') { nameError.classList.remove('hidden'); isValid = false; } else { nameError.classList.add('hidden'); }
-            if (userMobileInput.value.trim().length !== 10 || !/^\d{10}$/.test(userMobileInput.value.trim())) { mobileError.classList.remove('hidden'); isValid = false; } else { mobileError.classList.add('hidden'); }
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(userEmailInput.value.trim())) { emailError.classList.remove('hidden'); isValid = false; } else { emailError.classList.add('hidden'); }
-            
-            if (!isValid) {
-                if (userNameInput.value.trim() === '') userNameInput.focus();
-                else if (userMobileInput.value.trim().length !== 10) userMobileInput.focus();
-                else userEmailInput.focus();
+            if (userNameInput.value.trim() === '' || userMobileInput.value.trim().length !== 10 || !/^\d{10}$/.test(userMobileInput.value.trim()) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmailInput.value.trim())) {
+                showToast('कृपया सभी विवरण सही-सही भरें।');
+                return false;
             }
-            return isValid;
+            return true;
         }
 
-        startCameraBtn.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-                video.classList.remove('hidden');
-                uploadPlaceholder.classList.add('hidden');
-                canvas.classList.add('hidden');
-                controls.classList.add('hidden');
-                liveControls.classList.remove('hidden');
-            } catch (err) { showToast("कैमरा एक्सेस नहीं हो सका। कृपया अनुमति दें।"); }
-        });
+        function showStep(stepToShow) {
+            photoStep.classList.add('hidden');
+            detailsStep.classList.add('hidden');
+            loaderContainer.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            notFoundContainer.classList.add('hidden');
+            stepToShow.classList.remove('hidden');
+        }
 
-        const processImage = (imageSource, callback) => {
+        async function handlePhotoProvided(imageSource) {
             const img = new Image();
             img.onload = () => {
                 const aspectRatio = img.width / img.height;
                 canvas.width = MAX_WIDTH;
                 canvas.height = MAX_WIDTH / aspectRatio;
                 context.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.classList.remove('hidden');
-                video.classList.add('hidden');
-                uploadPlaceholder.classList.add('hidden');
-                liveControls.classList.remove('hidden');
-                snapPhotoBtn.classList.add('hidden');
+                capturedImageData = canvas.toDataURL('image/jpeg', 0.9);
                 if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
-                const imageData = canvas.toDataURL('image/jpeg', 0.9);
-                callback(imageData);
+                showStep(detailsStep);
             };
             img.src = imageSource;
-        };
+        }
 
-        snapPhotoBtn.addEventListener('click', () => {
-            if (!validateInputs()) return;
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = video.videoWidth;
-            tempCanvas.height = video.videoHeight;
-            tempCanvas.getContext('2d').drawImage(video, 0, 0);
-            processImage(tempCanvas.toDataURL(), (imageData) => {
-                findMyPhotos(imageData, userNameInput.value, userMobileInput.value, userEmailInput.value);
-            });
-        });
-        
-        retryPhotoBtn.addEventListener('click', () => {
-            video.classList.add('hidden');
-            canvas.classList.add('hidden');
-            uploadPlaceholder.classList.remove('hidden');
-            liveControls.classList.add('hidden');
-            controls.classList.remove('hidden');
-            startCameraBtn.click();
+        startCameraBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                
+                const tempCanvas = document.createElement('canvas');
+                const tempContext = tempCanvas.getContext('2d');
+
+                const captureFrame = () => {
+                    if (!video.srcObject) return;
+                    tempCanvas.width = video.videoWidth;
+                    tempCanvas.height = video.videoHeight;
+                    tempContext.drawImage(video, 0, 0);
+                    handlePhotoProvided(tempCanvas.toDataURL());
+                };
+                
+                // Ek baar click karne par hi photo le lo
+                video.onloadedmetadata = () => {
+                   setTimeout(captureFrame, 500); // Camera ko start hone ke liye thoda samay do
+                };
+
+            } catch (err) { showToast("कैमरा एक्सेस नहीं हो सका। कृपया अनुमति दें।"); }
         });
 
         uploadFile.addEventListener('change', (event) => {
-            if (!validateInputs()) { event.target.value = ''; return; }
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => processImage(e.target.result, (imageData) => {
-                    findMyPhotos(imageData, userNameInput.value, userMobileInput.value, userEmailInput.value);
-                });
+                reader.onload = (e) => handlePhotoProvided(e.target.result);
                 reader.readAsDataURL(file);
             }
         });
 
-        // --- UPDATED FUNCTION STARTS HERE ---
-        async function findMyPhotos(imageDataBase64, name, mobile, email) {
-            mainContent.classList.add('hidden');
-            loaderContainer.classList.remove('hidden');
-            
+        submitSearchBtn.addEventListener('click', () => {
+            if (!validateInputs()) return;
+            if (!capturedImageData) {
+                showToast("कृपया पहले एक तस्वीर प्रदान करें।");
+                return;
+            }
+            findMyPhotos(capturedImageData);
+        });
+
+        changePhotoBtn.addEventListener('click', () => {
+            capturedImageData = null;
+            showStep(photoStep);
+        });
+
+        async function findMyPhotos(imageDataBase64) {
+            showStep(loaderContainer);
             const loaderText = document.getElementById('loader-text');
             loaderText.textContent = "आपकी तस्वीर का विश्लेषण किया जा रहा है...";
             
             try {
-                // base64 स्ट्रिंग से डेटा का हिस्सा निकालें (जैसे, "data:image/jpeg;base64,")
                 const base64Data = imageDataBase64.split(',')[1];
+                const payload = { image: base64Data };
 
-                // --- महत्वपूर्ण बदलाव यहाँ है ---
-                // Lambda को डेटा JSON फॉर्मेट में भेजें
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     mode: 'cors',
-                    headers: {
-                      // 1. Content-Type को 'application/json' में बदला गया
-                      'Content-Type': 'application/json'
-                    },
-                    // 2. body को एक JSON ऑब्जेक्ट में रैप किया गया
-                    body: JSON.stringify({
-                        image: base64Data
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
                 
                 loaderText.textContent = "परिणाम तैयार किए जा रहे हैं...";
 
                 if (!response.ok) {
-                    // सर्वर से मिले एरर को अधिक विस्तार से दिखाने का प्रयास करें
-                    const errorData = await response.json().catch(() => ({ message: `HTTP Error: ${response.status}` }));
-                    throw new Error(errorData.message || `API से जवाब नहीं मिला। सर्वर लॉग्स जांचें।`);
+                    throw new Error(`Server error (HTTP ${response.status})`);
                 }
 
-                const matches = await response.json();
+                const responseBody = await response.json();
+                const matches = JSON.parse(responseBody.body);
                 
-                loaderContainer.classList.add('hidden');
-
                 if (matches && matches.length > 0) {
+                    resultsTitle.textContent = `आपके ${matches.length} परिणाम मिले`;
                     searchResults.innerHTML = '';
+                    
+                    const groupedResults = {};
                     matches.forEach(match => {
-                        const imageUrl = `${S3_BUCKET_URL}/${match.externalImageId}`;
-                        const item = document.createElement('div');
-                        item.className = 'image-result-item group'; // 'group' क्लास जोड़ी गई
-                        item.innerHTML = `
-                            <img src="${imageUrl}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt="Event Photo">
-                            <div class="download-overlay p-2 flex justify-end">
-                                <a href="${imageUrl}" download target="_blank" class="p-2 bg-white/20 rounded-full hover:bg-white/40 transition-colors">
-                                    <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                </a>
-                            </div>`;
-                        searchResults.appendChild(item);
+                        const pathParts = match.externalImageId.split('/');
+                        const folderName = pathParts.length > 1 ? pathParts[0] : "अन्य तस्वीरें";
+                        if (!groupedResults[folderName]) {
+                            groupedResults[folderName] = [];
+                        }
+                        groupedResults[folderName].push(match);
                     });
-                    resultsContainer.classList.remove('hidden');
+
+                    for (const folderName in groupedResults) {
+                        const folderContainer = document.createElement('div');
+                        folderContainer.className = 'folder-group';
+                        
+                        const folderTitle = document.createElement('h3');
+                        folderTitle.textContent = folderName;
+                        folderContainer.appendChild(folderTitle);
+
+                        const imageGrid = document.createElement('div');
+                        imageGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4';
+
+                        groupedResults[folderName].forEach(match => {
+                            const imageUrl = `${S3_BUCKET_URL}/${match.externalImageId}`;
+                            const item = document.createElement('div');
+                            item.className = 'image-result-item group';
+                            item.innerHTML = `
+                                <img src="${imageUrl}" class="w-full h-full object-cover aspect-square">
+                                <div class="download-overlay flex justify-end items-end">
+                                    <a href="${imageUrl}" download target="_blank" class="p-2 bg-white/20 rounded-full hover:bg-white/40 transition-colors">
+                                        <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z"/><path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z"/></svg>
+                                    </a>
+                                </div>`;
+                            imageGrid.appendChild(item);
+                        });
+                        folderContainer.appendChild(imageGrid);
+                        searchResults.appendChild(folderContainer);
+                    }
+                    showStep(resultsContainer);
                 } else {
-                    userEmailConfirm.textContent = email;
-                    notFoundContainer.classList.remove('hidden');
+                    userEmailConfirm.textContent = userEmailInput.value;
+                    showStep(notFoundContainer);
                 }
 
             } catch(error) {
                 console.error("Full API Call Error:", error);
-                loaderContainer.classList.add('hidden');
-                if (error.message.includes('Failed to fetch')) {
-                     showToast("API से कनेक्ट नहीं हो सका। कृपया अपनी इंटरनेट कनेक्टिविटी जांचें।");
-                } else {
-                    showToast(`एक त्रुटि हुई: ${error.message}`);
-                }
-                resetApp(); // एरर होने पर ऐप को रीसेट करें
+                showToast(`एक त्रुटि हुई: ${error.message}`);
+                resetApp();
             }
         }
-        // --- UPDATED FUNCTION ENDS HERE ---
 
         function resetApp() {
-            resultsContainer.classList.add('hidden');
-            notFoundContainer.classList.add('hidden');
-            mainContent.classList.remove('hidden');
             userNameInput.value = '';
             userMobileInput.value = '';
             userEmailInput.value = '';
-            video.classList.add('hidden');
-            canvas.classList.add('hidden');
-            uploadPlaceholder.classList.remove('hidden');
-            liveControls.classList.add('hidden');
-            controls.classList.remove('hidden');
+            capturedImageData = null;
             if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+            showStep(photoStep);
         }
 
         resetResultsBtn.addEventListener('click', resetApp);
@@ -340,3 +430,4 @@
     </script>
 </body>
 </html>
+
