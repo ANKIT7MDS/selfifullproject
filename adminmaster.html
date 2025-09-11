@@ -7,7 +7,18 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📸</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .admin-section { display: none; } .admin-section.active { display: block; } .toast { position: fixed; right: 1rem; top: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background: #111827; color: #fff; opacity: 0; transition: opacity .2s ease, transform .2s ease; transform: translateY(-8px); z-index: 50; } .toast.show { opacity: 1; transform: translateY(0); } .toast.success { background: #065f46; } .toast.error { background: #991b1b; } .toast.info { background: #1f2937; } .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border: 1px solid #e5e7eb; border-bottom-width: 3px; border-radius: .5rem; background:#f9fafb} details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; } .badge { padding: .2rem .5rem; border-radius: .5rem; font-size: .75rem; border: 1px solid #e5e7eb; background: #fff; } .linklike { text-decoration: underline; color: #111827; }
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+    .toast { position: fixed; right: 1rem; top: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background: #111827; color: #fff; opacity: 0; transition: opacity .2s ease, transform .2s ease; transform: translateY(-8px); z-index: 50; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #065f46; }
+    .toast.error { background: #991b1b; }
+    .toast.info { background: #1f2937; }
+    .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border: 1px solid #e5e7eb; border-bottom-width: 3px; border-radius: .5rem; background:#f9fafb}
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    .badge { padding: .2rem .5rem; border-radius: .5rem; font-size: .75rem; border: 1px solid #e5e7eb; background: #fff; }
+    .linklike { text-decoration: underline; color: #111827; }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-900">
@@ -29,26 +40,228 @@
       </div>
     </header>
 
-    <!-- Master notice and Diagnostics (HTML unchanged) -->
-    <div id="masterNotice" class="hidden mt-3 text-sm p-3 rounded-2xl border border-amber-300 bg-amber-50 text-amber-900">आप <strong>Master Admin</strong> हैं — आप यहाँ से सभी यूज़र्स मैनेज कर सकते हैं।</div>
-    <details id="diagPanel" class="mt-4"><summary class="cursor-pointer text-sm text-gray-600">Self-tests और नेटवर्क/कन्फ़िग डायग्नोस्टिक्स</summary><div id="diagOut" class="mt-3 text-sm bg-white rounded-2xl shadow p-4 whitespace-pre-wrap"></div></details>
+    <!-- Master notice -->
+    <div id="masterNotice" class="hidden mt-3 text-sm p-3 rounded-2xl border border-amber-300 bg-amber-50 text-amber-900">
+      आप <strong>Master Admin</strong> हैं — आप यहाँ से सभी यूज़र्स मैनेज कर सकते हैं।
+    </div>
 
-    <!-- All Sections (HTML unchanged) -->
-    <section id="loginSection" class="admin-section active"><!-- Login form --></section>
-    <section id="signUpSection" class="admin-section"><!-- Sign Up form --></section>
-    <section id="confirmSection" class="admin-section"><!-- Confirm form --></section>
-    <section id="forgotSection" class="admin-section"><!-- Forgot Password form --></section>
-    <section id="newPasswordSection" class="admin-section"><!-- New Password form --></section>
-    <section id="dashboardSection" class="admin-section"><!-- Dashboard --></section>
-    <section id="userMgmtSection" class="admin-section"><!-- User Management --></section>
-    <section id="uploadSection" class="admin-section"><!-- Upload Section --></section>
+    <!-- Diagnostics panel -->
+    <details id="diagPanel" class="mt-4">
+      <summary class="cursor-pointer text-sm text-gray-600">Self-tests और नेटवर्क/कन्फ़िग डायग्नोस्टिक्स</summary>
+      <div id="diagOut" class="mt-3 text-sm bg-white rounded-2xl shadow p-4 whitespace-pre-wrap"></div>
+    </details>
+
+    <!-- Login Section -->
+    <section id="loginSection" class="admin-section active">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-4">लॉगिन</h2>
+          <div class="grid gap-3">
+            <label class="text-sm">ईमेल/यूज़रनेम</label>
+            <input id="email" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com या username" />
+            <label class="text-sm mt-2">पासवर्ड</label>
+            <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
+            <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
+            <div class="flex items-center gap-3 mt-2">
+              <button id="goToSignUp" class="text-sm text-gray-700 underline">नया अकाउंट बनाएँ</button>
+              <button id="goToForgot" class="text-sm linklike">पासवर्ड भूल गए?</button>
+              <button id="hostedUiBtn" class="hidden text-sm linklike">Hosted UI से लॉगिन</button>
+            </div>
+            <p id="signupDisabledMsg" class="hidden text-xs text-red-600">इस User Pool में self-signup बंद है। कृपया एडमिन से अकाउंट बनवाएँ।</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sign Up Section -->
+    <section id="signUpSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-4">साइन-अप</h2>
+          <div class="grid gap-3">
+            <label class="text-sm">ईमेल</label>
+            <input id="suEmail" type="email" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
+            <label class="text-sm mt-2">पासवर्ड</label>
+            <input id="suPassword" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="कम से कम 8 कैरेक्टर्स" />
+            <button id="signUpBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">खाता बनाएँ</button>
+            <button id="backToLoginFromSignUp" class="mt-2 text-sm text-gray-700 underline">लॉगिन पर वापस</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Confirm Section -->
+    <section id="confirmSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">ईमेल सत्यापन</h2>
+          <p class="text-sm text-gray-600">हमने आपके ईमेल पर एक कोड भेजा है। कृपया नीचे दर्ज करें।</p>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">ईमेल</label>
+            <input id="cfEmail" type="email" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
+            <label class="text-sm mt-2">कोड</label>
+            <input id="cfCode" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="123456" />
+            <div class="flex gap-2 mt-2">
+              <button id="confirmBtn" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">कन्फ़र्म करें</button>
+              <button id="resendBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">कोड फिर भेजें</button>
+              <button id="backToLoginFromConfirm" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">लॉगिन</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Forgot Password Section -->
+    <section id="forgotSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">पासवर्ड रीसेट</h2>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">ईमेल/यूज़रनेम</label>
+            <input id="fpEmail" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com या username" />
+            <div class="flex gap-2 mt-1">
+              <button id="fpSend" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रीसेट कोड भेजें</button>
+              <button id="fpBackToLogin" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">लॉगिन</button>
+            </div>
+            <label class="text-sm mt-3">रीसेट कोड</label>
+            <input id="fpCode" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="123456" />
+            <label class="text-sm mt-2">नया पासवर्ड</label>
+            <input id="fpNew" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
+            <button id="fpConfirm" class="mt-2 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">पासवर्ड बदलें</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Password Required Section (first-time login) -->
+    <section id="newPasswordSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">पहली बार लॉगिन — नया पासवर्ड सेट करें</h2>
+          <p class="text-sm text-gray-600">एडमिन के बनाए अकाउंट्स पर पहली बार लॉगिन में यह स्टेप आता है।</p>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">नया पासवर्ड</label>
+            <input id="npwInput" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
+            <div class="flex gap-2 mt-2">
+              <button id="npwSubmit" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">सेव करें और आगे बढ़ें</button>
+              <button id="npwCancel" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रद्द करें</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboardSection" class="admin-section">
+      <div class="mt-8">
+        <div id="masterAdminBar" class="hidden mb-4 flex items-center gap-2">
+          <button id="openUserMgmt" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">यूज़र मैनेजमेंट</button>
+          <span class="text-xs text-gray-500">(API सेट न होने पर यह डेमो मोड में चलेगा)</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-medium">इवेंट्स</h2>
+          <button id="refreshEvents" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
+        </div>
+        <div id="eventList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- User Management Section (Master Admin only) -->
+    <section id="userMgmtSection" class="admin-section">
+      <div class="mt-8 bg-white rounded-2xl shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-lg font-medium">यूज़र मैनेजमेंट</h2>
+            <p class="text-sm text-gray-500 mt-1">यह सेक्शन केवल <span class="font-semibold">master-admin</span> ग्रुप के यूज़र देख/बना सकते हैं।</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="backFromUserMgmt" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
+          </div>
+        </div>
+
+        <div id="userApiWarn" class="hidden mt-4 text-sm p-3 rounded-2xl border border-blue-300 bg-blue-50 text-blue-900">
+          Admin API सेट नहीं मिला। URL में <span class="kbd">?api=&lt;API_BASE_URL&gt;</span> जोड़ें।
+          अपेक्षित एंडपॉइंट्स:
+          <code class="block text-xs mt-2">GET  {api}/users?limit=&nextToken=</code>
+          <code class="block text-xs">POST {api}/users               (body: { email, password?, verifyEmail?, groups? })</code>
+          <code class="block text-xs">POST {api}/users/{username}/reset-password  (body: { permanent, password? })</code>
+          <code class="block text-xs">POST {api}/users/{username}/enable</code>
+          <code class="block text-xs">POST {api}/users/{username}/disable</code>
+          <code class="block text-xs">DELETE {api}/users/{username}</code>
+          <code class="block text-xs">POST {api}/users/{username}/groups (body: { add?: string[], remove?: string[] })</code>
+          रिक्वेस्ट में <span class="kbd">Authorization: &lt;ID_TOKEN&gt;</span> हेडर लगेगा।
+        </div>
+
+        <div class="mt-4 grid lg:grid-cols-3 gap-6">
+          <!-- Create user card -->
+          <div class="lg:col-span-1 bg-gray-50 rounded-2xl p-4 border border-gray-200">
+            <h3 class="font-semibold mb-2">नया यूज़र बनाएँ</h3>
+            <label class="text-xs">ईमेल</label>
+            <input id="umEmail" type="email" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" placeholder="user@example.com" />
+            <label class="text-xs">पासवर्ड (वैकल्पिक — खाली छोड़ें तो टेम्प पासवर्ड)</label>
+            <input id="umPassword" type="password" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" />
+            <label class="text-xs">ग्रुप्स (comma सेपरेटेड, उदा. master-admin, photographer)</label>
+            <input id="umGroups" type="text" class="w-full mb-3 px-3 py-2 rounded-xl border border-gray-300" />
+            <div class="flex items-center gap-2 mb-3">
+              <input id="umVerifyEmail" type="checkbox" class="h-4 w-4" />
+              <span class="text-xs">ईमेल verified मार्क करें</span>
+            </div>
+            <button id="umCreateBtn" class="px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">यूज़र बनाएँ</button>
+          </div>
+
+          <!-- Users table -->
+          <div class="lg:col-span-2">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold">यूज़र लिस्ट</h3>
+              <div class="flex gap-2">
+                <input id="umSearch" type="text" class="px-3 py-2 rounded-xl border border-gray-300 text-sm" placeholder="ईमेल से खोजें" />
+                <button id="umRefresh" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
+              </div>
+            </div>
+            <div class="overflow-auto border border-gray-200 rounded-2xl">
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left px-3 py-2">Username</th>
+                    <th class="text-left px-3 py-2">Email</th>
+                    <th class="text-left px-3 py-2">Status</th>
+                    <th class="text-left px-3 py-2">Groups</th>
+                    <th class="text-left px-3 py-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="umTbody" class="divide-y divide-gray-100"></tbody>
+              </table>
+            </div>
+            <div class="flex justify-end mt-2">
+              <button id="umNext" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm hidden">अगला पेज</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section id="uploadSection" class="admin-section">
+      <div class="mt-8 bg-white rounded-2xl shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-lg font-medium">फ़ोटो अपलोड</h2>
+            <p id="uploadTitle" class="text-sm text-gray-500 mt-1">किसी इवेंट के लिए फ़ोटो चुनें</p>
+          </div>
+          <button id="backToDashboard" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
+        </div>
+        <div class="mt-4 grid gap-3">
+          <input id="fileInput" type="file" multiple accept="image/*" class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-black" />
+          <button id="startUpload" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black disabled:opacity-50" disabled>अपलोड शुरू करें</button>
+          <div id="uploadProgressContainer" class="text-sm text-gray-600 space-y-3 mt-2"></div>
+        </div>
+      </div>
+    </section>
   </div>
-  
-  <!-- --- यहाँ बदलाव किया गया है --- -->
-  <!-- सीधे और भरोसेमंद CDN से Amplify लोड करें -->
+
   <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js"></script>
   
-  <!-- App Logic Script -->
   <script>
     (function(){
       // ===== Config (editable) =====
@@ -56,19 +269,50 @@
       const S3_CONFIG = { BUCKET: 'abstudios-photoapp-820345', REGION: 'ap-southeast-1' };
       const FEATURES = { allowSignUp: false, allowHostedUI: false };
 
-      // URL overrides and other initial config (unchanged)
+      // URL overrides for quick testing
       const qp = new URLSearchParams(location.search);
       const COGNITO = { REGION: qp.get('region') || DEFAULT_COGNITO.REGION, USER_POOL_ID: qp.get('userPoolId') || DEFAULT_COGNITO.USER_POOL_ID, USER_POOL_WEB_CLIENT_ID: qp.get('clientId') || DEFAULT_COGNITO.USER_POOL_WEB_CLIENT_ID, };
+      if (qp.has('signup')) FEATURES.allowSignUp = qp.get('signup') === '1';
+      const HOSTED_UI_DOMAIN = qp.get('domain') || '';
+      if (HOSTED_UI_DOMAIN) FEATURES.allowHostedUI = true;
       const API_BASE = qp.get('api') || '';
-      // ... (rest of the config variables)
 
-      // ===== Utilities & DOM Nodes (unchanged) =====
-      // ... (showToast, showSection, all getElementById calls)
+      const inferredRegion = (COGNITO.USER_POOL_ID.match(/^([a-z]{2}-[a-z-]+-\d+)_/i) || [null, null])[1];
+      if (inferredRegion && inferredRegion !== COGNITO.REGION) {
+        console.warn('[Amplify] Region mismatch', COGNITO.REGION, 'vs inferred', inferredRegion, '→ using inferred');
+        COGNITO.REGION = inferredRegion;
+      }
+      
+      const regionBadge = document.getElementById('regionBadge');
+      regionBadge.textContent = `Region: ${COGNITO.REGION}`; regionBadge.classList.remove('hidden');
+      const flowBadge = document.getElementById('flowBadge');
 
-      // --- बदलाव: Amplify लोडर की अब ज़रूरत नहीं ---
-      // The complex ensureAmplify() function and URL arrays have been removed.
+      // ===== Utilities =====
+      function showToast(msg, type = 'info', ms = 3500) {
+        const el = document.getElementById('toast-container');
+        if (!el) return;
+        el.className = 'toast ' + type;
+        el.textContent = msg;
+        requestAnimationFrame(() => el.classList.add('show'));
+        setTimeout(() => el.classList.remove('show'), ms);
+      }
+      
+      const sectionIds = ['loginSection', 'signUpSection', 'confirmSection', 'forgotSection', 'newPasswordSection', 'dashboardSection', 'userMgmtSection', 'uploadSection'];
+      function showSection(el) { sectionIds.forEach(id => document.getElementById(id).classList.remove('active')); el.classList.add('active'); }
 
-      // We can directly resolve the library since it's loaded via a script tag.
+      // ===== DOM nodes =====
+      const loginSection = document.getElementById('loginSection'), dashboardSection = document.getElementById('dashboardSection'), signUpSection = document.getElementById('signUpSection'), confirmSection = document.getElementById('confirmSection'), forgotSection = document.getElementById('forgotSection'), newPasswordSection = document.getElementById('newPasswordSection'), uploadSection = document.getElementById('uploadSection'), userMgmtSection = document.getElementById('userMgmtSection');
+      const emailInput = document.getElementById('email'), passwordInput = document.getElementById('password'), loginBtn = document.getElementById('loginBtn'), goToSignUp = document.getElementById('goToSignUp'), goToForgot = document.getElementById('goToForgot'), hostedUiBtn = document.getElementById('hostedUiBtn');
+      const suEmail = document.getElementById('suEmail'), suPassword = document.getElementById('suPassword'), signUpBtn = document.getElementById('signUpBtn'), backToLoginFromSignUp = document.getElementById('backToLoginFromSignUp');
+      const cfEmail = document.getElementById('cfEmail'), cfCode = document.getElementById('cfCode'), confirmBtn = document.getElementById('confirmBtn'), resendBtn = document.getElementById('resendBtn'), backToLoginFromConfirm = document.getElementById('backToLoginFromConfirm');
+      const fpEmail = document.getElementById('fpEmail'), fpCode = document.getElementById('fpCode'), fpNew = document.getElementById('fpNew'), fpSend = document.getElementById('fpSend'), fpConfirm = document.getElementById('fpConfirm'), fpBackToLogin = document.getElementById('fpBackToLogin');
+      const logoutBtn = document.getElementById('logoutBtn'), diagBtn = document.getElementById('diagBtn'), diagOut = document.getElementById('diagOut');
+      const eventList = document.getElementById('eventList'), refreshEvents = document.getElementById('refreshEvents');
+      const backToDashboard = document.getElementById('backToDashboard'), fileInput = document.getElementById('fileInput'), startUpload = document.getElementById('startUpload'), uploadTitle = document.getElementById('uploadTitle'), uploadProgressContainer = document.getElementById('uploadProgressContainer');
+      const signupDisabledMsg = document.getElementById('signupDisabledMsg');
+      const masterAdminBar = document.getElementById('masterAdminBar'), masterNotice = document.getElementById('masterNotice'), openUserMgmt = document.getElementById('openUserMgmt'), backFromUserMgmt = document.getElementById('backFromUserMgmt'), userApiWarn = document.getElementById('userApiWarn');
+      const umEmail = document.getElementById('umEmail'), umPassword = document.getElementById('umPassword'), umGroups = document.getElementById('umGroups'), umVerifyEmail = document.getElementById('umVerifyEmail'), umCreateBtn = document.getElementById('umCreateBtn'), umRefresh = document.getElementById('umRefresh'), umNext = document.getElementById('umNext'), umTbody = document.getElementById('umTbody'), umSearch = document.getElementById('umSearch');
+      
       function resolveAmplify(){ 
         const ns = window.aws_amplify; 
         if (!ns) {
@@ -80,58 +324,164 @@
 
       // ===== App Logic =====
       let AUTH_FLOW = (qp.get('authflow') === 'password') ? 'USER_PASSWORD_AUTH' : 'USER_SRP_AUTH';
+      
       async function configureAmplify(){
         const { Amplify } = resolveAmplify();
         Amplify.configure({ 
             Auth: { region: COGNITO.REGION, userPoolId: COGNITO.USER_POOL_ID, userPoolWebClientId: COGNITO.USER_POOL_WEB_CLIENT_ID, authenticationFlowType: AUTH_FLOW },
             Storage: { AWSS3: { bucket: S3_CONFIG.BUCKET, region: S3_CONFIG.REGION } }
         });
-        // ... (rest of the function)
+        flowBadge.textContent = `AuthFlow: ${AUTH_FLOW}`; flowBadge.classList.remove('hidden');
       }
       
-      // ... (All other functions like checkUserSession, doLogin, uploadFilesForEvent, etc., remain exactly the same)
+      async function checkUserSession(){
+        const { Auth } = resolveAmplify();
+        try{
+          const user = await Auth.currentAuthenticatedUser();
+          if (user){
+            logoutBtn.classList.remove('hidden');
+            const session = await Auth.currentSession();
+            const idToken = session.getIdToken().getJwtToken();
+            const payload = JSON.parse(atob(idToken.split('.')[1] || 'e30='));
+            const groups = payload['cognito:groups'] || [];
+            const isMaster = Array.isArray(groups) && groups.includes('master-admin');
+            window.__id_token = idToken; window.__is_master = isMaster;
+            if (isMaster){ masterAdminBar.classList.remove('hidden'); masterNotice.classList.remove('hidden'); }
+            showSection(dashboardSection); await loadEvents();
+          } else { showSection(loginSection); }
+        } catch{ showSection(loginSection); }
+      }
 
+      function mapAuthError(error){ const name = error?.name || 'Error'; const raw = error?.message || ''; const map = { UserNotFoundException: 'यूज़र नहीं मिला', NotAuthorizedException: 'गलत पासवर्ड या यूज़र निष्क्रिय', UserNotConfirmedException: 'ईमेल वेरिफ़िकेशन पेंडिंग', PasswordResetRequiredException: 'पासवर्ड रीसेट आवश्यक', }; let hint = map[name] || raw || 'लॉगिन में त्रुटि'; if (/SRP|Password verifier failed/i.test(raw) && AUTH_FLOW === 'USER_SRP_AUTH') hint += ' — URL में ?authflow=password ट्राय करें'; return { name, hint }; }
+
+      async function doLogin(){
+        const { Auth } = resolveAmplify();
+        const username = (emailInput.value || '').trim();
+        const password = passwordInput.value;
+        if (!username || !password){ showToast('ईमेल और पासवर्ड भरें', 'error'); return; }
+        loginBtn.disabled = true;
+        try{
+          const res = await Auth.signIn(username, password);
+          if (res?.challengeName === 'NEW_PASSWORD_REQUIRED'){ pendingChallengeUser = res; showSection(newPasswordSection); showToast('पहली बार लॉगिन — नया पासवर्ड सेट करें', 'info', 6000); return; }
+          showToast('लॉगिन सफल', 'success'); await checkUserSession();
+        } catch(error){
+          console.error('SignIn error', error);
+          let { name, hint } = mapAuthError(error);
+          showToast(`${name}: ${hint}`, 'error', 7000);
+          if (name==='UserNotConfirmedException'){ cfEmail.value=username; showSection(confirmSection); }
+        } finally { loginBtn.disabled = false; }
+      }
+      
+      async function doSignUp(){ const { Auth } = resolveAmplify(); const email = suEmail.value.trim(); const pwd = suPassword.value; if(!email||!pwd){ showToast('ईमेल/पासवर्ड भरें', 'error'); return; } if(!FEATURES.allowSignUp){ showToast('इस पूल में self-signup बंद है', 'error', 5000); return; } signUpBtn.disabled=true; try{ await Auth.signUp({ username: email, password: pwd, attributes:{ email } }); showToast('साइन-अप सफल — ईमेल पर कोड भेजा गया', 'success', 5000); cfEmail.value=email; showSection(confirmSection);} catch(e){ console.error('SignUp error', e); showToast(e?.message || 'साइन-अप त्रुटि', 'error'); } finally{ signUpBtn.disabled=false; } }
+      async function doConfirm(){ const { Auth } = resolveAmplify(); const email=(cfEmail.value||'').trim(); const code=(cfCode.value||'').trim(); if(!email||!code){ showToast('ईमेल और कोड भरें', 'error'); return; } confirmBtn.disabled=true; try{ await Auth.confirmSignUp(email, code); showToast('सत्यापन सफल — अब लॉगिन करें', 'success'); emailInput.value=email; showSection(loginSection);} catch(e){ console.error('Confirm error', e); showToast(e?.message || 'कन्फ़र्मेशन त्रुटि', 'error'); } finally{ confirmBtn.disabled=false; } }
+      async function doForgotStart(){ const { Auth } = resolveAmplify(); const u=(fpEmail.value||'').trim(); if(!u){ showToast('ईमेल भरें', 'error'); return; } try{ await Auth.forgotPassword(u); showToast('रीसेट कोड भेजा गया', 'success'); } catch(e){ console.error('Forgot start error', e); showToast(e?.message || 'रीसेट कोड भेजने में त्रुटि', 'error'); } }
+      async function doForgotConfirm(){ const { Auth } = resolveAmplify(); const u=(fpEmail.value||'').trim(); const code=(fpCode.value||'').trim(); const np=(fpNew.value||''); if(!u||!code||!np){ showToast('सब फ़ील्ड भरें', 'error'); return; } try{ await Auth.forgotPasswordSubmit(u, code, np); showToast('पासवर्ड बदल गया — अब लॉगिन करें', 'success'); emailInput.value=u; showSection(loginSection); } catch(e){ console.error('Forgot submit error', e); showToast(e?.message || 'पासवर्ड बदलने में त्रुटि', 'error'); } }
+      async function doResend(){ const { Auth } = resolveAmplify(); const email=(cfEmail.value||'').trim(); if(!email){ showToast('ईमेल भरें', 'error'); return; } try{ await Auth.resendSignUp(email); showToast('कोड पुनः भेजा गया', 'success'); } catch(e){ console.error('Resend error', e); showToast(e?.message || 'री-सेंड त्रुटि', 'error'); } }
+      async function doLogout(){ const { Auth } = resolveAmplify(); try{ await Auth.signOut(); }catch{} showToast('लॉग आउट किया गया', 'info'); logoutBtn.classList.add('hidden'); masterAdminBar.classList.add('hidden'); masterNotice.classList.add('hidden'); showSection(loginSection); }
+
+      // Dummy events
+      async function loadEvents(){ const items=[{id:'evt_1',name:'Diwali Night 2024',photos:0},{id:'evt_2',name:'Wedding - A&V',photos:120},{id:'evt_3',name:'Corporate Meetup',photos:58}]; renderEvents(items); }
+      function renderEvents(items){ eventList.innerHTML=''; if(!items||!items.length){ eventList.innerHTML='<div class="text-sm text-gray-600">कोई इवेंट नहीं मिला</div>'; return; } for(const it of items){ const card=document.createElement('div'); card.className='bg-white rounded-2xl shadow p-5 flex flex-col gap-3'; card.innerHTML=`<div class="flex-1"><div class="text-base font-semibold">${it.name}</div><div class="text-sm text-gray-500 mt-1">फ़ोटो: ${it.photos}</div></div><div class="flex gap-2"><button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${it.id}" data-event-name="${it.name}">फ़ोटो अपलोड</button><button class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm" disabled>मैनेज</button></div>`; eventList.appendChild(card);} }
+
+      // Delegation & Upload
+      eventList.addEventListener('click', (e)=>{ const btn=e.target.closest('.upload-btn'); if(!btn) return; const eventName=btn.dataset.eventName; const eventId=btn.dataset.eventId; uploadTitle.textContent=`"${eventName}" में तस्वीरें अपलोड करें`; uploadSection.dataset.eventId=eventId; showSection(uploadSection); });
+      fileInput.addEventListener('change', ()=>{ startUpload.disabled=!(fileInput.files&&fileInput.files.length); uploadProgressContainer.innerHTML=''; });
+      
+      async function uploadFilesForEvent(eventId){
+        const { Storage } = resolveAmplify(); if (!fileInput.files?.length || !Storage) return;
+        const files = Array.from(fileInput.files);
+        startUpload.disabled = true; startUpload.textContent = 'अपलोड हो रहा है...';
+        uploadProgressContainer.innerHTML = '';
+        for (const file of files) {
+          const fileName = `${eventId}/${Date.now()}-${file.name}`;
+          const progressElement = document.createElement('div');
+          progressElement.innerHTML = `<div class="flex justify-between items-center text-sm"><p class="truncate w-60">${file.name}</p><p class="progress-text font-semibold">0%</p></div><div class="w-full bg-gray-200 rounded-full h-2 mt-1"><div class="progress-bar bg-indigo-600 h-2 rounded-full" style="width: 0%"></div></div>`;
+          uploadProgressContainer.appendChild(progressElement);
+          try {
+            await Storage.put(fileName, file, {
+              contentType: file.type,
+              progressCallback(progress) {
+                const percent = Math.round((progress.loaded / progress.total) * 100);
+                progressElement.querySelector('.progress-bar').style.width = `${percent}%`;
+                progressElement.querySelector('.progress-text').textContent = `${percent}%`;
+              },
+            });
+            progressElement.querySelector('.progress-text').textContent = '✅ पूरा हुआ';
+          } catch (error) {
+            console.error("Upload Error:", error);
+            progressElement.querySelector('.progress-text').textContent = '❌ विफल';
+            showToast(`'${file.name}' अपलोड विफल रहा।`, 'error');
+          }
+        }
+        showToast('सभी चयनित फ़ाइलें प्रोसेस हो गईं।', 'success');
+        fileInput.value = ''; startUpload.textContent = 'अपलोड शुरू करें';
+      }
+
+      // ===== Master Admin — backend helpers =====
+      function authzHeaders(){ return { 'Authorization': window.__id_token }; }
+      async function loadUsers(nextToken=null){
+        umTbody.innerHTML = '';
+        if (!API_BASE){ umTbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-sm text-gray-500">डेमो मोड: एडमिन API यूआरएल की आवश्यकता है।</td></tr>`; umNext.classList.add('hidden'); return; }
+        // API call logic will be added here later
+      }
+      
+      // ===== Event Handlers =====
+      function setupHandlers(){
+        loginBtn.addEventListener('click', doLogin);
+        goToSignUp.addEventListener('click', ()=> showSection(signUpSection));
+        goToForgot.addEventListener('click', ()=> { fpEmail.value = emailInput.value; showSection(forgotSection); });
+        signUpBtn.addEventListener('click', doSignUp);
+        backToLoginFromSignUp.addEventListener('click', ()=> showSection(loginSection));
+        confirmBtn.addEventListener('click', doConfirm);
+        resendBtn.addEventListener('click', doResend);
+        backToLoginFromConfirm.addEventListener('click', ()=> showSection(loginSection));
+        fpSend.addEventListener('click', doForgotStart);
+        fpConfirm.addEventListener('click', doForgotConfirm);
+        fpBackToLogin.addEventListener('click', ()=> showSection(loginSection));
+        logoutBtn.addEventListener('click', doLogout);
+        refreshEvents.addEventListener('click', loadEvents);
+        backToDashboard.addEventListener('click', ()=> showSection(dashboardSection));
+        openUserMgmt.addEventListener('click', ()=> { if (!window.__is_master){ showToast('Master admin अधिकार आवश्यक', 'error'); return; } showSection(userMgmtSection); if(!API_BASE){ userApiWarn.classList.remove('hidden'); } loadUsers(); });
+        backFromUserMgmt.addEventListener('click', ()=> showSection(dashboardSection));
+        umRefresh.addEventListener('click', ()=> loadUsers());
+        umNext.addEventListener('click', ()=> loadUsers(window.__um_next_token||null));
+        umCreateBtn.addEventListener('click', ()=>{/* createUserFromForm logic */});
+        startUpload.addEventListener('click', async()=>{ const eventId=uploadSection.dataset.eventId; if(!eventId){ showToast('इवेंट चयन करें', 'error'); return; } await uploadFilesForEvent(eventId); });
+        diagBtn.addEventListener('click', ()=>{/* runDiagnostics logic */});
+        
+        let pendingChallengeUser = null;
+        const npwInput = document.getElementById('npwInput'), npwSubmit = document.getElementById('npwSubmit'), npwCancel = document.getElementById('npwCancel');
+        npwSubmit.addEventListener('click', async ()=>{ 
+          const { Auth } = resolveAmplify();
+          const npw = npwInput.value || '';
+          if (!pendingChallengeUser){ showToast('कोई पेंडिंग सेशन नहीं', 'error'); return; }
+          if (!npw){ showToast('नया पासवर्ड भरें', 'error'); return; }
+          try { 
+            await Auth.completeNewPassword(pendingChallengeUser, npw); 
+            pendingChallengeUser = null; npwInput.value=''; 
+            showToast('पासवर्ड सेट — लॉगिन पूरा', 'success'); 
+            await checkUserSession();
+          }
+          catch(e){ console.error('CompleteNewPassword error', e); showToast(e?.message || 'पासवर्ड सेट करने में त्रुटि', 'error'); }
+        });
+        npwCancel.addEventListener('click', ()=>{ pendingChallengeUser = null; npwInput.value=''; showSection(loginSection); });
+      }
+      
       // ===== Boot =====
-      // The boot function is now much simpler
       (async function boot(){
         try{
-          showToast('Amplify लोड हो रहा है...', 'info');
-          // No need for ensureAmplify(), it's already loaded
+          showToast('एप्लिकेशन शुरू हो रहा है...', 'info');
           const { Amplify, Auth } = resolveAmplify();
           if(!Amplify || !Auth) throw new Error('Amplify components missing');
-          
           await configureAmplify();
           showToast('Amplify तैयार', 'success');
-          
-          // setupHandlers(); // This would contain all addEventListener calls
-          // await checkUserSession(); // This would check login status
-          // Note: The full logic for handlers and session check is assumed to be here from the previous version.
-          // For brevity, only showing the change in the boot process.
-          
-          // The rest of your app's boot logic goes here...
-          // For this example, we'll manually call checkUserSession after a brief delay
-          // to ensure the DOM is ready (in a real app, use DOMContentLoaded or similar).
-           setTimeout(async () => {
-              // Full HTML content needs to be injected here first
-              const mainContainer = document.querySelector('[data-admin-root]');
-              mainContainer.innerHTML += `
-                <!-- All your HTML sections go here -->
-              `;
-              // Then setup all handlers
-              // setupHandlers(); 
-              // Then check session
-              // await checkUserSession();
-              // This is a simplified example. Your full script would populate the sections and then run.
-           }, 100);
-
-
+          setupHandlers();
+          await checkUserSession();
         } catch(e){
           console.error("Boot Error:", e);
           showToast(e.message || 'एप्लिकेशन शुरू करने में विफल रहा।', 'error');
         }
       })();
-      
-      // ... (The rest of your script: runDiagnostics, etc.)
     })();
   </script>
 </body>
