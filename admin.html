@@ -23,6 +23,8 @@
     .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border: 1px solid #e5e7eb; border-bottom-width: 3px; border-radius: .5rem; background:#f9fafb}
     details > summary { list-style: none; }
     details > summary::-webkit-details-marker { display: none; }
+    .badge { padding: .2rem .5rem; border-radius: .5rem; font-size: .75rem; border: 1px solid #e5e7eb; background: #fff; }
+    .linklike { text-decoration: underline; color: #111827; }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-900">
@@ -33,7 +35,10 @@
   <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 lg:p-8" data-admin-root>
     <!-- Header -->
     <header class="flex items-center justify-between pb-4 border-b border-gray-200">
-      <h1 class="text-2xl font-semibold tracking-tight">इवेंट गैलरी एडमिन</h1>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-semibold tracking-tight">इवेंट गैलरी एडमिन</h1>
+        <span id="regionBadge" class="badge hidden"></span>
+      </div>
       <div class="flex items-center gap-2">
         <button id="diagBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">डायग्नोस्टिक्स</button>
         <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">लॉग आउट</button>
@@ -58,7 +63,12 @@
             <label class="text-sm mt-2">पासवर्ड</label>
             <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
             <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
-            <button id="goToSignUp" class="mt-2 text-sm text-gray-700 underline">नया अकाउंट बनाएँ</button>
+            <div class="flex items-center gap-3 mt-2">
+              <button id="goToSignUp" class="text-sm text-gray-700 underline">नया अकाउंट बनाएँ</button>
+              <button id="goToForgot" class="text-sm linklike">पासवर्ड भूल गए?</button>
+              <button id="hostedUiBtn" class="hidden text-sm linklike">Hosted UI से लॉगिन</button>
+            </div>
+            <p id="signupDisabledMsg" class="hidden text-xs text-red-600">इस User Pool में self‑signup बंद है। कृपया एडमिन से अकाउंट बनवाएँ।</p>
             <p class="text-xs text-gray-500">ध्यान दें: यदि आपके यूज़र पूल में ईमेल साइन‑इन सक्षम नहीं है, तो यह फ़ील्ड <em>यूज़रनेम</em> की तरह काम करेगा।</p>
           </div>
         </div>
@@ -103,6 +113,28 @@
       </div>
     </section>
 
+    <!-- Forgot Password Section -->
+    <section id="forgotSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">पासवर्ड रीसेट</h2>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">ईमेल</label>
+            <input id="fpEmail" type="email" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
+            <div class="flex gap-2 mt-1">
+              <button id="fpSend" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रीसेट कोड भेजें</button>
+              <button id="fpBackToLogin" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">लॉगिन</button>
+            </div>
+            <label class="text-sm mt-3">रीसेट कोड</label>
+            <input id="fpCode" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="123456" />
+            <label class="text-sm mt-2">नया पासवर्ड</label>
+            <input id="fpNew" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
+            <button id="fpConfirm" class="mt-2 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">पासवर्ड बदलें</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Dashboard Section -->
     <section id="dashboardSection" class="admin-section">
       <div class="mt-8">
@@ -142,18 +174,34 @@
         USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5',
         USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l'
       };
-      // URL overrides for quick testing: ?region=ap-south-1&userPoolId=xxx&clientId=yyy
+      // Feature flags
+      const FEATURES = {
+        allowSignUp: false,            // self‑signup off by default (B2B admin)
+        allowHostedUI: false           // set true when domain provided via URL
+      };
+
+      // URL overrides for quick testing: ?region=...&userPoolId=...&clientId=...&signup=1&domain=YOUR_DOMAIN
       const qp = new URLSearchParams(location.search);
       const COGNITO = {
         REGION: qp.get('region') || DEFAULT_COGNITO.REGION,
         USER_POOL_ID: qp.get('userPoolId') || DEFAULT_COGNITO.USER_POOL_ID,
         USER_POOL_WEB_CLIENT_ID: qp.get('clientId') || DEFAULT_COGNITO.USER_POOL_WEB_CLIENT_ID,
       };
+      if (qp.has('signup')) FEATURES.allowSignUp = qp.get('signup') === '1';
+      const HOSTED_UI_DOMAIN = qp.get('domain') || '';
+      if (HOSTED_UI_DOMAIN) FEATURES.allowHostedUI = true;
+
+      // Infer region from userPoolId prefix to avoid endpoint mismatch
       const inferredRegion = (COGNITO.USER_POOL_ID.match(/^([a-z]{2}-[a-z-]+-\d+)_/i) || [null, null])[1];
       if (inferredRegion && inferredRegion !== COGNITO.REGION) {
-        console.warn('[Amplify] Region mismatch: config', COGNITO.REGION, 'vs inferred from pool', inferredRegion, '→ using inferred');
+        console.warn('[Amplify] Region mismatch: config', COGNITO.REGION, 'vs inferred', inferredRegion, '→ using inferred');
         COGNITO.REGION = inferredRegion;
       }
+
+      // Update header badge
+      const regionBadge = document.getElementById('regionBadge');
+      regionBadge.textContent = `Region: ${COGNITO.REGION}`;
+      regionBadge.classList.remove('hidden');
 
       // ===== Utilities =====
       function showToast(msg, type = 'info', ms = 3500) {
@@ -166,8 +214,12 @@
       }
       const isFileProto = location.protocol === 'file:';
 
+      function looksLikeEmail(v){
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v || '');
+      }
+
       // Sections
-      const sectionIds = ['loginSection', 'signUpSection', 'confirmSection', 'dashboardSection', 'uploadSection'];
+      const sectionIds = ['loginSection', 'signUpSection', 'confirmSection', 'forgotSection', 'dashboardSection', 'uploadSection'];
       function showSection(el) {
         sectionIds.forEach(id => document.getElementById(id).classList.remove('active'));
         el.classList.add('active');
@@ -178,12 +230,15 @@
       const dashboardSection = document.getElementById('dashboardSection');
       const signUpSection = document.getElementById('signUpSection');
       const confirmSection = document.getElementById('confirmSection');
+      const forgotSection = document.getElementById('forgotSection');
       const uploadSection = document.getElementById('uploadSection');
 
       const emailInput = document.getElementById('email');
       const passwordInput = document.getElementById('password');
       const loginBtn = document.getElementById('loginBtn');
       const goToSignUp = document.getElementById('goToSignUp');
+      const goToForgot = document.getElementById('goToForgot');
+      const hostedUiBtn = document.getElementById('hostedUiBtn');
 
       const suEmail = document.getElementById('suEmail');
       const suPassword = document.getElementById('suPassword');
@@ -195,6 +250,13 @@
       const confirmBtn = document.getElementById('confirmBtn');
       const resendBtn = document.getElementById('resendBtn');
       const backToLoginFromConfirm = document.getElementById('backToLoginFromConfirm');
+
+      const fpEmail = document.getElementById('fpEmail');
+      const fpCode = document.getElementById('fpCode');
+      const fpNew = document.getElementById('fpNew');
+      const fpSend = document.getElementById('fpSend');
+      const fpConfirm = document.getElementById('fpConfirm');
+      const fpBackToLogin = document.getElementById('fpBackToLogin');
 
       const logoutBtn = document.getElementById('logoutBtn');
       const diagBtn = document.getElementById('diagBtn');
@@ -208,6 +270,21 @@
       const startUpload = document.getElementById('startUpload');
       const uploadTitle = document.getElementById('uploadTitle');
       const uploadStatus = document.getElementById('uploadStatus');
+
+      const signupDisabledMsg = document.getElementById('signupDisabledMsg');
+
+      // Toggle sign-up / hosted UI visibility
+      function updateSignUpVisibility(){
+        if (FEATURES.allowSignUp){
+          goToSignUp.classList.remove('hidden');
+          signupDisabledMsg.classList.add('hidden');
+        } else {
+          goToSignUp.classList.add('hidden');
+          signupDisabledMsg.classList.remove('hidden');
+          if (signUpSection.classList.contains('active')) showSection(loginSection);
+        }
+        hostedUiBtn.classList.toggle('hidden', !FEATURES.allowHostedUI);
+      }
 
       // Enter-to-submit
       [emailInput, passwordInput].forEach(inp => inp && inp.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); }));
@@ -230,65 +307,71 @@
         'https://esm.sh/aws-amplify@5?bundle',
         'https://esm.sh/aws-amplify@5.3.21?bundle'
       ];
-      function withTimeout(promise, ms, label){
-        let t; const err = new Error('Timeout: '+label); const timer = new Promise((_, reject)=> t = setTimeout(()=>reject(err), ms));
-        return Promise.race([promise.finally(()=>clearTimeout(t)), timer]);
-      }
-      function scriptLoad(url){
-        return new Promise((resolve, reject)=>{
-          const s = document.createElement('script'); s.src = url; s.async = false;
-          s.onload = () => { fallbackAttemptLog.push(`UMD ok: ${url}`); resolve(url); };
-          s.onerror = () => { fallbackAttemptLog.push(`UMD fail: ${url}`); reject(new Error('Failed to load: '+url)); };
-          document.head.appendChild(s);
-        });
-      }
-      function moduleImport(url){
-        return new Promise((resolve, reject)=>{
-          const s = document.createElement('script'); s.type = 'module';
-          s.textContent = `import * as pkg from '${url}'; window.aws_amplify = window.aws_amplify || pkg;`;
-          s.onload = () => { fallbackAttemptLog.push(`ESM ok: ${url}`); resolve(url); };
-          s.onerror = () => { fallbackAttemptLog.push(`ESM fail: ${url}`); reject(new Error('Failed to import: '+url)); };
-          document.head.appendChild(s);
-        });
-      }
-      async function ensureAmplify(){
-        if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true;
-        let lastErr;
-        for (const url of AMPLIFY_URLS_UMD){ try{ await withTimeout(scriptLoad(url), 4000, url); if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; }catch(e){ lastErr = e; } }
-        for (const url of AMPLIFY_URLS_ESM){ try{ await withTimeout(moduleImport(url), 6000, url); if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; }catch(e){ lastErr = e; } }
-        throw (lastErr || new Error('Amplify UMD not loaded'));
-      }
-      function resolveAmplify(){
-        const ns = window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify;
-        const Amplify = ns?.Amplify || ns?.default || ns; const Auth = ns?.Auth || Amplify?.Auth; const Storage = ns?.Storage || Amplify?.Storage; return { Amplify, Auth, Storage };
-      }
+      function withTimeout(promise, ms, label){ let t; const err = new Error('Timeout: '+label); const timer = new Promise((_, reject)=> t = setTimeout(()=>reject(err), ms)); return Promise.race([promise.finally(()=>clearTimeout(t)), timer]); }
+      function scriptLoad(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.src = url; s.async = false; s.onload = () => { fallbackAttemptLog.push(`UMD ok: ${url}`); resolve(url); }; s.onerror = () => { fallbackAttemptLog.push(`UMD fail: ${url}`); reject(new Error('Failed to load: '+url)); }; document.head.appendChild(s); }); }
+      function moduleImport(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.type = 'module'; s.textContent = `import * as pkg from '${url}'; window.aws_amplify = window.aws_amplify || pkg;`; s.onload = () => { fallbackAttemptLog.push(`ESM ok: ${url}`); resolve(url); }; s.onerror = () => { fallbackAttemptLog.push(`ESM fail: ${url}`); reject(new Error('Failed to import: '+url)); }; document.head.appendChild(s); }); }
+      async function ensureAmplify(){ if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; let lastErr; for (const url of AMPLIFY_URLS_UMD){ try{ await withTimeout(scriptLoad(url), 4000, url); if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; }catch(e){ lastErr = e; } } for (const url of AMPLIFY_URLS_ESM){ try{ await withTimeout(moduleImport(url), 6000, url); if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; }catch(e){ lastErr = e; } } throw (lastErr || new Error('Amplify UMD not loaded')); }
+      function resolveAmplify(){ const ns = window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify; const Amplify = ns?.Amplify || ns?.default || ns; const Auth = ns?.Auth || Amplify?.Auth; const Storage = ns?.Storage || Amplify?.Storage; return { Amplify, Auth, Storage }; }
 
       // ===== App Logic =====
-      async function configureAmplify(){
-        const { Amplify } = resolveAmplify();
-        if (!Amplify?.configure) throw new Error('Amplify.configure not available');
-        Amplify.configure({ Auth: { region: COGNITO.REGION, userPoolId: COGNITO.USER_POOL_ID, userPoolWebClientId: COGNITO.USER_POOL_WEB_CLIENT_ID, authenticationFlowType: 'USER_SRP_AUTH' } });
+      async function configureAmplify(){ const { Amplify } = resolveAmplify(); if (!Amplify?.configure) throw new Error('Amplify.configure not available'); Amplify.configure({ Auth: { region: COGNITO.REGION, userPoolId: COGNITO.USER_POOL_ID, userPoolWebClientId: COGNITO.USER_POOL_WEB_CLIENT_ID, authenticationFlowType: 'USER_SRP_AUTH' } }); }
+      async function checkUserSession(){ const { Auth } = resolveAmplify(); try{ const user = await Auth.currentAuthenticatedUser(); if (user){ logoutBtn.classList.remove('hidden'); showSection(dashboardSection); await loadEvents(); } else { showSection(loginSection); } } catch{ showSection(loginSection); } }
+
+      function preValidateLogin(){
+        const u = emailInput.value.trim();
+        const p = passwordInput.value;
+        if (!u || !p){ showToast('ईमेल/पासवर्ड भरें', 'error'); return false; }
+        if (!looksLikeEmail(u)) showToast('ईमेल फ़ॉर्मेट जाँचें', 'info');
+        return true;
       }
-      async function checkUserSession(){
-        const { Auth } = resolveAmplify();
-        try{ const user = await Auth.currentAuthenticatedUser(); if (user){ logoutBtn.classList.remove('hidden'); showSection(dashboardSection); await loadEvents(); } else { showSection(loginSection); } }
-        catch{ showSection(loginSection); }
-      }
+
       async function doLogin(){
-        const { Auth } = resolveAmplify(); const username = emailInput.value.trim(); const password = passwordInput.value; if (!username || !password){ showToast('ईमेल/पासवर्ड भरें', 'error'); return; }
+        const { Auth } = resolveAmplify();
+        if (!preValidateLogin()) return;
+        const username = emailInput.value.trim();
+        const password = passwordInput.value;
         loginBtn.disabled = true;
-        try{ const res = await Auth.signIn(username, password); showToast('लॉगिन सफल', 'success'); logoutBtn.classList.remove('hidden'); emailInput.value=''; passwordInput.value=''; showSection(dashboardSection); await loadEvents(); console.debug('SignIn result:', res); }
-        catch(error){ console.error('SignIn error', error); const map={UserNotFoundException:'यूज़र नहीं मिला — पहले साइन‑अप करें या सही पूल चुनें',NotAuthorizedException:'गलत पासवर्ड या यूज़र निष्क्रिय',UserNotConfirmedException:'ईमेल वेरिफ़िकेशन पेंडिंग — कोड कन्फ़र्म करें',PasswordResetRequiredException:'पासवर्ड रीसेट आवश्यक'}; const hint = map[error?.name] || (error?.message || 'लॉगिन में त्रुटि'); showToast(`${error?.name ? error.name+': ' : ''}${hint}`, 'error', 6000); if (error?.name==='UserNotFoundException'){ suEmail.value=username; showSection(signUpSection);} if (error?.name==='UserNotConfirmedException'){ cfEmail.value=username; showSection(confirmSection);} }
-        finally{ loginBtn.disabled = false; }
+        try{
+          const res = await Auth.signIn(username, password);
+          showToast('लॉगिन सफल', 'success');
+          logoutBtn.classList.remove('hidden');
+          emailInput.value=''; passwordInput.value='';
+          showSection(dashboardSection);
+          await loadEvents();
+          console.debug('SignIn result:', res);
+        } catch(error){
+          console.error('SignIn error', error);
+          const name = error?.name || 'Error';
+          const msg = error?.message || '';
+          const map={
+            UserNotFoundException:'यूज़र नहीं मिला — पहले साइन‑अप/एडमिन क्रिएशन करें',
+            NotAuthorizedException:'गलत पासवर्ड या यूज़र निष्क्रिय',
+            UserNotConfirmedException:'ईमेल वेरिफ़िकेशन पेंडिंग — कोड कन्फ़र्म करें',
+            PasswordResetRequiredException:'पासवर्ड रीसेट आवश्यक',
+          };
+          const hint = map[name] || (msg || 'लॉगिन में त्रुटि');
+          showToast(`${name}: ${hint}`, 'error', 6000);
+          if (name==='UserNotConfirmedException'){ cfEmail.value=username; showSection(confirmSection); }
+          if (name==='PasswordResetRequiredException'){ fpEmail.value=username; showSection(forgotSection); }
+          if (name==='UserNotFoundException' && FEATURES.allowSignUp){ suEmail.value=username; showSection(signUpSection); }
+        } finally { loginBtn.disabled = false; }
       }
-      async function doSignUp(){
-        const { Auth } = resolveAmplify(); const email = suEmail.value.trim(); const pwd = suPassword.value; if(!email||!pwd){ showToast('ईमेल/पासवर्ड भरें', 'error'); return; }
-        signUpBtn.disabled=true; try{ await Auth.signUp({ username: email, password: pwd, attributes:{ email } }); showToast('साइन‑अप सफल — ईमेल पर कोड भेजा गया', 'success', 5000); cfEmail.value=email; cfCode.value=''; showSection(confirmSection);} catch(e){ console.error('SignUp error', e); showToast(e?.message || 'साइन‑अप त्रुटि', 'error'); } finally{ signUpBtn.disabled=false; }
+
+      async function doHostedUILogin(){
+        if (!FEATURES.allowHostedUI) return;
+        // Build Hosted UI URL
+        const redirectUri = location.origin + location.pathname;
+        const url = `https://${HOSTED_UI_DOMAIN}/login?client_id=${encodeURIComponent(COGNITO.USER_POOL_WEB_CLIENT_ID)}&response_type=code&scope=openid+email+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
+        location.href = url;
       }
-      async function doConfirm(){
-        const { Auth } = resolveAmplify(); const email=(cfEmail.value||'').trim(); const code=(cfCode.value||'').trim(); if(!email||!code){ showToast('ईमेल और कोड भरें', 'error'); return; }
-        confirmBtn.disabled=true; try{ await Auth.confirmSignUp(email, code); showToast('सत्यापन सफल — अब लॉगिन करें', 'success'); emailInput.value=email; showSection(loginSection);} catch(e){ console.error('Confirm error', e); showToast(e?.message || 'कन्फ़र्मेशन त्रुटि', 'error'); } finally{ confirmBtn.disabled=false; }
+
+      async function doSignUp(){ const { Auth } = resolveAmplify(); const email = suEmail.value.trim(); const pwd = suPassword.value; if(!email||!pwd){ showToast('ईमेल/पासवर्ड भरें', 'error'); return; } if(!FEATURES.allowSignUp){ showToast('इस पूल में self‑signup बंद है — कृपया एडमिन से अकाउंट बनवाएँ', 'error', 5000); return; } signUpBtn.disabled=true; try{ await Auth.signUp({ username: email, password: pwd, attributes:{ email } }); showToast('साइन‑अप सफल — ईमेल पर कोड भेजा गया', 'success', 5000); cfEmail.value=email; cfCode.value=''; showSection(confirmSection);} catch(e){ console.error('SignUp error', e); if (e?.name==='NotAuthorizedException' && /SignUp is not permitted/i.test(e?.message||'')){ FEATURES.allowSignUp=false; updateSignUpVisibility(); showToast('Self‑signup इस User Pool में disabled है', 'error', 6000); showSection(loginSection); } else { showToast(e?.message || 'साइन‑अप त्रुटि', 'error'); } } finally{ signUpBtn.disabled=false; } }
+      async function doConfirm(){ const { Auth } = resolveAmplify(); const email=(cfEmail.value||'').trim(); const code=(cfCode.value||'').trim(); if(!email||!code){ showToast('ईमेल और कोड भरें', 'error'); return; } confirmBtn.disabled=true; try{ await Auth.confirmSignUp(email, code); showToast('सत्यापन सफल — अब लॉगिन करें', 'success'); emailInput.value=email; showSection(loginSection);} catch(e){ console.error('Confirm error', e); showToast(e?.message || 'कन्फ़र्मेशन त्रुटि', 'error'); } finally{ confirmBtn.disabled=false; } }
+
+      async function doForgotStart(){ const { Auth } = resolveAmplify(); const email=(fpEmail.value||'').trim(); if(!looksLikeEmail(email)){ showToast('मान्य ईमेल भरें', 'error'); return; } try{ await Auth.forgotPassword(email); showToast('रीसेट कोड ईमेल पर भेजा गया', 'success'); } catch(e){ console.error('Forgot start error', e); showToast(e?.message || 'रीसेट कोड भेजने में त्रुटि', 'error'); } }
+      async function doForgotConfirm(){ const { Auth } = resolveAmplify(); const email=(fpEmail.value||'').trim(); const code=(fpCode.value||'').trim(); const np=(fpNew.value||''); if(!email||!code||!np){ showToast('ईमेल/कोड/नया पासवर्ड भरें', 'error'); return; } try{ await Auth.forgotPasswordSubmit(email, code, np); showToast('पासवर्ड बदल गया — अब लॉगिन करें', 'success'); emailInput.value=email; showSection(loginSection); } catch(e){ console.error('Forgot submit error', e); showToast(e?.message || 'पासवर्ड बदलने में त्रुटि', 'error'); }
       }
+
       async function doResend(){ const { Auth } = resolveAmplify(); const email=(cfEmail.value||'').trim(); if(!email){ showToast('ईमेल भरें', 'error'); return; } try{ await Auth.resendSignUp(email); showToast('कोड पुनः भेजा गया', 'success'); } catch(e){ console.error('Resend error', e); showToast(e?.message || 'री‑सेंड त्रुटि', 'error'); } }
       async function doLogout(){ const { Auth } = resolveAmplify(); try{ await Auth.signOut(); }catch{} showToast('लॉग आउट किया गया', 'info'); logoutBtn.classList.add('hidden'); showSection(loginSection); }
 
@@ -304,11 +387,20 @@
       // Handlers
       loginBtn.addEventListener('click', doLogin);
       goToSignUp.addEventListener('click', ()=> showSection(signUpSection));
+      goToForgot.addEventListener('click', ()=> { fpEmail.value = emailInput.value; showSection(forgotSection); });
+      hostedUiBtn.addEventListener('click', doHostedUILogin);
+
       signUpBtn.addEventListener('click', doSignUp);
       backToLoginFromSignUp.addEventListener('click', ()=> showSection(loginSection));
+
       confirmBtn.addEventListener('click', doConfirm);
       resendBtn.addEventListener('click', doResend);
       backToLoginFromConfirm.addEventListener('click', ()=> showSection(loginSection));
+
+      fpSend.addEventListener('click', doForgotStart);
+      fpConfirm.addEventListener('click', doForgotConfirm);
+      fpBackToLogin.addEventListener('click', ()=> showSection(loginSection));
+
       logoutBtn.addEventListener('click', doLogout);
       refreshEvents.addEventListener('click', loadEvents);
       backToDashboard.addEventListener('click', ()=> showSection(dashboardSection));
@@ -317,24 +409,47 @@
       diagBtn.addEventListener('click', runDiagnostics);
 
       // Boot
-      (async function boot(){ try{ if(isFileProto) showToast('बेहतर अनुभव हेतु localhost से चलाएँ', 'info', 4500); showToast('Amplify लोड हो रहा है…', 'info'); await ensureAmplify(); const { Amplify, Auth } = resolveAmplify(); if(!Amplify||!Auth) throw new Error('Amplify globals missing after load'); await configureAmplify(); showToast('Amplify तैयार', 'success'); await checkUserSession(); } catch(e){ console.error(e); showToast('Amplify लोड नहीं हुआ — नेटवर्क/CDN चेक करें', 'error'); showSection(loginSection); } })();
+      (async function boot(){ try{ if(isFileProto) showToast('बेहतर अनुभव हेतु localhost से चलाएँ', 'info', 4500); updateSignUpVisibility(); if(FEATURES.allowHostedUI) hostedUiBtn.classList.remove('hidden'); showToast('Amplify लोड हो रहा है…', 'info'); await ensureAmplify(); const { Amplify, Auth } = resolveAmplify(); if(!Amplify||!Auth) throw new Error('Amplify globals missing after load'); await configureAmplify(); showToast('Amplify तैयार', 'success'); await checkUserSession(); } catch(e){ console.error(e); showToast('Amplify लोड नहीं हुआ — नेटवर्क/CDN चेक करें', 'error'); showSection(loginSection); } })();
 
-      // Tests
+      // ===== Self‑tests ("test cases") =====
       function logDiag(line){ diagOut.textContent += (line + '\n'); }
       function clearDiag(){ diagOut.textContent = ''; }
       function assertTest(name, cond){ logDiag(`${cond ? '✅' : '❌'} ${name}`); return !!cond; }
       async function runDiagnostics(){
         clearDiag(); logDiag('— रनिंग Self‑tests —'); logDiag(`URL: ${location.href}`); logDiag(`Protocol: ${location.protocol}`);
-        logDiag('Config (final):'); logDiag('  REGION=' + COGNITO.REGION); logDiag('  USER_POOL_ID=' + COGNITO.USER_POOL_ID); logDiag('  CLIENT_ID=' + COGNITO.USER_POOL_WEB_CLIENT_ID); logDiag('  Inferred from pool=' + (inferredRegion || 'n/a')); logDiag('  Expected Cognito endpoint: https://cognito-idp.'+COGNITO.REGION+'.amazonaws.com');
+        logDiag('Config (final):'); logDiag('  REGION=' + COGNITO.REGION); logDiag('  USER_POOL_ID=' + COGNITO.USER_POOL_ID); logDiag('  CLIENT_ID=' + COGNITO.USER_POOL_WEB_CLIENT_ID); logDiag('  Inferred from pool=' + (inferredRegion || 'n/a')); logDiag('  Expected Cognito endpoint: https://cognito-idp.'+COGNITO.REGION+'.amazonaws.com'); logDiag('  allowSignUp=' + FEATURES.allowSignUp + ', allowHostedUI=' + FEATURES.allowHostedUI);
         if (fallbackAttemptLog.length){ logDiag('Loader attempts:'); fallbackAttemptLog.forEach(x=>logDiag('  • '+x)); } else { logDiag('Loader attempts: (none recorded — library may be cached/present)'); }
         let ampNS = window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify; assertTest('Amplify namespace detected', !!ampNS);
-        const { Amplify, Auth } = resolveAmplify(); assertTest('Amplify.configure उपलब्ध', !!Amplify?.configure); assertTest('Auth.signIn उपलब्ध', typeof Auth?.signIn === 'function'); assertTest('Auth.signUp उपलब्ध', typeof Auth?.signUp === 'function'); assertTest('Auth.confirmSignUp उपलब्ध', typeof Auth?.confirmSignUp === 'function'); assertTest('Auth.currentAuthenticatedUser उपलब्ध', typeof Auth?.currentAuthenticatedUser === 'function');
+        const { Amplify, Auth } = resolveAmplify(); assertTest('Amplify.configure उपलब्ध', !!Amplify?.configure); assertTest('Auth.signIn उपलब्ध', typeof Auth?.signIn === 'function'); assertTest('Auth.signUp उपलब्ध', typeof Auth?.signUp === 'function'); assertTest('Auth.confirmSignUp उपलब्ध', typeof Auth?.confirmSignUp === 'function'); assertTest('Auth.forgotPassword उपलब्ध', typeof Auth?.forgotPassword === 'function'); assertTest('Auth.forgotPasswordSubmit उपलब्ध', typeof Auth?.forgotPasswordSubmit === 'function'); assertTest('Auth.currentAuthenticatedUser उपलब्ध', typeof Auth?.currentAuthenticatedUser === 'function');
+
+        // UI toggling
         const before = document.querySelector('.admin-section.active'); showSection(dashboardSection); const dashActive = dashboardSection.classList.contains('active'); assertTest('Dashboard दिख रहा है', dashActive); showSection(before || loginSection);
+
+        // Events render & upload button routing
         renderEvents([{id:'t_evt', name:'Test Event', photos: 1}]); const btn = document.querySelector('.upload-btn'); const hadBtn = assertTest('Upload बटन मौजूद', !!btn); if (hadBtn){ btn.click(); const upActive = uploadSection.classList.contains('active'); assertTest('Upload सेक्शन खुलता है', upActive); backToDashboard.click(); }
+
+        // File input default state
         assertTest('Start Upload disabled by default', startUpload.disabled === true);
+
+        // Region inferred == configured (after auto-fix)
         assertTest('Region matches userPool prefix (auto-fixed)', !inferredRegion || inferredRegion === COGNITO.REGION);
-        // New: sign-up navigation exposure (synthetic)
-        (function(){ suEmail.value = 'test@example.com'; showSection(signUpSection); })(); const inSU = signUpSection.classList.contains('active'); assertTest('Sign‑up सेक्शन दिखता है (nav)', inSU); showSection(loginSection);
+
+        // Sign-up visibility tests
+        const suVisible = !goToSignUp.classList.contains('hidden');
+        assertTest('Sign-up button visibility matches feature flag', suVisible === FEATURES.allowSignUp);
+        const prevAllow = FEATURES.allowSignUp; FEATURES.allowSignUp = true; updateSignUpVisibility(); const suVisible2 = !goToSignUp.classList.contains('hidden'); assertTest('Sign-up button becomes visible when enabled', suVisible2 === true); FEATURES.allowSignUp = prevAllow; updateSignUpVisibility();
+
+        // Forgot password navigation presence
+        assertTest('Forgot password link present', !!document.getElementById('goToForgot'));
+
+        // JWKS URL format + reachability (best effort)
+        const jwksUrl = `https://cognito-idp.${COGNITO.REGION}.amazonaws.com/${COGNITO.USER_POOL_ID}/.well-known/jwks.json`;
+        assertTest('JWKS URL looks valid', /cognito-idp\.[^/]+\.amazonaws\.com\/.+\/.well-known\/jwks\.json$/.test(jwksUrl));
+        try { const r = await fetch(jwksUrl, { method:'GET' }); logDiag('JWKS fetch status: ' + r.status); } catch(e){ logDiag('JWKS fetch error: ' + (e?.message||e)); }
+
+        // Client ID sanity (length >= 8)
+        assertTest('ClientId length sanity', (COGNITO.USER_POOL_WEB_CLIENT_ID||'').length >= 8);
+
         try { await fetch('https://cdn.jsdelivr.net', { method:'HEAD', mode:'no-cors' }); logDiag('CDN reachability: attempted (no-cors)'); } catch(e){ logDiag('CDN reachability: blocked'); }
         logDiag('— Self‑tests complete —'); document.getElementById('diagPanel').open = true;
       }
