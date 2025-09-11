@@ -307,6 +307,7 @@
           };
           
           const doLogin = async () => {
+              console.log("[DEBUG] Login button was clicked!"); // Debug log
               const username = (emailInput.value || '').trim();
               const password = passwordInput.value;
               if (!username || !password) { showToast('ईमेल और पासवर्ड भरें', 'error'); return; }
@@ -373,6 +374,7 @@
           };
           
           // Attach event listeners
+          console.log("[DEBUG] Attaching event listeners...");
           loginBtn.addEventListener('click', doLogin);
           logoutBtn.addEventListener('click', doLogout);
           fileInput.addEventListener('change', () => { startUpload.disabled = !(fileInput.files && fileInput.files.length > 0); });
@@ -386,6 +388,7 @@
               }
           });
           backToDashboard.addEventListener('click', () => showSection(dashboardSection));
+          console.log("[DEBUG] Event listeners attached.");
 
           // Check user session to start
           await checkUserSession();
