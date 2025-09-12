@@ -129,7 +129,8 @@
   <!-- App Script -->
   <script type="module">
     // Using a proper ES module for cleaner code
-    import { Amplify, Auth } from 'https://cdn.skypack.dev/aws-amplify@5';
+    // FIX: Switched to a more reliable CDN (esm.sh) to resolve packaging errors
+    import { Amplify, Auth } from 'https://esm.sh/aws-amplify@5';
 
     // ===== Config =====
     const COGNITO_CONFIG = {
