@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Portal | Standalone</title>
+  <title>Admin Portal | Final v3</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📸</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- AWS Amplify v5 Library Code - Embedded directly to prevent loading errors -->
-  <script>
-    // This is the minified code for aws-amplify@5. It is included here directly
-    // to ensure it always loads, regardless of network conditions.
-    !function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"function"==typeof define&&define.amd?define(["exports"],e):e((t="undefined"!=typeof globalThis?globalThis:t||self).aws_amplify={})}(this,(function(t){"use strict";var e,n,r,i,o;!function(t){t.Default="Default",t.None="None"}(e||(e={})),function(t){t.Cognito="cognito",t.Facebook="facebook",t.Google="google",t.Amazon="amazon",t.Apple="apple"}(n||(n={})),function(t){t.Default="default",t.Guest="guest",t.Facebook="facebook",t.Google="google",t.Amazon="amazon",t.Apple="apple"}(r||(r={})),function(t){t.Email="email",t.Phone="phone_number",t.Username="username"}(i||(i={})),function(t){t.Enabled="ENABLED",t.Disabled="DISABLED",t.SignIn="SIGN_IN",t.SignUp="SIGN_UP"}(o||(o={}));const s={amplify:"amplify",auth:"auth",storage:"storage",api:"api",predictions:"predictions",interactions:"interactions",pubsub:"pubsub",datastore:"datastore",core:"core",geo:"geo",notifications:"notifications"},a={Auth:s.auth,Storage:s.storage,API:s.api,Predictions:s.predictions,Interactions:s.interactions,PubSub:s.pubsub,DataStore:s.datastore,Geo:s.geo,Notifications:s.notifications},u=Object.freeze({NONE:e.None,AMAZON_COGNITO_USER_POOLS:e.Default}),c=Object.freeze({API_KEY:"API_KEY",AWS_IAM:"AWS_IAM",OPENID_CONNECT:"OPENID_CONNECT",AMAZON_COGNITO_USER_POOLS:"AMAZON_COGNITO_USER_POOLS"}),l=Object.freeze({REST:"REST",GraphQL:"GraphQL"});class d extends Error{constructor(t){super(t),this.name=d.name,Object.setPrototypeOf(this,d.prototype)}}class h{static isCancel(t){return!!t&&"Cancel"===t.name&&!0===t.isCancel}}class f extends Error{constructor(t){super(t),this.name="Cancel",this.isCancel=!0,Object.setPrototypeOf(this,f.prototype)}}const m=t=>"object"==typeof t&&null!==t&&"function"==typeof t.then;var p;!function(t){t.API="API",t.Auth="Auth",t.Cache="Cache",t.DataStore="DataStore",t.Geo="Geo",t.Interactions="Interactions",t.Notifications="Notifications",t.Predictions="Predictions",t.PubSub="PubSub",t.Storage="Storage"}(p||(p={}));const g=p;class v{constructor(){}get(t,e){if(this._config&&Object.prototype.hasOwnProperty.call(this._config,t))return this._config[t];if(e)for(const t of e)if(this._config&&Object.prototype.hasOwnProperty.call(this._config,t))return this._config[t];return}}class y extends v{constructor(t={}){super(),this._config={},this.config=t}get config(){return this._config}set config(t){this._config=t}get(t,e){return super.get(t,e)}}const w=new y;class b{constructor(){this.amplify="amplify-js",this.auth="auth-js",this.storage="storage-js",this.api="api-js",this.datastore="datastore-js",this.interactions="interactions-js",this.pubsub="pubsub-js",this.predictions="predictions-js",this.geo="geo-js",this.notifications="notifications-js"}setUserAgent(t){this._userAgent=t}get userAgent(){return this._userAgent}}const _=new b,S=(t,e,n)=>{const r=_.userAgent;if(r&&r.indexOf(t)<0){const n=r+" "+t+"/"+(e||"unspecified");_.setUserAgent(n)}else"undefined"==typeof navigator||navigator.product,_.setUserAgent(t+"/"+(e||"unspecified"))},E=t=>{const e=_.userAgent;e&&e.indexOf(t)<0?_.setUserAgent(`${e} ${t}`):e||_.setUserAgent(t)};var C,I;!function(t){t. mulai="[Mulai] ",t.finish="[Selesai] ",t.error="[Error] "}(C||(C={})),function(t){t.DEBUG=1,t.INFO=2,t.WARN=3,t.ERROR=4,t.SILENT=5}(I||(I={}));const k=t=>"undefined"!=typeof window&&void 0!==window.localStorage&&"true"===window.localStorage.getItem(t),O=t=>{try{"undefined"!=typeof window&&void 0!==window.localStorage&&window.localStorage.setItem("amplify-logger-level",t)}catch(t){}},A=k("amplify-logger-level-unlocked");let T=I.WARN;const x=new class{constructor(t,e=I.WARN){this.name=t,this._logLevel=e,this.LOG_LEVEL_KEY_IN_STORAGE="amplify-logger-level",this.LOG_LEVEL_UNLOCKED_KEY_IN_STORAGE="amplify-logger-level-unlocked"}getLogLevel(){const t=k(this.LOG_LEVEL_UNLOCKED_KEY_IN_STORAGE);let e;try{e="undefined"!=typeof window&&void 0!==window.localStorage?window.localStorage.getItem(this.LOG_LEVEL_KEY_IN_STORAGE):void 0}catch(t){}return t&&e&&I[e.toUpperCase()]?I[e.toUpperCase()]:this._logLevel}setLogLevel(t){this._logLevel=t;const e=k(this.LOG_LEVEL_UNLOCKED_KEY_IN_STORAGE);t&&e&&O(I[t].toLowerCase())}handleLog(t,e){const n=this.getLogLevel();t>=n&&("function"==typeof console[I[t].toLowerCase()]&&console[I[t].toLowerCase()](...e),n===I.DEBUG&&("function"==typeof console.trace&&console.trace(...e)))}debug(...t){this.handleLog(I.DEBUG,t)}info(...t){this.handleLog(I.INFO,t)}warn(...t){this.handleLog(I.WARN,t)}error(...t){this.handleLog(I.ERROR,t)}};var D,U;!function(t){t.Cognito="Cognito",t.Facebook="Facebook",t.Google="Google",t.Amazon="Amazon",t.Apple="Apple"}(D||(D={})),function(t){t.Default="Default",t.Guest="Guest",t.Facebook="Facebook",t.Google="Google",t.Amazon="Amazon",t.Apple="Apple"}(U||(U={}));const L=t=>{const e=()=>{try{return"undefined"!=typeof window&&"function"==typeof window.matchMedia?window.matchMedia("(prefers-color-scheme: dark)").matches:!1}catch(t){return!1}};return t||(e()?"dark":"light")},R=x;class M{constructor(t){this.credentials=t}get accessKeyId(){return this.credentials.accessKeyId}get secretAccessKey(){return this.credentials.secretAccessKey}get sessionToken(){return this.credentials.sessionToken}}class P{constructor(t){this._config=Object.assign({},t),this._config.storage=this._config.storage||{setItem:()=>{},getItem:()=>{},removeItem:()=>{},clear:()=>{}},this._refreshSubscribers=[],this._awsCreds||(this._awsCreds={}),this._topic=this._config.topic||"Credentials",this._nextCredentialsRefresh=0,S("Credentials",void 0)}configure(t){this._config=Object.assign({},this._config,t)}set(t){return this._setCredentials(t)}get(){const t=new Promise((t,e)=>{if(this.isExpired()){if(this.refreshing)return void this._refreshSubscribers.push(t);this.refreshing=!0;const n=this.getCredentialsfromSource(this._config);n?n.then(e=>{this._setCredentials(e),this.refreshing=!1,this._refreshSubscribers.forEach(t=>t(e)),this._refreshSubscribers=[],t(e)}).catch(t=>{this.refreshing=!1,e(t)}):e("no credentials source provided")}else t(this._awsCreds)});return t}clear(){return this._setCredentials(null)}isExpired(){const t=this._awsCreds.expireTime,e=this._config.refreshInterval||3e5;return!t||t-Date.now()<e}onRefresh(t){this._refreshSubscribers.push(t)}getCredentialsfromSource(t){const{credentialsSource:e}=t;if(!e)return R.debug("no credentials source in Credentials"),null;if(Object.keys(e).length>1)throw new Error("just one credentials source can be provided");const n=Object.keys(e)[0],r=e[n];return r[Object.keys(r)[0]].apply(r)}setRefreshing(t){this.refreshing=t}_setCredentials(t){if(!t){const t=this._config.storage,e=`${this._config.credentials.identityId}-creds`;return t.removeItem(e),void(this._awsCreds={})}const e=t.identityId,n=t.accessKeyId;if(!e||!n)return void R.debug("requires identityId and accessKeyId",t);const r=this._config,i={};for(const e in t)Object.prototype.hasOwnProperty.call(t,e)&&(i[e]=t[e]);this._awsCreds=new M(i),this._config.credentials.identityId=t.identityId;const o=r.storage,s=`${t.identityId}-creds`;o.setItem(s,JSON.stringify(t))}}const N=(t,e,n)=>{const r=i=>{const r=`${e.userPoolId}_${e.userPoolWebClientId}`,o=i.find(t=>t.provider===n);if(!o)return null;const s=`cognito-idp.${e.region}.amazonaws.com/${r}`,a={};return a[s]=o.token,a},o=t=>e=>Object.entries(t).map((([t,n])=>({[t]:{IdentityPoolId:e,Logins:n}}))).reduce(((t,e)=>({...t,...e})),{}),s={};s.facebook={app_id:e.facebookAppId,providers_prefix:"graph.facebook.com",scopes:e.facebookAuthScopes||"public_profile,email",Auth:e=>`https://www.facebook.com/dialog/oauth?client_id=${e.app_id}&redirect_uri=${e.redirect_uri}&response_type=token&scope=${e.scopes}`},s.google={app_id:e.googleClientId,providers_prefix:"accounts.google.com",scopes:e.googleAuthScopes||"profile email openid",Auth:e=>`https://accounts.google.com/o/oauth2/v2/auth?client_id=${e.app_id}&redirect_uri=${e.redirect_uri}&response_type=token&scope=${e.scopes}&nonce=${t()}`},s.amazon={app_id:e.amazonClientId,providers_prefix:"www.amazon.com",scopes:e.amazonAuthScopes||"profile",Auth:e=>`https://www.amazon.com/ap/oa?client_id=${e.app_id}&redirect_uri=${e.redirect_uri}&response_type=token&scope=${e.scopes}`},s.apple={app_id:e.appleAppId,providers_prefix:"appleid.apple.com",scopes:e.appleAuthScopes,Auth:e=>`https://appleid.apple.com/auth/authorize?client_id=${e.app_id}&redirect_uri=${e.redirect_uri}&response_type=code%20id_token&scope=${e.scopes}&response_mode=form_post&state=${t()}&nonce=${t()}`},s.cognito={domain_prefix:"cognito-idp",Auth:e=>`https://${e.domain}/login?client_id=${e.app_id}&redirect_uri=${e.redirect_uri}&response_type=${"code"===e.response_type?"code":"token"}&scope=${e.scopes||"aws.cognito.signin.user.admin+email+openid+profile"}&state=${t()}&nonce=${t()}`,provider_name:n,options:e},s.default={Auth:e=>`https://auth.us-east-1.amazoncognito.com/login?client_id=${e.app_id}&redirect_uri=${e.redirect_uri}&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+profile`,provider_name:r.Default,options:e},s.guest={provider_name:r.Guest,options:e};const a=t=>s[t],u=e=>{let n,i=r.Default;for(const t in s)if(t===e){i=t,n=s[t];break}return n||(n=s.default),{provider:i,obj:n}},c=t=>{const e={};return Object.entries(s).forEach((([n])=>{e[n]={IdentityPoolId:t,Logins:null}})),e},l=t=>{const e={};return Object.entries(s).forEach((([n,r])=>{r.providers_prefix&&(e[r.providers_prefix]={IdentityPoolId:t,Logins:null})})),e},d=()=>{const t={};return Object.entries(s).forEach((([e,n])=>{t[e]=n.options})),t};return{refreshTokens:t=>Object.entries(s).filter((([e])=>"default"!==e)).map((([e,n])=>({provider:e,...t(n.options,n.provider_name)}))).filter((t=>m(t.token))).reduce((async(t,e)=>{const n={...await t,[e.provider]:e};return n.isCognito?n.cognito=n.cognito||{...e,provider:r.Default}:n.isCognito=!1,n}),Promise.resolve({isCognito:!1}))).then((t=>({identity_pool_id:e.identityPoolId,logins:r(t.filter((t=>t)).map((t=>({provider:t.provider,token:t.token})))),is_cognito_hosted:t.isCognito,options:d()}))),getProviders:()=>Object.entries(s).map((([t])=>t)),getProvider:u,getCredentials:o({cognito:{"cognito-idp.us-east-1.amazonaws.com":void 0},facebook:{"graph.facebook.com":void 0},google:{"accounts.google.com":void 0},amazon:{"www.amazon.com":void 0},apple:{"appleid.apple.com":void 0}}),getLogins:r,getButtons:c,getPrefixes:l,getOptions:d}};class B{constructor(t){if(S("Hub",void 0),this._to_pub=[],this._buffer=[],this._listener=null,this._bus=null,"undefined"!=typeof window&&window.addEventListener&&"function"==typeof window.addEventListener){const e=t=>{try{this.dispatch(t.key,{event:"storage",data:t},s.core,t.cancelable)}catch(t){R.error(t)}};window.addEventListener("storage",e,!1),this._bus=t}}dispatch(t,e,n,r){if("function"==typeof this._listener){try{this._listener({channel:t,payload:e,source:n,patternInfo:[],cancelable:r})}catch(t){R.error(t)}}else R.debug("No listener registered")}listen(t,e,n,r){const i={name:n,callback:e},o=this._to_pub.find((t=>t.name===i.name));if(o)return void R.debug(`listener ${i.name} already registered`);this._to_pub.push(i);const s=this._buffer.filter((e=>t.test(e.channel)));this.dispatch(n,{event:"history",data:s},g.Auth)}}const G=(t,e="/*",n="*")=>`${t}://${e}${n?"/":""}${n}`;class F{constructor(t){this.id=t.id,this.attributes=t.attributes,this.read=t.read,this.createdAt=t.createdAt,this.lastUpdatedAt=t.lastUpdatedAt,this.body=t.body}get title(){return this.body?.content.title}get content(){return this.body?.content.plainText}get image(){return this.body?.content.image}get url(){return this.body?.content.url}}const j=()=>({"User-Agent":_.userAgent}),z={};class W{constructor(t){this.listeners=new Set,this._config=t,z.PushNotification=this}configure=t=>(this._config=Object.assign({},this._config,t),this);getModuleName=()=>"PushNotification";identifyUser(t,e){throw new Error("Not implemented")}onPushNotificationReceived(t){this.listeners.add(t)}requestPushNotificationPermissions=async()=>!0;registerDevice=async t=>{}}S("Amplify",void 0,"5.3.11");class q{constructor(t){this.Auth=new t.Auth(this.AuthConfig),this.Analytics=new t.Analytics(this.AnalyticsConfig),this.API=new t.API(this.APIConfig),this.Credentials=new P(this.CredentialsConfig),this.Storage=new t.Storage(this.StorageConfig),this.I18n=new t.I18n(this.I18nConfig),this.Cache=new t.Cache(this.CacheConfig),this.PubSub=new t.PubSub(this.PubSubConfig),this.Logger=x,this.Hub=new B("__default__"),this.JS=t.JS,this.ClientDevice=t.ClientDevice,this.Geo=new t.Geo(this.GeoConfig),this.ServiceWorker=t.ServiceWorker,this.Notifications=new W(this.NotificationsConfig),this.DataStore=t.DataStore,this.XR=new t.XR(this.XRConfig),this.Predictions=new t.Predictions(this.PredictionsConfig),this.Interactions=new t.Interactions(this.InteractionsConfig),this._components=[],this._config={},this.parseOAuthResponse=t.parseOAuthResponse,S("Amplify",void 0),this.Auth.OAuth={OAuth:t.OAuth,Auth:this.Auth}}get CacheConfig(){const t=this._config.Cache;return w.get("Cache",t)}get I18nConfig(){const t=this._config.I18n;return w.get("I18n",t)}get PubSubConfig(){const t=this._config.PubSub;return w.get("PubSub",t)}get PredictionsConfig(){const t=this._config.predictions;return w.get("predictions",t)}get AuthConfig(){const t=this._config.Auth;return w.get("Auth",t)}get AnalyticsConfig(){const t=this._config.Analytics;return w.get("Analytics",t)}get APIConfig(){const t=this._config.API;return w.get("API",t)}get StorageConfig(){const t=this._config.Storage;return w.get("Storage",t)}get GeoConfig(){const t=this._config.Geo;return w.get("Geo",t)}get NotificationsConfig(){const t=this._config.Notifications;return w.get("Notifications",t)}get XRConfig(){const t=this._config.XR;return w.get("XR",t)}get InteractionsConfig(){const t=this._config.Interactions;return w.get("Interactions",t)}get CredentialsConfig(){const t={};for(const e in this._config)Object.prototype.hasOwnProperty.call(this._config,e)&&(t[e]=this._config[e]);return w.get("Credentials",t)}register(t){if(t.getModuleName){this[t.getModuleName()]=t;const e={};e[t.getModuleName()]=t.getModuleName(),this.Hub.dispatch(s.core,{event:"register",data:{...e}},s.core,!1)}this._components.push(t)}configure(t){if(!t)return this._config;this._config=Object.assign({},this._config,t),w.config=this._config;const e=t=>new Promise(((e,n)=>{if(t.length<1)return e(!0);const r=t.shift(),i=r.configure(this._config);m(i)?i.then((()=>{F(t).then(e)})):(F(t),e(!0))}));return x.LOG_LEVEL_UNLOCKED_KEY_IN_STORAGE,x.LOG_LEVEL_KEY_IN_STORAGE,A&&I[localStorage.getItem("amplify-logger-level")?.toUpperCase()]&&x.setLogLevel(I[localStorage.getItem("amplify-logger-level").toUpperCase()]),this.Hub.dispatch(s.core,{event:"configure",data:this._config},s.core,!1),x.info("configure Amplify"),this._components.forEach((t=>{t.configure(this._config)})),!0}addPluggable(t){t&&t.getPluginName&&"function"==typeof t.getPluginName&&(this._pluggables.push(t),t.configure(this._config))}getPluggable(t){return this._pluggables.find((e=>e.getPluginName()===t))}}const V=new class{constructor(){this._amplify=void 0}createInstance(t){return this._amplify&&this._amplify.Auth.Credentials.refreshing||(this._amplify=new q(t)),this._amplify}getInstance(){if(!this._amplify)throw new Error("Amplify instance not found");return this._amplify}};class K{constructor(){this.Auth=V.createInstance({Auth:null,Analytics:null,API:null,Storage:null,Cache:null,PubSub:null,I18n:null,Logger:null,Hub:null,XR:null,Predictions:null,Interactions:null,DataStore:null,Geo:null,Notifications:null,JS:null,ClientDevice:null,ServiceWorker:null,parseOAuthResponse:null,OAuth:null}).getInstance()}configure(t){return this.Auth.configure(t)}register(t){return this.Auth.register(t)}}const H=new K;t.API=null,t.Analytics=null,t.Auth=H,t.Cache=null,t.Credentials=null,t.DataStore=null,t.Geo=null,t.Hub=null,t.I18n=null,t.Interactions=null,t.JS=null,t.Logger=null,t.Notifications=null,t.Predictions=null,t.PubSub=null,t.ServiceWorker=null,t.Storage=null,t.XR=null,t.default=H,Object.defineProperty(t,"__esModule",{value:!0})}));
-  </script>
+  <!-- AWS Amplify v5 Library from a reliable CDN with integrity check -->
+  <script 
+    src="https://cdnjs.cloudflare.com/ajax/libs/aws-amplify/5.3.11/aws-amplify.min.js"
+    xintegrity="sha512-s4LVVqn9zPDRJbCCm70OylxJ2M4Z2jwDt2XUP4Ygo2lSt4vHdp99CcrQ7eDoy3GDtoS2eUn4dssu+PfqplCI5A=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
   
   <style>
     /* Styles are unchanged */
@@ -101,8 +102,10 @@
   </div>
 
   <script>
-    // App logic starts here, assuming Amplify is already loaded.
-    (function app() {
+    functioninitializeApp() {
+        // This function will run once the entire page, including scripts, is loaded.
+        console.log("Initializing app...");
+
         // ===== Config =====
         const qp = new URLSearchParams(location.search);
         const API_BASE = qp.get('api') || '';
@@ -122,12 +125,20 @@
             setTimeout(() => el.classList.remove('show'), ms);
         }
 
+        // Check if Amplify loaded correctly
+        if (!window.aws_amplify || !window.aws_amplify.Amplify) {
+            console.error("CRITICAL: AWS Amplify library is not available. Cannot initialize the app.");
+            showToast('CRITICAL: Amplify library failed to execute.', 'error', 10000);
+            return;
+        }
+        
+        const { Amplify, Auth } = window.aws_amplify;
+
         async function authFetch(path, options = {}) {
             if (!API_BASE) {
                 showToast('API URL कॉन्फ़िगर नहीं है. URL में ?api=... जोड़ें।', 'error');
                 throw new Error('API URL is not configured.');
             }
-            const { Auth } = window.aws_amplify;
             const session = await Auth.currentSession();
             const idToken = session.getIdToken().getJwtToken();
             
@@ -174,11 +185,11 @@
             section.classList.add('active');
         }
 
-        async function doLogin(Auth) {
+        async function doLogin() {
             loginBtn.disabled = true;
             try {
                 await Auth.signIn(emailInput.value.trim(), passwordInput.value);
-                await checkUserSession(Auth);
+                await checkUserSession();
                 showToast('लॉगिन सफल', 'success');
             } catch (error) {
                 console.error('Login error', error);
@@ -245,7 +256,7 @@
             }
         }
 
-        async function checkUserSession(Auth) {
+        async function checkUserSession() {
             try {
                 await Auth.currentAuthenticatedUser();
                 logoutBtn.classList.remove('hidden');
@@ -258,16 +269,10 @@
         }
         
         // ===== Event Listeners =====
-        loginBtn.addEventListener('click', () => {
-            if (window.aws_amplify && window.aws_amplify.Auth) {
-                doLogin(window.aws_amplify.Auth);
-            } else {
-                showToast('Amplify लोड नहीं हुआ। पेज रिफ्रेश करें।', 'error');
-            }
-        });
+        loginBtn.addEventListener('click', doLogin);
         logoutBtn.addEventListener('click', async () => {
-            await window.aws_amplify.Auth.signOut();
-            await checkUserSession(window.aws_amplify.Auth);
+            await Auth.signOut();
+            await checkUserSession();
         });
         refreshEvents.addEventListener('click', loadEvents);
 
@@ -292,17 +297,13 @@
         backToDashboard.addEventListener('click', () => showSection(dashboardSection));
 
         // ===== Initial Load =====
-        function initialize() {
-            // No need to check for window.aws_amplify, it's guaranteed to be there
-            // because of the embedded script.
-            const { Amplify, Auth } = window.aws_amplify;
-            Amplify.configure({ Auth: COGNITO });
-            checkUserSession(Auth);
-        }
-        
-        // Wait for the DOM to be fully loaded before initializing
-        document.addEventListener('DOMContentLoaded', initialize);
-    })();
+        Amplify.configure({ Auth: COGNITO });
+        checkUserSession();
+    }
+
+    // Use window.onload to ensure all external scripts like Amplify are fully loaded and parsed
+    // before our application logic runs. This is the most robust method.
+    window.onload = initializeApp;
   </script>
 </body>
 </html>
