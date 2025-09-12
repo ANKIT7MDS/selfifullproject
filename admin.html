@@ -176,12 +176,13 @@
 
       // ===== Robust Amplify Loader (Final, Stable Version) =====
       const AMPLIFY_URLS_UMD = [
-        // FIX: Using a highly reliable CDN (Cloudflare) with a specific, stable library version to prevent loading errors.
+        // Using a highly reliable CDN (Cloudflare) with a specific, stable library version.
         'https://cdnjs.cloudflare.com/ajax/libs/aws-amplify/5.3.11/aws-amplify.min.js',
         'https://cdn.jsdelivr.net/npm/aws-amplify@5.3.11/dist/aws-amplify.min.js',
       ];
       function withTimeout(promise, ms, label){ let t; const err = new Error('Timeout: '+label); const timer = new Promise((_, reject)=> t = setTimeout(()=>reject(err), ms)); return Promise.race([promise.finally(()=>clearTimeout(t)), timer]); }
-      function scriptLoad(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.src = url; s.async = true; s.onload = resolve; s.onerror = reject; document.head.appendChild(s); }); }
+      // FIX: Reverted to s.async = false to ensure script loads and executes before our code runs. This is the most stable method.
+      function scriptLoad(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.src = url; s.async = false; s.onload = resolve; s.onerror = reject; document.head.appendChild(s); }); }
       async function ensureAmplify(){ if (window.aws_amplify) return; let lastErr; for (const url of AMPLIFY_URLS_UMD){ try{ await withTimeout(scriptLoad(url), 8000, url); if (window.aws_amplify) return; }catch(e){ lastErr = e; } } throw (lastErr || new Error('Amplify UMD not loaded from any CDN.')); }
       function resolveAmplify(){ const ns = window.aws_amplify; const Amplify = ns?.Amplify || ns?.default || ns; const Auth = ns?.Auth || Amplify?.Auth; return { Amplify, Auth }; }
 
