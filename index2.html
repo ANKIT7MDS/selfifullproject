@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>अपनी तस्वीरें खोजें</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .loader {
+            border: 5px solid #e2e8f0; /* slate-200 */
+            border-top: 5px solid #4f46e5; /* indigo-600 */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .form-input {
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+            border-color: #4f46e5; /* indigo-600 */
+        }
+        .gradient-btn {
+            background-image: linear-gradient(to right, #4f46e5, #6366f1); /* indigo-600 to indigo-500 */
+            transition: all 0.3s ease;
+        }
+        .gradient-btn:hover {
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4), 0 4px 6px -2px rgba(79, 70, 229, 0.2);
+            transform: translateY(-2px);
+        }
+        .card-download {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .photo-card:hover .card-download {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-5xl">
+        <header class="text-center mb-10">
+            <div class="flex justify-center items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Event Memories</h1>
+            </div>
+            <p class="text-lg text-slate-600 mt-3">अपनी एक तस्वीर अपलोड करें और इवेंट की सभी मिलती-जुलती तस्वीरें खोजें।</p>
+        </header>
+
+        <main>
+            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+                
+                <!-- User Details Form -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label for="userName" class="block text-sm font-medium text-slate-700 mb-2">नाम</label>
+                        <input type="text" id="userName" placeholder="अपना पूरा नाम" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none form-input">
+                    </div>
+                    <div>
+                        <label for="userMobile" class="block text-sm font-medium text-slate-700 mb-2">मोबाइल नंबर</label>
+                        <input type="tel" id="userMobile" placeholder="आपका मोबाइल नंबर" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none form-input">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="userEmail" class="block text-sm font-medium text-slate-700 mb-2">ईमेल आईडी</label>
+                        <input type="email" id="userEmail" placeholder="आपका ईमेल पता" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none form-input">
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-200 pt-8 text-center">
+                    <div class="flex flex-col items-center">
+                        <input type="file" id="imageInput" accept="image/*" class="hidden">
+                        <button id="uploadButton" class="bg-white border-2 border-indigo-600 text-indigo-600 font-bold py-3 px-6 rounded-lg hover:bg-indigo-50 transition duration-300 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            अपनी तस्वीर चुनें
+                        </button>
+                        <p id="fileName" class="mt-4 text-slate-600 min-h-[24px]"></p>
+                    </div>
+                    <div class="mt-6">
+                        <button id="searchButton" class="gradient-btn text-white font-bold py-3.5 px-10 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center gap-2 mx-auto" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            खोजें
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="mt-12">
+                <div id="loader" class="hidden mx-auto loader"></div>
+                <p id="statusMessage" class="text-center text-xl text-slate-700 font-medium"></p>
+                <div id="gallery" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mt-8">
+                    <!-- Matched photos will be inserted here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- अपनी सेटिंग्स यहाँ बदलें ---
+        const SEARCH_API_URL = "https://4ne5t75p0c.execute-api.ap-southeast-1.amazonaws.com/prod/search";
+        const BUCKET_NAME = "abstudios-photoapp-820345";
+        const BUCKET_REGION = "ap-southeast-1";
+        // ---
+
+        const userName = document.getElementById('userName');
+        const userMobile = document.getElementById('userMobile');
+        const userEmail = document.getElementById('userEmail');
+        const imageInput = document.getElementById('imageInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const searchButton = document.getElementById('searchButton');
+        const fileNameDisplay = document.getElementById('fileName');
+        const loader = document.getElementById('loader');
+        const statusMessage = document.getElementById('statusMessage');
+        const gallery = document.getElementById('gallery');
+        
+        let imageBase64 = null;
+        
+        function validateForm() {
+            const isNameValid = userName.value.trim() !== '';
+            const isMobileValid = userMobile.value.trim().length > 5;
+            const isEmailValid = userEmail.value.includes('@') && userEmail.value.includes('.');
+            const isFileSelected = imageBase64 !== null;
+
+            searchButton.disabled = !(isNameValid && isMobileValid && isEmailValid && isFileSelected);
+        }
+
+        [userName, userMobile, userEmail].forEach(input => input.addEventListener('input', validateForm));
+        uploadButton.addEventListener('click', () => imageInput.click());
+
+        imageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                fileNameDisplay.textContent = '';
+                imageBase64 = null;
+                validateForm();
+                return;
+            }
+
+            fileNameDisplay.textContent = `चुनी गई फ़ाइल: ${file.name}`;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imageBase64 = e.target.result.split(',')[1];
+                validateForm();
+            };
+            reader.readAsDataURL(file);
+        });
+
+        searchButton.addEventListener('click', async () => {
+            if (searchButton.disabled) {
+                alert("कृपया सभी जानकारी भरें और एक तस्वीर चुनें।");
+                return;
+            }
+            
+            const userData = {
+                name: userName.value.trim(),
+                mobile: userMobile.value.trim(),
+                email: userEmail.value.trim(),
+            };
+            console.log("User Data Collected:", userData);
+
+            gallery.innerHTML = '';
+            statusMessage.textContent = '';
+            loader.classList.remove('hidden');
+            searchButton.disabled = true;
+            uploadButton.disabled = true;
+
+            try {
+                const response = await fetch(SEARCH_API_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ image_base64: imageBase64 })
+                });
+
+                if (!response.ok) throw new Error(`सर्वर से त्रुटि: ${response.status}`);
+                const data = await response.json();
+                
+                if (data.photos && data.photos.length > 0) {
+                    displayPhotos(data.photos);
+                } else {
+                    statusMessage.textContent = "कोई मिलती-जुलती तस्वीर नहीं मिली।";
+                }
+
+            } catch (error) {
+                console.error("Search failed:", error);
+                statusMessage.textContent = "खोजने में एक त्रुटि हुई। कृपया पुनः प्रयास करें।";
+            } finally {
+                loader.classList.add('hidden');
+                searchButton.disabled = false;
+                uploadButton.disabled = false;
+            }
+        });
+
+        function displayPhotos(photos) {
+            statusMessage.textContent = `${photos.length} मिलती-जुलती तस्वीरें मिलीं!`;
+            
+            photos.forEach(photo => {
+                const imageUrl = `https://${BUCKET_NAME}.s3.${BUCKET_REGION}.amazonaws.com/${photo.s3_key}`;
+                
+                const photoCard = document.createElement('div');
+                photoCard.className = 'bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-all duration-300 photo-card relative';
+                
+                let tagsHtml = '';
+                if (photo.tags && photo.tags.length > 0) {
+                    tagsHtml = photo.tags.slice(0, 2).map(tag => `<span class="bg-indigo-100 text-indigo-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">${tag}</span>`).join(' ');
+                }
+
+                photoCard.innerHTML = `
+                    <img src="${imageUrl}" alt="Event photo" class="w-full h-48 sm:h-56 object-cover">
+                    <div class="p-4">
+                        <p class="text-base font-bold text-slate-800 truncate">${photo.subEvent || 'Event Photo'}</p>
+                        <p class="text-sm text-green-600 font-semibold">Match: ${photo.similarity}</p>
+                        <div class="mt-3 h-6">
+                            ${tagsHtml}
+                        </div>
+                    </div>
+                    <a href="${imageUrl}" download class="card-download absolute top-2 right-2 bg-white/70 backdrop-blur-sm p-2 rounded-full text-slate-700 hover:bg-white hover:text-indigo-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    </a>
+                `;
+                gallery.appendChild(photoCard);
+            });
+        }
+
+    </script>
+</body>
+</html>
+
