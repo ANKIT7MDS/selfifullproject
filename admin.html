@@ -127,7 +127,8 @@
       const COGNITO_CONFIG = {
         REGION: 'ap-southeast-1',
         USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5',
-        USER_POOL_WEB_CLIENT_ID: '1mecg_9_v_8gfau8_0k0_8arpofgl4l'
+        // FIX: Corrected the Client ID by removing invalid underscores.
+        USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l'
       };
       
       const API_GATEWAY_INVOKE_URL = 'https://4ne5xt75p0.execute-api.ap-southeast-1.amazonaws.com/prod';
@@ -138,24 +139,19 @@
       const dashboardSection = document.getElementById('dashboardSection');
       const uploadSection = document.getElementById('uploadSection');
       const userMgmtSection = document.getElementById('userMgmtSection');
-      
       const emailInput = document.getElementById('email');
       const passwordInput = document.getElementById('password');
       const loginBtn = document.getElementById('loginBtn');
       const logoutBtn = document.getElementById('logoutBtn');
-      
       const npwInput = document.getElementById('npwInput');
       const npwSubmit = document.getElementById('npwSubmit');
-      
       const eventList = document.getElementById('eventList');
       const refreshEvents = document.getElementById('refreshEvents');
-      
       const fileInput = document.getElementById('fileInput');
       const startUpload = document.getElementById('startUpload');
       const uploadTitle = document.getElementById('uploadTitle');
       const uploadStatus = document.getElementById('uploadStatus');
       const backToDashboard = document.getElementById('backToDashboard');
-      
       const masterNotice = document.getElementById('masterNotice');
       const masterAdminBar = document.getElementById('masterAdminBar');
       const openUserMgmt = document.getElementById('openUserMgmt');
@@ -179,10 +175,10 @@
         sectionElement.classList.add('active');
       }
 
-      // ===== Robust Amplify Loader =====
+      // ===== Robust Amplify Loader (Restored from original fast version) =====
       const AMPLIFY_URLS_UMD = [
-        'https://cdn.jsdelivr.net/npm/aws-amplify/dist/aws-amplify.min.js',
-        'https://unpkg.com/aws-amplify/dist/aws-amplify.min.js'
+        'https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify@5/dist/aws-amplify.min.js'
       ];
       function withTimeout(promise, ms, label){ let t; const err = new Error('Timeout: '+label); const timer = new Promise((_, reject)=> t = setTimeout(()=>reject(err), ms)); return Promise.race([promise.finally(()=>clearTimeout(t)), timer]); }
       function scriptLoad(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.src = url; s.async = false; s.onload = resolve; s.onerror = reject; document.head.appendChild(s); }); }
