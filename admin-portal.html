@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Portal | Event Memory Experience</title>
+  <title>Admin Portal | Final</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📸</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Direct link to Amplify library -->
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js"></script>
   <style>
     .admin-section { display: none; }
     .admin-section.active { display: block; }
@@ -29,7 +31,6 @@
 
     <!-- Login Section -->
     <section id="loginSection" class="admin-section active">
-        <!-- Login form HTML from previous version... -->
         <div class="grid gap-6 max-w-md mt-6">
             <div class="bg-white rounded-2xl shadow p-6">
               <h2 class="text-lg font-medium mb-4">लॉगिन</h2>
@@ -60,7 +61,7 @@
       </div>
     </section>
 
-    <!-- Upload Section -->
+    <!-- Upload Section (Placeholder) -->
     <section id="uploadSection" class="admin-section">
       <div class="mt-8 bg-white rounded-2xl shadow p-6">
         <div class="flex items-start justify-between">
@@ -71,12 +72,9 @@
           <button id="backToDashboard" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
         </div>
         <div class="mt-4 grid gap-3">
+          <p class="text-sm text-amber-800 bg-amber-100 p-3 rounded-lg">नोट: यह सेक्शन आपके पहले से चल रहे Amplify Storage अपलोड सिस्टम के साथ इंटीग्रेट होगा।</p>
           <input id="fileInput" type="file" multiple accept="image/*" class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-black" />
-          <div id="uploadProgressContainer" class="hidden w-full bg-gray-200 rounded-full h-2.5">
-            <div id="uploadProgressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
-          </div>
-          <button id="startUpload" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black disabled:opacity-50" disabled>अपलोड शुरू करें</button>
-          <div id="uploadStatus" class="text-sm text-gray-600"></div>
+          <button id="startUpload" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black disabled:opacity-50" disabled>अपलोड शुरू करें (डेमो)</button>
         </div>
       </div>
     </section>
@@ -95,27 +93,9 @@
     </div>
   </div>
 
-  <script type="module">
-    // ===== Amplify Loader (for authentication) =====
-    // This script will dynamically load the AWS Amplify library for Cognito authentication.
-    async function loadAmplify() {
-        if (window.aws_amplify) return window.aws_amplify;
-        try {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js';
-            document.head.appendChild(script);
-            await new Promise((resolve, reject) => {
-                script.onload = resolve;
-                script.onerror = reject;
-            });
-            return window.aws_amplify;
-        } catch (e) {
-            console.error("Could not load Amplify", e);
-            throw e;
-        }
-    }
-
-    (async function app() {
+  <script>
+    // App logic starts here, assuming Amplify is already loaded.
+    (function app() {
         // ===== Config =====
         const qp = new URLSearchParams(location.search);
         const API_BASE = qp.get('api') || '';
@@ -126,7 +106,7 @@
         };
 
         // ===== Utilities =====
-        function showToast(msg, type = 'info', ms = 3500) { /* ... toast implementation ... */ 
+        function showToast(msg, type = 'info', ms = 3500) {
             const el = document.getElementById('toast-container');
             if (!el) return;
             el.className = 'toast ' + type;
@@ -137,9 +117,10 @@
 
         async function authFetch(path, options = {}) {
             if (!API_BASE) {
-                showToast('API URL not configured. Use ?api=... in URL.', 'error');
+                showToast('API URL कॉन्फ़िगर नहीं है. URL में ?api=... जोड़ें।', 'error');
                 throw new Error('API URL is not configured.');
             }
+            // window.aws_amplify is guaranteed to exist because of the script tag in <head>
             const { Auth } = window.aws_amplify;
             const session = await Auth.currentSession();
             const idToken = session.getIdToken().getJwtToken();
@@ -170,23 +151,17 @@
         const logoutBtn = document.getElementById('logoutBtn');
         const refreshEvents = document.getElementById('refreshEvents');
         
-        // Modal elements
         const createEventModal = document.getElementById('createEventModal');
         const openCreateEventModal = document.getElementById('openCreateEventModal');
         const cancelCreateEvent = document.getElementById('cancelCreateEvent');
         const createEventBtn = document.getElementById('createEventBtn');
         const newEventName = document.getElementById('newEventName');
 
-        // Upload elements
         const backToDashboard = document.getElementById('backToDashboard');
         const fileInput = document.getElementById('fileInput');
         const startUpload = document.getElementById('startUpload');
         const uploadTitle = document.getElementById('uploadTitle');
-        const uploadStatus = document.getElementById('uploadStatus');
-        const uploadProgressContainer = document.getElementById('uploadProgressContainer');
-        const uploadProgressBar = document.getElementById('uploadProgressBar');
-
-
+        
         // ===== App Logic =====
         function showSection(section) {
             document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
@@ -235,7 +210,6 @@
                     </div>
                     <div class="flex gap-2">
                         <button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${item.id}" data-event-name="${item.name}">फ़ोटो अपलोड</button>
-                        <button class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm" disabled>मैनेज</button>
                     </div>`;
                 eventList.appendChild(card);
             }
@@ -265,16 +239,6 @@
             }
         }
 
-        async function uploadFilesForEvent(eventId) {
-            if (!fileInput.files?.length) return;
-            // NOTE: This function assumes you have a separate, working upload mechanism.
-            // This is just a placeholder to show UI. For real uploads, you would integrate
-            // your existing Amplify Storage or other upload logic here.
-            uploadStatus.textContent = `अपलोडिंग... (यह एक डेमो है)`;
-            showToast("आपका मौजूदा अपलोड सिस्टम यहाँ इंटीग्रेट होगा।", "info");
-        }
-
-
         async function checkUserSession(Auth) {
             try {
                 await Auth.currentAuthenticatedUser();
@@ -288,50 +252,54 @@
         }
         
         // ===== Event Listeners =====
-        loginBtn.addEventListener('click', () => doLogin(window.aws_amplify.Auth));
+        loginBtn.addEventListener('click', () => {
+            if (window.aws_amplify && window.aws_amplify.Auth) {
+                doLogin(window.aws_amplify.Auth);
+            } else {
+                showToast('Amplify लोड नहीं हुआ। पेज रिफ्रेश करें।', 'error');
+            }
+        });
         logoutBtn.addEventListener('click', async () => {
             await window.aws_amplify.Auth.signOut();
             await checkUserSession(window.aws_amplify.Auth);
         });
         refreshEvents.addEventListener('click', loadEvents);
 
-        // Modal listeners
         openCreateEventModal.addEventListener('click', () => createEventModal.classList.add('active'));
         cancelCreateEvent.addEventListener('click', () => createEventModal.classList.remove('active'));
         createEventBtn.addEventListener('click', handleCreateEvent);
         
-        // Upload listeners
         eventList.addEventListener('click', (e) => {
             const btn = e.target.closest('.upload-btn');
             if (!btn) return;
             uploadTitle.textContent = `"${btn.dataset.eventName}" में तस्वीरें अपलोड करें`;
-            uploadSection.dataset.eventId = btn.dataset.eventId;
             fileInput.value = '';
             startUpload.disabled = true;
-            uploadStatus.textContent = '';
             showSection(uploadSection);
         });
         fileInput.addEventListener('change', () => {
             startUpload.disabled = !(fileInput.files && fileInput.files.length > 0);
         });
         startUpload.addEventListener('click', () => {
-            const eventId = uploadSection.dataset.eventId;
-            if (eventId) uploadFilesForEvent(eventId);
+            showToast("यह आपके मौजूदा अपलोड सिस्टम के साथ इंटीग्रेट होगा।", "info");
         });
         backToDashboard.addEventListener('click', () => showSection(dashboardSection));
 
         // ===== Initial Load =====
-        try {
-            showToast('प्रारंभ हो रहा है...', 'info');
-            const { Amplify, Auth } = await loadAmplify();
+        function initialize() {
+            if (!window.aws_amplify) {
+                showToast('Amplify लोड नहीं हो सका। नेटवर्क कनेक्शन जांचें।', 'error');
+                showSection(loginSection);
+                return;
+            }
+            const { Amplify, Auth } = window.aws_amplify;
             Amplify.configure({ Auth: COGNITO });
-            await checkUserSession(Auth);
-        } catch (e) {
-            showToast('प्रारंभ करने में विफल', 'error');
-            showSection(loginSection);
+            checkUserSession(Auth);
         }
+        
+        // Wait for the DOM to be fully loaded before initializing
+        document.addEventListener('DOMContentLoaded', initialize);
     })();
   </script>
 </body>
 </html>
-
