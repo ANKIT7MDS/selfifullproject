@@ -32,12 +32,9 @@
     <header class="flex items-center justify-between pb-4 border-b border-gray-200">
       <div class="flex items-center gap-3">
         <h1 class="text-2xl font-semibold tracking-tight">इवेंट गैलरी एडमिन</h1>
-        <span id="regionBadge" class="badge hidden"></span>
-        <span id="flowBadge" class="badge hidden"></span>
       </div>
       <div class="flex items-center gap-2">
-        <button id="diagBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">डायग्नोस्टिक्स</button>
-        <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg/black">लॉग आउट</button>
+        <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">लॉग आउट</button>
       </div>
     </header>
 
@@ -45,9 +42,7 @@
     <div id="masterNotice" class="hidden mt-3 text-sm p-3 rounded-2xl border border-amber-300 bg-amber-50 text-amber-900">
       आप <strong>Master Admin</strong> हैं — आप यहाँ से सभी यूज़र्स मैनेज कर सकते हैं।
     </div>
-    
-    <!-- All other sections remain the same... -->
-    
+
     <!-- Login Section -->
     <section id="loginSection" class="admin-section active">
       <div class="grid gap-6 max-w-md mt-6">
@@ -59,6 +54,23 @@
             <label class="text-sm mt-2">पासवर्ड</label>
             <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
             <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- New Password Required Section (first-time login) -->
+    <section id="newPasswordSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">नया पासवर्ड सेट करें</h2>
+          <p class="text-sm text-gray-600">यह पहली बार लॉगिन करने पर आवश्यक है।</p>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">नया पासवर्ड</label>
+            <input id="npwInput" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
+            <div class="flex gap-2 mt-2">
+              <button id="npwSubmit" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">सेव करें</button>
+            </div>
           </div>
         </div>
       </div>
@@ -79,6 +91,22 @@
       </div>
     </section>
     
+    <!-- User Management Section (Master Admin only) -->
+    <section id="userMgmtSection" class="admin-section">
+      <div class="mt-8 bg-white rounded-2xl shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-lg font-medium">यूज़र मैनेजमेंट</h2>
+            <p class="text-sm text-gray-500 mt-1">यह सेक्शन केवल master-admin ग्रुप के यूज़र देख सकते हैं।</p>
+          </div>
+          <button id="backFromUserMgmt" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
+        </div>
+        <div class="mt-4 text-sm p-3 rounded-2xl border border-blue-300 bg-blue-50 text-blue-900">
+            <b>नोट:</b> यूज़र मैनेजमेंट के लिए बैकएंड API (स्टेप 3) अभी नहीं बना है। यह अभी डेमो मोड में है।
+        </div>
+      </div>
+    </section>
+
     <!-- Upload Section -->
     <section id="uploadSection" class="admin-section">
       <div class="mt-8 bg-white rounded-2xl shadow p-6">
@@ -96,44 +124,54 @@
         </div>
       </div>
     </section>
-    
-    <!-- Other sections like User Management, Forgot Password etc. are omitted for brevity -->
-
   </div>
 
-  <!-- Multi-CDN Amplify loader + App -->
+  <!-- App Script -->
   <script type="module">
     // Using a proper ES module for cleaner code
-    // This assumes a modern browser environment
+    import { Amplify, Auth } from 'https://cdn.skypack.dev/aws-amplify@5';
 
-    // ===== Config (editable) =====
+    // ===== Config =====
     const COGNITO_CONFIG = {
       REGION: 'ap-southeast-1',
       USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5',
       USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l'
     };
     
-    // FINAL STEP: Your Backend API URL from API Gateway
     const API_GATEWAY_INVOKE_URL = 'https://4ne5xt75p0.execute-api.ap-southeast-1.amazonaws.com/prod';
-
-    // Import Amplify from a reliable CDN
-    import { Amplify, Auth } from 'https://cdn.skypack.dev/aws-amplify@5';
 
     // --- DOM Elements ---
     const loginSection = document.getElementById('loginSection');
+    const newPasswordSection = document.getElementById('newPasswordSection');
     const dashboardSection = document.getElementById('dashboardSection');
     const uploadSection = document.getElementById('uploadSection');
+    const userMgmtSection = document.getElementById('userMgmtSection');
+    
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
+    
+    const npwInput = document.getElementById('npwInput');
+    const npwSubmit = document.getElementById('npwSubmit');
+    
     const eventList = document.getElementById('eventList');
+    const refreshEvents = document.getElementById('refreshEvents');
+    
     const fileInput = document.getElementById('fileInput');
     const startUpload = document.getElementById('startUpload');
     const uploadTitle = document.getElementById('uploadTitle');
     const uploadStatus = document.getElementById('uploadStatus');
     const backToDashboard = document.getElementById('backToDashboard');
     
+    const masterNotice = document.getElementById('masterNotice');
+    const masterAdminBar = document.getElementById('masterAdminBar');
+    const openUserMgmt = document.getElementById('openUserMgmt');
+    const backFromUserMgmt = document.getElementById('backFromUserMgmt');
+    
+    // --- Global State ---
+    let pendingChallengeUser = null;
+
     // --- Utility Functions ---
     function showToast(msg, type = 'info', ms = 3500) {
       const el = document.getElementById('toast-container');
@@ -165,6 +203,13 @@
         const user = await Auth.currentAuthenticatedUser();
         const session = await Auth.currentSession();
         window.__id_token = session.getIdToken().getJwtToken();
+        const payload = JSON.parse(atob(window.__id_token.split('.')[1] || '{}'));
+        const groups = payload['cognito:groups'] || [];
+
+        if (groups.includes('master-admin')) {
+            masterNotice.classList.remove('hidden');
+            masterAdminBar.classList.remove('hidden');
+        }
         
         logoutBtn.classList.remove('hidden');
         showSection(dashboardSection);
@@ -184,12 +229,11 @@
       loginBtn.disabled = true;
       try {
         const user = await Auth.signIn(username, password);
-        // Handle NEW_PASSWORD_REQUIRED challenge if it occurs
+        
         if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-            // In a real app, you would show a form to complete this challenge.
-            // For now, we'll log it and ask the user to reset via Cognito Console if needed.
-            showToast('आपको पासवर्ड बदलना होगा।', 'info');
-            // Show a dedicated section for this in a real app.
+            pendingChallengeUser = user;
+            showToast('कृपया एक नया पासवर्ड सेट करें।', 'info');
+            showSection(newPasswordSection);
         } else {
             showToast('लॉगिन सफल!', 'success');
             await checkUserSession();
@@ -201,17 +245,41 @@
         loginBtn.disabled = false;
       }
     }
+    
+    async function completeNewPassword() {
+        const newPassword = npwInput.value;
+        if (!newPassword || !pendingChallengeUser) {
+            showToast('कृपया नया पासवर्ड दर्ज करें।', 'error');
+            return;
+        }
+        npwSubmit.disabled = true;
+        try {
+            await Auth.completeNewPassword(pendingChallengeUser, newPassword);
+            showToast('पासवर्ड सफलतापूर्वक सेट हो गया!', 'success');
+            pendingChallengeUser = null;
+            npwInput.value = '';
+            await checkUserSession(); // Re-check session to log in
+        } catch (error) {
+            console.error('New Password Error:', error);
+            showToast(error.message || 'पासवर्ड सेट करने में त्रुटि।', 'error');
+        } finally {
+            npwSubmit.disabled = false;
+        }
+    }
 
     async function doLogout() {
       await Auth.signOut();
       window.__id_token = null;
       logoutBtn.classList.add('hidden');
+      masterNotice.classList.add('hidden');
+      masterAdminBar.classList.add('hidden');
       showSection(loginSection);
     }
     
     async function loadEvents() {
-        // This is still demo data. You would replace this with a call to your API
-        // e.g., fetch(`${API_GATEWAY_INVOKE_URL}/events`)
+        // TODO: Replace this with a real API call to fetch events from DynamoDB
+        // const response = await fetch(`${API_GATEWAY_INVOKE_URL}/events`, { headers: {'Authorization': window.__id_token }});
+        // const items = await response.json();
         const items = [{id:'evt_1', name:'Diwali Night 2024', photos:0}, {id:'evt_2', name:'Wedding - A&V', photos:0}];
         renderEvents(items);
     }
@@ -251,25 +319,16 @@
             try {
                 uploadStatus.textContent = `"${file.name}" के लिए URL प्राप्त किया जा रहा है...`;
                 
-                // 1. Get the presigned URL from our backend Lambda
                 const response = await fetch(uploadUrlEndpoint, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': window.__id_token // Send ID token for security
-                    },
-                    body: JSON.stringify({
-                        fileName: file.name,
-                        fileType: file.type
-                    })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': window.__id_token },
+                    body: JSON.stringify({ fileName: file.name, fileType: file.type })
                 });
 
                 if (!response.ok) throw new Error(`API Error: ${await response.text()}`);
                 
-                const { uploadUrl, key } = await response.json();
-                console.log(`Uploading to S3 with key: ${key}`);
+                const { uploadUrl } = await response.json();
 
-                // 2. Upload the file directly to S3 using the received URL
                 uploadStatus.textContent = `"${file.name}" अपलोड हो रहा है...`;
                 const uploadResponse = await fetch(uploadUrl, {
                     method: 'PUT',
@@ -284,9 +343,9 @@
 
             } catch (err) {
                 console.error(`Upload failed for ${file.name}:`, err);
-                uploadStatus.textContent = `"${file.name}" का अपलोड विफल। विवरण के लिए कंसोल देखें।`;
+                uploadStatus.textContent = `"${file.name}" का अपलोड विफल।`;
                 showToast(`"${file.name}" का अपलोड विफल।`, 'error');
-                break; // Stop on first error
+                break; 
             }
         }
 
@@ -300,9 +359,13 @@
     // --- Event Listeners ---
     loginBtn.addEventListener('click', doLogin);
     logoutBtn.addEventListener('click', doLogout);
-    fileInput.addEventListener('change', () => {
-        startUpload.disabled = !fileInput.files.length;
-    });
+    npwSubmit.addEventListener('click', completeNewPassword);
+    refreshEvents.addEventListener('click', loadEvents);
+    
+    openUserMgmt.addEventListener('click', () => showSection(userMgmtSection));
+    backFromUserMgmt.addEventListener('click', () => showSection(dashboardSection));
+
+    fileInput.addEventListener('change', () => { startUpload.disabled = !fileInput.files.length; });
     startUpload.addEventListener('click', () => {
         const eventId = uploadSection.dataset.eventId;
         const eventName = uploadSection.dataset.eventName;
@@ -333,3 +396,4 @@
   </script>
 </body>
 </html>
+
