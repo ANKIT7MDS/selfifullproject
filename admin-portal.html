@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Portal | Final v3</title>
+  <title>Admin Portal | Corrected Version</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📸</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- AWS Amplify v5 Library from a reliable CDN with integrity check -->
+  <!-- AWS Amplify v5 Library from CDN - CORRECTED URL -->
   <script 
     src="https://cdnjs.cloudflare.com/ajax/libs/aws-amplify/5.3.11/aws-amplify.min.js"
     xintegrity="sha512-s4LVVqn9zPDRJbCCm70OylxJ2M4Z2jwDt2XUP4Ygo2lSt4vHdp99CcrQ7eDoy3GDtoS2eUn4dssu+PfqplCI5A=="
@@ -16,7 +16,6 @@
   ></script>
   
   <style>
-    /* Styles are unchanged */
     .admin-section { display: none; }
     .admin-section.active { display: block; }
     .toast { position: fixed; right: 1rem; top: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background: #111827; color: #fff; opacity: 0; transition: opacity .2s ease, transform .2s ease; transform: translateY(-8px); z-index: 100; }
@@ -103,7 +102,6 @@
 
   <script>
     function initializeApp() {
-        // This function will run once the entire page, including scripts, is loaded.
         console.log("Initializing app...");
 
         // ===== Config =====
@@ -301,10 +299,7 @@
         checkUserSession();
     }
 
-    // Use window.onload to ensure all external scripts like Amplify are fully loaded and parsed
-    // before our application logic runs. This is the most robust method.
     window.onload = initializeApp;
   </script>
 </body>
 </html>
-
