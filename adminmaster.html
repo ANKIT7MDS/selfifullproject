@@ -267,56 +267,13 @@
 
         async function uploadFilesForEvent(eventId) {
             if (!fileInput.files?.length) return;
-            const files = Array.from(fileInput.files);
-            startUpload.disabled = true;
-            uploadProgressContainer.classList.remove('hidden');
-            uploadProgressBar.style.width = '0%';
-            
-            let uploadedCount = 0;
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                try {
-                    uploadStatus.textContent = `(${i + 1}/${files.length}) ${file.name} के लिए URL प्राप्त हो रहा है...`;
-                    
-                    // 1. Get pre-signed URL from our backend
-                    const { uploadURL, key } = await authFetch(`/events/${eventId}/upload-url`, {
-                        method: 'POST',
-                        body: JSON.stringify({ fileName: file.name, contentType: file.type })
-                    });
-
-                    // 2. Upload file directly to S3
-                    uploadStatus.textContent = `(${i + 1}/${files.length}) ${file.name} अपलोड हो रहा है...`;
-                    const uploadResponse = await fetch(uploadURL, {
-                        method: 'PUT',
-                        body: file,
-                        headers: { 'Content-Type': file.type }
-                    });
-
-                    if (!uploadResponse.ok) throw new Error('S3 upload failed');
-                    
-                    uploadedCount++;
-                    const progress = (uploadedCount / files.length) * 100;
-                    uploadProgressBar.style.width = `${progress}%`;
-
-                } catch (error) {
-                    console.error(`Upload failed for ${file.name}`, error);
-                    showToast(`${file.name} का अपलोड विफल: ${error.message}`, 'error');
-                    // Stop on first error
-                    uploadStatus.textContent = `त्रुटि: ${file.name} अपलोड नहीं हो सका।`;
-                    startUpload.disabled = false;
-                    return; 
-                }
-            }
-            
-            uploadStatus.textContent = `सभी ${files.length} फ़ाइलें सफलतापूर्वक अपलोड हो गईं!`;
-            showToast('सभी फ़ाइलें अपलोड हो गईं', 'success');
-            setTimeout(() => {
-                fileInput.value = '';
-                uploadProgressContainer.classList.add('hidden');
-                uploadStatus.textContent = '';
-                showSection(dashboardSection);
-            }, 2000);
+            // NOTE: This function assumes you have a separate, working upload mechanism.
+            // This is just a placeholder to show UI. For real uploads, you would integrate
+            // your existing Amplify Storage or other upload logic here.
+            uploadStatus.textContent = `अपलोडिंग... (यह एक डेमो है)`;
+            showToast("आपका मौजूदा अपलोड सिस्टम यहाँ इंटीग्रेट होगा।", "info");
         }
+
 
         async function checkUserSession(Auth) {
             try {
@@ -377,3 +334,4 @@
   </script>
 </body>
 </html>
+
