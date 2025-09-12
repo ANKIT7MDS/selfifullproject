@@ -15,11 +15,6 @@
     .toast.success { background: #065f46; }
     .toast.error { background: #991b1b; }
     .toast.info { background: #1f2937; }
-    .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border: 1px solid #e5e7eb; border-bottom-width: 3px; border-radius: .5rem; background:#f9fafb}
-    details > summary { list-style: none; }
-    details > summary::-webkit-details-marker { display: none; }
-    .badge { padding: .2rem .5rem; border-radius: .5rem; font-size: .75rem; border: 1px solid #e5e7eb; background: #fff; }
-    .linklike { text-decoration: underline; color: #111827; }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-900">
@@ -82,7 +77,6 @@
         <div id="masterAdminBar" class="hidden mb-4 flex items-center gap-2">
           <button id="openUserMgmt" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">यूज़र मैनेजमेंट</button>
         </div>
-
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-medium">इवेंट्स</h2>
           <button id="refreshEvents" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
@@ -127,273 +121,268 @@
   </div>
 
   <!-- App Script -->
-  <script type="module">
-    // Using a proper ES module for cleaner code
-    // FIX: Switched to a more reliable CDN (esm.sh) to resolve packaging errors
-    import { Amplify, Auth } from 'https://esm.sh/aws-amplify@5';
+  <script>
+    (function(){
+      // ===== Config =====
+      const COGNITO_CONFIG = {
+        REGION: 'ap-southeast-1',
+        USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5',
+        USER_POOL_WEB_CLIENT_ID: '1mecg_9_v_8gfau8_0k0_8arpofgl4l'
+      };
+      
+      const API_GATEWAY_INVOKE_URL = 'https://4ne5xt75p0.execute-api.ap-southeast-1.amazonaws.com/prod';
 
-    // ===== Config =====
-    const COGNITO_CONFIG = {
-      REGION: 'ap-southeast-1',
-      USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5',
-      USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l'
-    };
-    
-    const API_GATEWAY_INVOKE_URL = 'https://4ne5xt75p0.execute-api.ap-southeast-1.amazonaws.com/prod';
+      // --- DOM Elements ---
+      const loginSection = document.getElementById('loginSection');
+      const newPasswordSection = document.getElementById('newPasswordSection');
+      const dashboardSection = document.getElementById('dashboardSection');
+      const uploadSection = document.getElementById('uploadSection');
+      const userMgmtSection = document.getElementById('userMgmtSection');
+      
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      
+      const npwInput = document.getElementById('npwInput');
+      const npwSubmit = document.getElementById('npwSubmit');
+      
+      const eventList = document.getElementById('eventList');
+      const refreshEvents = document.getElementById('refreshEvents');
+      
+      const fileInput = document.getElementById('fileInput');
+      const startUpload = document.getElementById('startUpload');
+      const uploadTitle = document.getElementById('uploadTitle');
+      const uploadStatus = document.getElementById('uploadStatus');
+      const backToDashboard = document.getElementById('backToDashboard');
+      
+      const masterNotice = document.getElementById('masterNotice');
+      const masterAdminBar = document.getElementById('masterAdminBar');
+      const openUserMgmt = document.getElementById('openUserMgmt');
+      const backFromUserMgmt = document.getElementById('backFromUserMgmt');
+      
+      // --- Global State ---
+      let pendingChallengeUser = null;
 
-    // --- DOM Elements ---
-    const loginSection = document.getElementById('loginSection');
-    const newPasswordSection = document.getElementById('newPasswordSection');
-    const dashboardSection = document.getElementById('dashboardSection');
-    const uploadSection = document.getElementById('uploadSection');
-    const userMgmtSection = document.getElementById('userMgmtSection');
-    
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    
-    const npwInput = document.getElementById('npwInput');
-    const npwSubmit = document.getElementById('npwSubmit');
-    
-    const eventList = document.getElementById('eventList');
-    const refreshEvents = document.getElementById('refreshEvents');
-    
-    const fileInput = document.getElementById('fileInput');
-    const startUpload = document.getElementById('startUpload');
-    const uploadTitle = document.getElementById('uploadTitle');
-    const uploadStatus = document.getElementById('uploadStatus');
-    const backToDashboard = document.getElementById('backToDashboard');
-    
-    const masterNotice = document.getElementById('masterNotice');
-    const masterAdminBar = document.getElementById('masterAdminBar');
-    const openUserMgmt = document.getElementById('openUserMgmt');
-    const backFromUserMgmt = document.getElementById('backFromUserMgmt');
-    
-    // --- Global State ---
-    let pendingChallengeUser = null;
+      // --- Utility Functions ---
+      function showToast(msg, type = 'info', ms = 3500) {
+        const el = document.getElementById('toast-container');
+        if (!el) return;
+        el.className = 'toast ' + type;
+        el.textContent = msg;
+        requestAnimationFrame(() => el.classList.add('show'));
+        setTimeout(() => el.classList.remove('show'), ms);
+      }
+      
+      function showSection(sectionElement) {
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        sectionElement.classList.add('active');
+      }
 
-    // --- Utility Functions ---
-    function showToast(msg, type = 'info', ms = 3500) {
-      const el = document.getElementById('toast-container');
-      if (!el) return;
-      el.className = 'toast ' + type;
-      el.textContent = msg;
-      requestAnimationFrame(() => el.classList.add('show'));
-      setTimeout(() => el.classList.remove('show'), ms);
-    }
-    
-    function showSection(sectionElement) {
-      document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-      sectionElement.classList.add('active');
-    }
+      // ===== Robust Amplify Loader =====
+      const AMPLIFY_URLS_UMD = [
+        'https://cdn.jsdelivr.net/npm/aws-amplify/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify/dist/aws-amplify.min.js'
+      ];
+      function withTimeout(promise, ms, label){ let t; const err = new Error('Timeout: '+label); const timer = new Promise((_, reject)=> t = setTimeout(()=>reject(err), ms)); return Promise.race([promise.finally(()=>clearTimeout(t)), timer]); }
+      function scriptLoad(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.src = url; s.async = false; s.onload = resolve; s.onerror = reject; document.head.appendChild(s); }); }
+      async function ensureAmplify(){ if (window.aws_amplify) return; let lastErr; for (const url of AMPLIFY_URLS_UMD){ try{ await withTimeout(scriptLoad(url), 5000, url); if (window.aws_amplify) return; }catch(e){ lastErr = e; } } throw (lastErr || new Error('Amplify UMD not loaded')); }
+      function resolveAmplify(){ const ns = window.aws_amplify; const Amplify = ns?.Amplify || ns?.default || ns; const Auth = ns?.Auth || Amplify?.Auth; return { Amplify, Auth }; }
 
-    // --- App Logic ---
-    async function configureAmplify() {
-      Amplify.configure({
-        Auth: {
-          region: COGNITO_CONFIG.REGION,
-          userPoolId: COGNITO_CONFIG.USER_POOL_ID,
-          userPoolWebClientId: COGNITO_CONFIG.USER_POOL_WEB_CLIENT_ID,
+      // --- App Logic ---
+      async function configureAmplify() {
+        const { Amplify } = resolveAmplify();
+        Amplify.configure({
+          Auth: {
+            region: COGNITO_CONFIG.REGION,
+            userPoolId: COGNITO_CONFIG.USER_POOL_ID,
+            userPoolWebClientId: COGNITO_CONFIG.USER_POOL_WEB_CLIENT_ID,
+          }
+        });
+      }
+
+      async function checkUserSession() {
+        const { Auth } = resolveAmplify();
+        try {
+          const user = await Auth.currentAuthenticatedUser();
+          const session = await Auth.currentSession();
+          window.__id_token = session.getIdToken().getJwtToken();
+          const payload = JSON.parse(atob(window.__id_token.split('.')[1] || '{}'));
+          const groups = payload['cognito:groups'] || [];
+
+          if (groups.includes('master-admin')) {
+              masterNotice.classList.remove('hidden');
+              masterAdminBar.classList.remove('hidden');
+          }
+          
+          logoutBtn.classList.remove('hidden');
+          showSection(dashboardSection);
+          await loadEvents();
+        } catch (err) {
+          showSection(loginSection);
         }
-      });
-    }
+      }
 
-    async function checkUserSession() {
-      try {
-        const user = await Auth.currentAuthenticatedUser();
-        const session = await Auth.currentSession();
-        window.__id_token = session.getIdToken().getJwtToken();
-        const payload = JSON.parse(atob(window.__id_token.split('.')[1] || '{}'));
-        const groups = payload['cognito:groups'] || [];
-
-        if (groups.includes('master-admin')) {
-            masterNotice.classList.remove('hidden');
-            masterAdminBar.classList.remove('hidden');
+      async function doLogin() {
+        const { Auth } = resolveAmplify();
+        const username = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!username || !password) {
+          showToast('ईमेल और पासवर्ड आवश्यक हैं', 'error');
+          return;
         }
-        
-        logoutBtn.classList.remove('hidden');
-        showSection(dashboardSection);
-        await loadEvents();
-      } catch (err) {
+        loginBtn.disabled = true;
+        try {
+          const user = await Auth.signIn(username, password);
+          if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
+              pendingChallengeUser = user;
+              showToast('कृपया एक नया पासवर्ड सेट करें।', 'info');
+              showSection(newPasswordSection);
+          } else {
+              showToast('लॉगिन सफल!', 'success');
+              await checkUserSession();
+          }
+        } catch (error) {
+          console.error('Login error:', error);
+          showToast(error.message || 'लॉगिन में त्रुटि', 'error');
+        } finally {
+          loginBtn.disabled = false;
+        }
+      }
+      
+      async function completeNewPassword() {
+          const { Auth } = resolveAmplify();
+          const newPassword = npwInput.value;
+          if (!newPassword || !pendingChallengeUser) {
+              showToast('कृपया नया पासवर्ड दर्ज करें।', 'error');
+              return;
+          }
+          npwSubmit.disabled = true;
+          try {
+              await Auth.completeNewPassword(pendingChallengeUser, newPassword);
+              showToast('पासवर्ड सफलतापूर्वक सेट हो गया!', 'success');
+              pendingChallengeUser = null;
+              npwInput.value = '';
+              await checkUserSession();
+          } catch (error) {
+              console.error('New Password Error:', error);
+              showToast(error.message || 'पासवर्ड सेट करने में त्रुटि।', 'error');
+          } finally {
+              npwSubmit.disabled = false;
+          }
+      }
+
+      async function doLogout() {
+        const { Auth } = resolveAmplify();
+        await Auth.signOut();
+        window.__id_token = null;
+        logoutBtn.classList.add('hidden');
+        masterNotice.classList.add('hidden');
+        masterAdminBar.classList.add('hidden');
         showSection(loginSection);
       }
-    }
-
-    async function doLogin() {
-      const username = emailInput.value.trim();
-      const password = passwordInput.value;
-      if (!username || !password) {
-        showToast('ईमेल और पासवर्ड आवश्यक हैं', 'error');
-        return;
-      }
-      loginBtn.disabled = true;
-      try {
-        const user = await Auth.signIn(username, password);
-        
-        if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-            pendingChallengeUser = user;
-            showToast('कृपया एक नया पासवर्ड सेट करें।', 'info');
-            showSection(newPasswordSection);
-        } else {
-            showToast('लॉगिन सफल!', 'success');
-            await checkUserSession();
-        }
-      } catch (error) {
-        console.error('Login error:', error);
-        showToast(error.message || 'लॉगिन में त्रुटि', 'error');
-      } finally {
-        loginBtn.disabled = false;
-      }
-    }
-    
-    async function completeNewPassword() {
-        const newPassword = npwInput.value;
-        if (!newPassword || !pendingChallengeUser) {
-            showToast('कृपया नया पासवर्ड दर्ज करें।', 'error');
-            return;
-        }
-        npwSubmit.disabled = true;
-        try {
-            await Auth.completeNewPassword(pendingChallengeUser, newPassword);
-            showToast('पासवर्ड सफलतापूर्वक सेट हो गया!', 'success');
-            pendingChallengeUser = null;
-            npwInput.value = '';
-            await checkUserSession(); // Re-check session to log in
-        } catch (error) {
-            console.error('New Password Error:', error);
-            showToast(error.message || 'पासवर्ड सेट करने में त्रुटि।', 'error');
-        } finally {
-            npwSubmit.disabled = false;
-        }
-    }
-
-    async function doLogout() {
-      await Auth.signOut();
-      window.__id_token = null;
-      logoutBtn.classList.add('hidden');
-      masterNotice.classList.add('hidden');
-      masterAdminBar.classList.add('hidden');
-      showSection(loginSection);
-    }
-    
-    async function loadEvents() {
-        // TODO: Replace this with a real API call to fetch events from DynamoDB
-        // const response = await fetch(`${API_GATEWAY_INVOKE_URL}/events`, { headers: {'Authorization': window.__id_token }});
-        // const items = await response.json();
+      
+      async function loadEvents() {
         const items = [{id:'evt_1', name:'Diwali Night 2024', photos:0}, {id:'evt_2', name:'Wedding - A&V', photos:0}];
         renderEvents(items);
-    }
+      }
 
-    function renderEvents(items) {
-        eventList.innerHTML = '';
-        if (!items || !items.length) {
-            eventList.innerHTML = '<p>कोई इवेंट नहीं मिला।</p>';
-            return;
+      function renderEvents(items) {
+          eventList.innerHTML = '';
+          if (!items || !items.length) {
+              eventList.innerHTML = '<p>कोई इवेंट नहीं मिला।</p>';
+              return;
+          }
+          items.forEach(it => {
+              const card = document.createElement('div');
+              card.className = 'bg-white rounded-2xl shadow p-5 flex flex-col gap-3';
+              card.innerHTML = `<div class="flex-1"><div class="text-base font-semibold">${it.name}</div><div class="text-sm text-gray-500 mt-1">फ़ोटो: ${it.photos}</div></div><div class="flex gap-2"><button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${it.id}" data-event-name="${it.name}">फ़ोटो अपलोड</button></div>`;
+              eventList.appendChild(card);
+          });
+      }
+
+      async function uploadFilesForEvent(eventId, eventName) {
+          if (!fileInput.files?.length) return;
+          const uploadUrlEndpoint = `${API_GATEWAY_INVOKE_URL}/upload-url`;
+          const files = Array.from(fileInput.files);
+          let uploadedCount = 0;
+          startUpload.disabled = true;
+          uploadStatus.textContent = 'अपलोड की तैयारी...';
+
+          for (const file of files) {
+              try {
+                  uploadStatus.textContent = `"${file.name}" के लिए URL प्राप्त किया जा रहा है...`;
+                  const response = await fetch(uploadUrlEndpoint, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', 'Authorization': window.__id_token },
+                      body: JSON.stringify({ fileName: file.name, fileType: file.type })
+                  });
+                  if (!response.ok) throw new Error(`API Error: ${await response.text()}`);
+                  const { uploadUrl } = await response.json();
+                  uploadStatus.textContent = `"${file.name}" अपलोड हो रहा है...`;
+                  const uploadResponse = await fetch(uploadUrl, {
+                      method: 'PUT',
+                      body: file,
+                      headers: { 'Content-Type': file.type }
+                  });
+                  if (!uploadResponse.ok) throw new Error(`S3 Upload Error: ${uploadResponse.statusText}`);
+                  uploadedCount++;
+                  uploadStatus.textContent = `${uploadedCount} / ${files.length} फ़ाइलें सफलतापूर्वक अपलोड हो गईं।`;
+              } catch (err) {
+                  console.error(`Upload failed for ${file.name}:`, err);
+                  uploadStatus.textContent = `"${file.name}" का अपलोड विफल।`;
+                  showToast(`"${file.name}" का अपलोड विफल।`, 'error');
+                  break; 
+              }
+          }
+          startUpload.disabled = false;
+          if (uploadedCount === files.length) {
+              showToast('सभी फ़ाइलें सफलतापूर्वक अपलोड हो गईं!', 'success');
+              fileInput.value = '';
+          }
+      }
+
+      // --- Event Listeners ---
+      loginBtn.addEventListener('click', doLogin);
+      logoutBtn.addEventListener('click', doLogout);
+      npwSubmit.addEventListener('click', completeNewPassword);
+      refreshEvents.addEventListener('click', loadEvents);
+      openUserMgmt.addEventListener('click', () => showSection(userMgmtSection));
+      backFromUserMgmt.addEventListener('click', () => showSection(dashboardSection));
+      fileInput.addEventListener('change', () => { startUpload.disabled = !fileInput.files.length; });
+      startUpload.addEventListener('click', () => {
+          const eventId = uploadSection.dataset.eventId;
+          const eventName = uploadSection.dataset.eventName;
+          uploadFilesForEvent(eventId, eventName);
+      });
+      eventList.addEventListener('click', (e) => {
+          const btn = e.target.closest('.upload-btn');
+          if (!btn) return;
+          const eventName = btn.dataset.eventName;
+          const eventId = btn.dataset.eventId;
+          uploadTitle.textContent = `"${eventName}" में तस्वीरें अपलोड करें`;
+          uploadSection.dataset.eventId = eventId;
+          uploadSection.dataset.eventName = eventName;
+          showSection(uploadSection);
+      });
+      backToDashboard.addEventListener('click', () => showSection(dashboardSection));
+
+      // --- Initial Boot ---
+      async function boot() {
+        try {
+          showToast('एप्लिकेशन शुरू हो रहा है...', 'info');
+          await ensureAmplify();
+          await configureAmplify();
+          await checkUserSession();
+          showToast('एप्लिकेशन तैयार है!', 'success');
+        } catch(e) {
+            console.error("Boot failed:", e);
+            showToast("एप्लिकेशन लोड नहीं हो सका। कंसोल देखें।", "error");
         }
-        items.forEach(it => {
-            const card = document.createElement('div');
-            card.className = 'bg-white rounded-2xl shadow p-5 flex flex-col gap-3';
-            card.innerHTML = `
-                <div class="flex-1">
-                    <div class="text-base font-semibold">${it.name}</div>
-                    <div class="text-sm text-gray-500 mt-1">फ़ोटो: ${it.photos}</div>
-                </div>
-                <div class="flex gap-2">
-                    <button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${it.id}" data-event-name="${it.name}">फ़ोटो अपलोड</button>
-                </div>`;
-            eventList.appendChild(card);
-        });
-    }
+      }
 
-    // --- REAL UPLOAD FUNCTIONALITY ---
-    async function uploadFilesForEvent(eventId, eventName) {
-        if (!fileInput.files?.length) return;
-
-        const uploadUrlEndpoint = `${API_GATEWAY_INVOKE_URL}/upload-url`;
-        const files = Array.from(fileInput.files);
-        let uploadedCount = 0;
-        startUpload.disabled = true;
-        uploadStatus.textContent = 'अपलोड की तैयारी...';
-
-        for (const file of files) {
-            try {
-                uploadStatus.textContent = `"${file.name}" के लिए URL प्राप्त किया जा रहा है...`;
-                
-                const response = await fetch(uploadUrlEndpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': window.__id_token },
-                    body: JSON.stringify({ fileName: file.name, fileType: file.type })
-                });
-
-                if (!response.ok) throw new Error(`API Error: ${await response.text()}`);
-                
-                const { uploadUrl } = await response.json();
-
-                uploadStatus.textContent = `"${file.name}" अपलोड हो रहा है...`;
-                const uploadResponse = await fetch(uploadUrl, {
-                    method: 'PUT',
-                    body: file,
-                    headers: { 'Content-Type': file.type }
-                });
-
-                if (!uploadResponse.ok) throw new Error(`S3 Upload Error: ${uploadResponse.statusText}`);
-
-                uploadedCount++;
-                uploadStatus.textContent = `${uploadedCount} / ${files.length} फ़ाइलें सफलतापूर्वक अपलोड हो गईं।`;
-
-            } catch (err) {
-                console.error(`Upload failed for ${file.name}:`, err);
-                uploadStatus.textContent = `"${file.name}" का अपलोड विफल।`;
-                showToast(`"${file.name}" का अपलोड विफल।`, 'error');
-                break; 
-            }
-        }
-
-        startUpload.disabled = false;
-        if (uploadedCount === files.length) {
-            showToast('सभी फ़ाइलें सफलतापूर्वक अपलोड हो गईं!', 'success');
-            fileInput.value = '';
-        }
-    }
-
-    // --- Event Listeners ---
-    loginBtn.addEventListener('click', doLogin);
-    logoutBtn.addEventListener('click', doLogout);
-    npwSubmit.addEventListener('click', completeNewPassword);
-    refreshEvents.addEventListener('click', loadEvents);
-    
-    openUserMgmt.addEventListener('click', () => showSection(userMgmtSection));
-    backFromUserMgmt.addEventListener('click', () => showSection(dashboardSection));
-
-    fileInput.addEventListener('change', () => { startUpload.disabled = !fileInput.files.length; });
-    startUpload.addEventListener('click', () => {
-        const eventId = uploadSection.dataset.eventId;
-        const eventName = uploadSection.dataset.eventName;
-        uploadFilesForEvent(eventId, eventName);
-    });
-    eventList.addEventListener('click', (e) => {
-        const btn = e.target.closest('.upload-btn');
-        if (!btn) return;
-        const eventName = btn.dataset.eventName;
-        const eventId = btn.dataset.eventId;
-        uploadTitle.textContent = `"${eventName}" में तस्वीरें अपलोड करें`;
-        uploadSection.dataset.eventId = eventId;
-        uploadSection.dataset.eventName = eventName;
-        showSection(uploadSection);
-    });
-    backToDashboard.addEventListener('click', () => showSection(dashboardSection));
-
-    // --- Initial Boot ---
-    async function boot() {
-        showToast('एप्लिकेशन शुरू हो रहा है...', 'info');
-        await configureAmplify();
-        await checkUserSession();
-        showToast('एप्लिकेशन तैयार है!', 'success');
-    }
-
-    boot();
-
+      boot();
+    })();
   </script>
 </body>
 </html>
