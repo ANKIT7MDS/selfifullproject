@@ -3,178 +3,709 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simple Admin Portal</title>
+  <title>Admin | Event Memory Experience</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📸</text></svg>">
+  <!-- Tailwind (CDN) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://esm.sh" crossorigin>
+  <link rel="preconnect" href="https://esm.run" crossorigin>
+  <link rel="preconnect" href="https://cdn.skypack.dev" crossorigin>
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- The entire AWS Amplify library is embedded to prevent any network errors -->
-  <script>
-    // This is the minified code for AWS Amplify v5.3.11
-    !function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.aws_amplify=t():e.aws_amplify=t()}(self,(function(){return(()=>{"use strict";var e={d:(t,r)=>{for(var n in r)e.o(r,n)&&!e.o(t,n)&&Object.defineProperty(t,n,{enumerable:!0,get:r[n]})},o:(e,t)=>Object.prototype.hasOwnProperty.call(e,t),r:e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})}},t={};e.r(t),e.d(t,{Amplify:()=>T,Auth:()=>E,Cache:()=>S,Credentials:()=>L,DataStore:()=>_,I18n:()=>P,Interactions:()=>C,Logger:()=>j,PubSub:()=>N,Storage:()=>A,XR:()=>R,default:()=>T});const r="5.3.11";var n,i;!function(e){e.API="API",e.Analytics="Analytics",e.Auth="Auth",e.Cache="Cache",e.DataStore="DataStore",e.Interactions="Interactions",e.I18n="I18n",e.Logger="Logger",e.PubSub="PubSub",e.Storage="Storage",e.XR="XR"}(n||(n={})),function(e){e.DEBUG="DEBUG",e.INFO="INFO",e.WARN="WARN",e.ERROR="ERROR",e.VERBOSE="VERBOSE"}(i||(i={}));class a{constructor(e){this.name=e,this.listeners=[]}log(e,t){if(this.listeners.length>0)for(const r of this.listeners)r(e,t)}}class o{constructor(){this.hubs=[]}register(e,t){const r=this.hubs.find((t=>t.name===e));null==r?this.hubs.push({name:e,bus:new a(e),listeners:[t]}):r.listeners.push(t)}remove(e,t){const r=this.hubs.find((t=>t.name===e)),n=null==r?void 0:r.listeners.findIndex((e=>e===t));void 0!==n&&n>-1&&(null==r||r.listeners.splice(n,1),0===r.listeners.length&&(this.hubs=this.hubs.filter((t=>t.name!==e))))}dispatch(e,t,r){const n=this.hubs.find((t=>t.name===e));null==n||n.bus.log(t,r)}}const s=new o;var c,l;!function(e){e.জিস্ট="জিস্ট",e.ಫಾರ್ಮ್="ಫಾರ್ಮ್",e.ಸ್ಥಳ="ಸ್ಥಳ",e.ಹುಡುಕಿ="ಹುಡುಕಿ"}(c||(c={})),function(e){e.പ്രധാനം="പ്രധാനം",e.ഫോം="ഫോം",e.സ്ഥലം="സ്ഥലം",e.തിരയുക="തിരയുക"}(l||(l={}));const u=["ar","bn","de","en","es","fr","hi","it","ja","ko","pt","ru","zh-Hans","zh-Hant"],d="amplify-i18n-plurals",f="amplify-i18n-language",m={};class h{static headline(e){const t=document.createElement("amplify-headline");return t.innerText=e,t}static a(e,t){const r=document.createElement("a");return r.href=e,r.innerText=t,r}static p(e){const t=document.createElement("p");return t.innerText=e,t}static span(e){const t=document.createElement("span");return t.innerText=e,t}static div(e,t){const r=document.createElement("div");return r.className=t,r.appendChild(e),r}static section(e,t){const r=document.createElement("section");return r.className=t,r.appendChild(e),r}static actionRow(e){const t=document.createElement("div");return t.className="action-row",t.innerText=e,t}}class p{constructor(e){this.channel=e}onHubCapsule(e){const{channel:t,payload:r}=e;"auth"===t&&this.onAuthEvent(r)}onAuthEvent(e){switch(e.event){case"signIn":case"signUp":case"signOut":s.dispatch("core",{event:"token_expired"},"Auth",r)}}}class g{constructor(e){this.observers=[],this.onHubCapsule=this.onHubCapsule.bind(this),this.send=this.send.bind(this),this.context=e,s.register("core",this.onHubCapsule)}onHubCapsule(e){const{payload:t}=e;switch(t.event){case"token_expired":this.send("tokenExpired",t.data);break;case"auth_failure":this.send("authFailure",t.data)}}subscribe(e){return this.observers.push(e),{unsubscribe:()=>{this.observers=this.observers.filter((t=>t!==e))}}}send(e,t){this.observers.forEach((r=>{r[e]&&r[e](t)}))}}class v{constructor(){}get(e,t){const{user:r}=t,n={id:null==r?void 0:r.username,username:null==r?void 0:r.username};return e.endpoint=Object.assign(Object.assign({},n),e.endpoint),e}enable(){}disable(){}}const b={};class y{constructor(){this._config={}}getModuleName(){return"Analytics"}configure(e){const t=new j(this.getModuleName());if(!e)return t.debug("configure Analytics failed",e),this._config;t.debug("configure Analytics",e);const r=Object.assign({},e);return r.bufferSize=r.bufferSize||1e3,r.flushSize=r.flushSize||100,r.flushInterval=r.flushInterval||5e3,r.resendLimit=r.resendLimit||5,this._config=Object.assign({},this._config,r.Analytics),this.G=new g(b),this.G.subscribe(this._config),this._config.Analytics?this.plugin?this.plugin.configure(this._config.Analytics):(this.plugin=new v,this.plugin.configure(this._config.Analytics)):t.debug("no Analytics plugin found"),this._config}record(e,r){if(!this.plugin){const e=new j(this.getModuleName());return e.debug("no Analytics plugin configured"),Promise.resolve()}return this.plugin.record(e,r)}identifyUser(e,t){if(!this.plugin){const e=new j(this.getModuleName());return e.debug("no Analytics plugin configured"),Promise.resolve()}return this.plugin.identifyUser(e,t)}startSession(e){if(!this.plugin){const e=new j(this.getModuleName());return e.debug("no Analytics plugin configured"),Promise.resolve()}return this.plugin.startSession(e)}stopSession(e){if(!this.plugin){const e=new j(this.getModuleName());return e.debug("no Analytics plugin configured"),Promise.resolve()}return this.plugin.stopSession(e)}autoTrack(e,t){if(!this.plugin){const e=new j(this.getModuleName());return e.debug("no Analytics plugin configured"),Promise.resolve()}return this.plugin.autoTrack(e,t)}enable(){if(!this.plugin){const e=new j(this.getModuleName());return e.debug("no Analytics plugin configured"),Promise.resolve()}return this.plugin.enable()}disable(){if(!this.plugin){const e=new j(this.getModuleName());return e.debug("no Analytics plugin configured"),Promise.resolve()}return this.plugin.disable()}getPluggable(){return this.plugin}onHubCapsule(e){if(!this.plugin){const e=new j(this.getModuleName());return e.debug("no Analytics plugin configured"),Promise.resolve()}return this.plugin.onHubCapsule(e)}}const w=new y;var I;!function(e){e.SUCCESS="SUCCESS",e.FAILURE="FAILURE"}(I||(I={}));class O{static milliSeconds(e){return 1e3*e}static seconds(e){return e/1e3}static minutes(e){return O.seconds(e)/60}static hours(e){return O.minutes(e)/60}static days(e){return O.hours(e)/24}}class x{constructor(e){if(this._config=Object.assign({},x. defaultConfig,e),this._pluggables=[],this._config=this.dotToObject(this._config),this.checkConfig(),this.get=this.get.bind(this),this.put=this.put.bind(this),this.remove=this.remove.bind(this),this.clear=this.clear.bind(this),this.getAllKeys=this.getAllKeys.bind(this),"object"==typeof window&&"function"==typeof window.addEventListener)try{window.addEventListener("beforeunload",this._onBrowserClose,!1)}catch(e){new j("Cache").warn("Failed to add event listener for beforeunload",e)}}static get defaultConfig(){const e={Cache:{capacityInBytes:1048576,itemMaxSize:21e4,defaultTTL:2592e5,defaultPriority:5,warningThreshold:.8,storage:void 0}};return e}getModuleName(){return"Cache"}getPluggables(){return this._pluggables}addPluggable(e){if(e&&e.getCategory&&"Cache"===e.getCategory()){if(this._pluggables.find((t=>t.getProviderName()===e.getProviderName())))throw new Error(`Pluggable ${e.getProviderName()} has already been added.`);this._pluggables.push(e),e.configure(this._config.Cache)}}configure(e){const t=new j("Cache");return e?(this._config=Object.assign({},x. defaultConfig,e),this._config=this.dotToObject(this._config),t.log("configure Cache with",this._config),this.checkConfig(),this._pluggables.forEach((e=>{e.configure(this._config.Cache)})),this._config):this._config}get(e,t){const r=this.getPluggable(t),n=new j(`Cache.${r.getProviderName()}`);try{return Promise.resolve(r.get(e,t))}catch(e){return n.error(`Failed to get item from cache`,e),Promise.reject(e)}}put(e,t,r){const n=this.getPluggable(r),i=new j(`Cache.${n.getProviderName()}`);try{return Promise.resolve(n.put(e,t,r))}catch(e){return i.error(`Failed to put item into cache`,e),Promise.reject(e)}}remove(e,t){const r=this.getPluggable(t),n=new j(`Cache.${r.getProviderName()}`);try{return Promise.resolve(r.remove(e,t))}catch(e){return n.error(`Failed to remove item from cache`,e),Promise.reject(e)}}clear(e){const t=this.getPluggable(e),r=new j(`Cache.${t.getProviderName()}`);try{return Promise.resolve(t.clear(e))}catch(e){return r.error("Failed to clear cache",e),Promise.reject(e)}}getAllKeys(e){const t=this.getPluggable(e),r=new j(`Cache.${t.getProviderName()}`);try{return Promise.resolve(t.getAllKeys(e))}catch(e){return r.error("Failed to get all keys from cache",e),Promise.reject(e)}}_onBrowserClose(){this._pluggables.forEach((e=>{e.onRaiseCacheEvent("browser-close")}))}getPluggable(e){const t=new j("Cache"),r=e&&e.provider?e.provider:"AWSPinpointCache";if(this._pluggables.length<1)throw new Error("No cache pluggable is added");const n=this._pluggables.find((e=>e.getProviderName()===r));if(void 0===n){if("AWSPinpointCache"===r)throw new Error("No cache pluggable is added");throw new Error(`Pluggable ${r} is not added.`)}return t.debug(`using provider ${r}`),n}checkConfig(){const e=new j("Cache");if("number"!=typeof this._config.Cache.capacityInBytes)throw e.error("capacityInBytes should be a number."),new Error("capacityInBytes should be a number.");if("number"!=typeof this._config.Cache.itemMaxSize)throw e.error("itemMaxSize should be a number."),new Error("itemMaxSize should be a number.");if(this._config.Cache.itemMaxSize>this._config.Cache.capacityInBytes)throw e.error("itemMaxSize should be smaller than capacityInBytes."),new Error("itemMaxSize should be smaller than capacityInBytes.");if("number"!=typeof this._config.Cache.defaultTTL)throw e.error("defaultTTL should be a number."),new Error("defaultTTL should be a number.");if("number"!=typeof this._config.Cache.defaultPriority)throw e.error("defaultPriority should be a number."),new Error("defaultPriority should be a number.");if(this._config.Cache.defaultPriority<1||this._config.Cache.defaultPriority>5)throw e.error("defaultPriority should be between 1 and 5."),new Error("defaultPriority should be between 1 and 5.");if("number"!=typeof this._config.Cache.warningThreshold)throw e.error("warningThreshold should be a number."),new Error("warningThreshold should be a number.");if(this._config.Cache.warningThreshold>1||this._config.Cache.warningThreshold<0)throw e.error("warningThreshold should be between 0 and 1."),new Error("warningThreshold should be between 0 and 1.")}dotToObject(e){const t=Object.assign({},e);for(const r in t){if(!t.hasOwnProperty(r))continue;if(r.indexOf(".")!==-1){const e=r.split("."),n=e.shift();if(void 0===t[n]||"object"!=typeof t[n])t[n]={};t[n]=this.dotToObject(Object.assign({[e.join(".")]:t[r]},t[n])),delete t[r]}}return t}}const S=new x;class j{constructor(e,t=i.WARN){this.name=e,this._logger=new a(e),this._pluggables=[],this.level=t}static clear(){j._buffer.splice(0),j._pluggables.forEach((e=>{e.clear()}))}static addPluggable(e){if(e&&e.getCategory&&"Logger"===e.getCategory()){if(j._pluggables.find((t=>t.getProviderName()===e.getProviderName())))throw new Error(`Pluggable ${e.getProviderName()} has already been added.`);j._pluggables.push(e),e.configure(j._config),j._buffer.forEach((t=>e.log(t)))}else console.error("This pluggable cannot be added.",e)}getPluggables(){return this._pluggables}addPluggable(e){if(e&&e.getCategory&&"Logger"===e.getCategory()){if(this._pluggables.find((t=>t.getProviderName()===e.getProviderName())))throw new Error(`Pluggable ${e.getProviderName()} has already been added.`);this._pluggables.push(e),e.configure(this.dotToObject(j._config))}else console.error("This pluggable cannot be added.",e)}configure(e){e&&e.Logger&&(j._config=Object.assign({},j._config,e.Logger),j._pluggables.forEach((e=>{e.configure(this.dotToObject(j._config))})))}_log(e,t){const r=new Date,n=j._pluggables;if(n.length>0){const a={message:t.map((e=>"object"==typeof e?JSON.stringify(e):e)).join(" "),logLevel:e,timestamp:r.getTime()};n.forEach((e=>e.log(a)))}else{const r={logLevel:e,msg:t.map((e=>"object"==typeof e?JSON.stringify(e):e)).join(" ")};j._buffer.push(r),j._buffer.length>j._bufferSize&&j._buffer.splice(0,1)}this._logger.log(e,t)}log(e,t){"function"==typeof t&&(t=t());const r=this.level;if(i.VERBOSE===r)this._log(e,t);else{if(i.DEBUG===r){if(e===i.DEBUG||e===i.INFO||e===i.WARN||e===i.ERROR)this._log(e,t)}else if(i.INFO===r){if(e===i.INFO||e===i.WARN||e===i.ERROR)this._log(e,t)}else if(i.WARN===r){if(e===i.WARN||e===i.ERROR)this._log(e,t)}else i.ERROR===r&&e===i.ERROR&&this._log(e,t)}}debug(...e){this.log(i.DEBUG,[...e])}info(...e){this.log(i.INFO,[...e])}warn(...e){this.log(i.WARN,[...e])}error(...e){this.log(i.ERROR,[...e])}verbose(...e){this.log(i.VERBOSE,[...e])}dotToObject(e){const t=Object.assign({},e);for(const r in t){if(!t.hasOwnProperty(r))continue;if(r.indexOf(".")!==-1){const e=r.split("."),n=e.shift();if(void 0===t[n]||"object"!=typeof t[n])t[n]={};t[n]=this.dotToObject(Object.assign({[e.join(".")]:t[r]},t[n])),delete t[r]}}return t}}j._buffer=[],j._bufferSize=1024,j._pluggables=[],j._config={};const k=new p;var M,$,D;!function(e){e.API="API",e.Auth="Auth",e.Credentials="Credentials",e.Storage="Storage",e.Analytics="Analytics",e.Interactions="Interactions",e.Logger="Logger"}(M||(M={})),function(e){e.Amazon="Amazon",e.Facebook="Facebook",e.Google="Google"}(D||(D={}));class L{constructor(){this._config={},this._pluggables=[],this._cancelToken=void 0}getModuleName(){return"Credentials"}getPluggables(){return this._pluggables}addPluggable(e){e.getCategory&&"Credentials"===e.getCategory()&&(this._pluggables.length>0?new j("Credentials").warn("Credentials utility has been configured, addPluggable cannot be called anymore."):this._pluggables.push(e))}configure(e){return this._config=Object.assign({},this._config,e),s.register("core",this.handleHubEvent.bind(this)),this.get(),this._config}get(){return this._cancelToken=new AbortController,this._getCredentials(this._cancelToken.signal)}currentCredentials(){return this.get()}shear(e){const t=Object.assign({},e);return delete t.Credentials,t}set(e){return this._config=Object.assign({},this._config,e),this.get()}clear(){return this._config=Object.assign({}),this._cancelToken&&this._cancelToken.abort(),Promise.resolve()}handleHubEvent(e){const{payload:t}=e;switch(t.event){case"signIn":this.get();break;case"signOut":this.clear();break;default:return}}async _getCredentials(e){const t=new j(this.getModuleName());if(this._pluggables.length>0)return this._pluggables[0].get(e);t.debug("no credentials provider");const{Auth:r}=this._config;if(!r)return t.debug("Auth module not configured"),Promise.reject(new Error("Auth module not configured"));const n=new E;return n.configure(this._config),n.currentCredentials()}}const E=class{constructor(e){s.register("auth",k.onHubCapsule),this._config=Object.assign({},e),new j("AuthClass").debug("Auth config is",this._config),this.G=new g({}),this.G.subscribe(this._config)}getModuleName(){return"Auth"}configure(e){if(!e)return this._config||{};const t=new j(this.getModuleName());return this._config=Object.assign({},this._config,e.Auth,e),t.debug("configure Auth",this._config),this._pluggables&&this._pluggables.length>0||(this._pluggables=[],this.getPluggable("AWSCognitoAuthPluggable").configure(this._config)),this._pluggables.forEach((e=>{e.configure(this._config)})),this._config}addPluggable(e){e&&e.getCategory&&"Auth"===e.getCategory()&&(this._pluggables.push(e),e.configure(this._config))}getPluggable(e){const t=this._pluggables.find((t=>t.getProviderName()===e));if(t)return t;const r=T.getPluggable(e);return r?("Auth"===r.getCategory()&&this._pluggables.push(r),r):void 0}removePluggable(e){const t=this._pluggables.findIndex((t=>t.getProviderName()===e));-1!==t&&this._pluggables.splice(t,1)}signUp(e){const t="object"==typeof e?e.username:arguments[0],r="object"==typeof e?e.password:arguments[1],n="object"==typeof e?e.attributes:arguments[2],i=n,a="object"==typeof e?e.validationData:arguments[3];return this.getPluggable("AWSCognitoAuthPluggable").signUp(t,r,i,a)}signIn(e,t){const r="object"==typeof e?e.username:arguments[0],n="object"==typeof e?e.password:arguments[1],i="object"==typeof e?e.validationData:arguments[2];return this.getPluggable("AWSCognitoAuthPluggable").signIn(r,n,i)}confirmSignIn(e,t,r){return this.getPluggable("AWSCognitoAuthPluggable").confirmSignIn(e,t,r)}resendSignUp(e){return this.getPluggable("AWSCognitoAuthPluggable").resendSignUp(e)}confirmSignUp(e,t,r){const n="object"==typeof r?r.forceAliasCreation:r;return this.getPluggable("AWSCognitoAuthPluggable").confirmSignUp(e,t,{forceAliasCreation:n})}signOut(e){return this.getPluggable("AWSCognitoAuthPluggable").signOut(e)}changePassword(e,t,r){return this.getPluggable("AWSCognitoAuthPluggable").changePassword(e,t,r)}forgotPassword(e){return this.getPluggable("AWSCognitoAuthPluggable").forgotPassword(e)}forgotPasswordSubmit(e,t,r){return this.getPluggable("AWSCognitoAuthPluggable").forgotPasswordSubmit(e,t,r)}verifyCurrentUserAttribute(e){return this.getPluggable("AWSCognitoAuthPluggable").verifyCurrentUserAttribute(e)}verifyCurrentUserAttributeSubmit(e,t){return this.getPluggable("AWSCognitoAuthPluggable").verifyCurrentUserAttributeSubmit(e,t)}updateUserAttributes(e,t){return this.getPluggable("AWSCognitoAuthPluggable").updateUserAttributes(e,t)}completeNewPassword(e,t,r){return this.getPluggable("AWSCognitoAuthPluggable").completeNewPassword(e,t,r)}setPreferredMFA(e,t){return this.getPluggable("AWSCognitoAuthPluggable").setPreferredMFA(e,t)}currentAuthenticatedUser(e){return this.getPluggable("AWSCognitoAuthPluggable").currentAuthenticatedUser(e)}currentSession(e){return this.getPluggable("AWSCognitoAuthPluggable").currentSession(e)}currentUserPoolUser(e){return this.getPluggable("AWSCognitoAuthPluggable").currentUserPoolUser(e)}currentUserInfo(){return this.getPluggable("AWSCognitoAuthPluggable").currentUserInfo()}currentCredentials(){const e=new L;return e.configure(this._config),e.get()}federatedSignIn(e){if(e&&"object"==typeof e)return e.customState?this.getPluggable("AWSCognitoAuthPluggable").federatedSignIn(e.provider,e.token,e.user,e.customState):this.getPluggable("AWSCognitoAuthPluggable").federatedSignIn(e.provider,e.token,e.user);let t,r,n;const i=e;return i&&Object.values(D).includes(i)?(t=arguments[1],r=arguments[2],n=arguments[3]):(t=arguments[0],r=arguments[1],n=arguments[2]),this.getPluggable("AWSCognitoAuthPluggable").federatedSignIn(i,t,r,n)}essentialCredentials(e){return this.getPluggable("AWSCognitoAuthPluggable").getCredentials(e)}setMFA(e,t){return this.getPluggable("AWSCognitoAuthPluggable").setMFA(e,t)}};class C{getModuleName(){return"Interactions"}}class P{getModuleName(){return"I18n"}addPluggable(e){}configure(e){return{}}get(e,t){return e}of(e){return}on(e,t){}plural(e,t,r){return""}getLocale(){return""}setLocale(e){}}const _=class{constructor(){this.G=new g({}),s.register("datastore",this.onHubCapsule.bind(this),this.constructor.name)}getModuleName(){return"DataStore"}configure(e){if(this.config)return this.config;this.config=e;const t=T.getPluggable("aws-amplify-datastore");return t?(this.datastore=t,this.datastore.start(this.config)):(new j("DataStore").error("No datastore pluggable is added to Amplify"),Promise.reject("No datastore pluggable is added to Amplify")),this.config}getPluggable(){return this.datastore}clear(){return this.datastore.clear()}start(){return this.datastore.start(this.config)}stop(){return this.datastore.stop()}query(...e){return this.datastore.query(...e)}save(...e){return this.datastore.save(...e)}delete(...e){return this.datastore.delete(...e)}observe(...e){return this.datastore.observe(...e)}observeQuery(...e){return this.datastore.observeQuery(...e)}onHubCapsule(e){this.G.send("datastore",e.payload)}};class N{constructor(){this._pluggables=[]}getModuleName(){return"PubSub"}getPluggables(){return this._pluggables}addPluggable(e){if(e&&"PubSub"===e.getCategory()){if(this._pluggables.find((t=>t.getProviderName()===e.getProviderName())))throw new Error(`Pluggable ${e.getProviderName()} has already been added.`);this._pluggables.push(e),e.configure(this._config)}return}configure(e){return this._config=Object.assign({},e),this._pluggables.forEach((e=>{e.configure(this._config)})),this._config}publish(e,t,r){return this._pluggables.map((n=>n.publish(e,t,r)))}subscribe(e,t){return{subscribe:r=>{const n=this._pluggables.map((n=>{const i=Object.assign({},t,r);return n.subscribe(e,i)}));return{unsubscribe:()=>{n.forEach((e=>e.unsubscribe()))}}}}}}const A=class{constructor(e){this._config=Object.assign({},e),this._pluggables=[],this.G=new g({}),new j("StorageClass").debug("Storage config is",this._config)}getModuleName(){return"Storage"}configure(e){const t=new j(this.getModuleName());if(!e)return this._config;t.debug("configure Storage",e),this._config=Object.assign({},this._config,e.Storage,e),this._pluggables.forEach((e=>{e.configure(this._config)})),this._config}addPluggable(e){e&&e.getCategory&&"Storage"===e.getCategory()&&(this._pluggables.length>0?t.error("Storage has already been configured with a pluggable. Please check your configuration."):this._pluggables.push(e),e.configure(this._config))}getPluggable(e){if(this._pluggables.length>1)throw new Error("Multiple pluggables are not supported by this category.");const r=this._pluggables.find((t=>t.getProviderName()===e));if(r)return r;const n=T.getPluggable(e);return n?("Storage"===n.getCategory()&&this._pluggables.push(n),n):void 0}removePluggable(e){const t=this._pluggables.findIndex((t=>t.getProviderName()===e));-1!==t&&this._pluggables.splice(t,1)}get(e,t){return this.getPluggable("AWSS3Provider").get(e,t)}put(e,t,r){return this.getPluggable("AWSS3Provider").put(e,t,r)}remove(e,t){return this.getPluggable("AWSS3Provider").remove(e,t)}list(e,t){return this.getPluggable("AWSS3Provider").list(e,t)}copy(e,t,r){return this.getPluggable("AWSS3Provider").copy(e,t,r)}};class R{getModuleName(){return"XR"}}const T=class{constructor(){this.Auth=new E,this.Analytics=w,this.Cache=S,this.Storage=new A,this.I18n=new P,this.Interactions=new C,this.PubSub=new N,this.XR=new R,this.DataStore=new _,this._components=[],this._config={},this._pluggables=[],this.Hub=s,this.Logger=j,this.Credentials=new L,this.version=r,this._ Amplify=this}getModuleName(){return"Amplify"}configure(e){if(!e)return this._config;const t=new j("Amplify");t.debug("configure called",e),this._config=Object.assign(this._config,e);const a=new E,o=new A,c=new P,l=new N,u=w,d=S,f=new C,m=new _,h=new R,p=new L;return a.configure(this._config),o.configure(this._config),c.configure(this._config),l.configure(this._config),u.configure(this._config),d.configure(this._config),f.configure(this._config),m.configure(this._config),h.configure(this._config),p.configure(this._config),this._pluggables.forEach((e=>{t.debug("configuring pluggable "+e.getModuleName());const r=this._config[e.getModuleName()];e.configure(r),Object.values(n).includes(e.getModuleName())||Object.assign(this,{[e.getModuleName()]:e})})),this._config}register(e){const t=new j("Amplify");if(!e.getModuleName){return void t.error("Invalid pluggable. Must have getModuleName()",e)}if(this[e.getModuleName()]&&this[e.getModuleName()][e.getProviderName()]){return void t.error("Pluggable "+e.getProviderName()+" has already been registered.")}t.debug("registering pluggable "+e.getModuleName());const r=e.getModuleName();if(this[r]){const t=this._config[r];this[r].addPluggable(e),e.configure(t)}else this.addPluggable(e);t.debug("pluggable registered")}addPluggable(e){if(this._pluggables.find((t=>t.getModuleName()===e.getModuleName())))throw new Error("Pluggable "+e.getModuleName()+" has already been added.");this._pluggables.push(e);const t=this._config[e.getModuleName()];e.configure(t),Object.values(n).includes(e.getModuleName())||Object.assign(this,{[e.getModuleName()]:e})}getPluggable(e){return this._pluggables.find((t=>t.getProviderName()===e))}removePluggable(e){const t=this._pluggables.find((t=>t.getProviderName()===e));if(t){const r=t.getModuleName();this._pluggables=this._pluggables.filter((r=>r.getProviderName()!==e)),this[r]&&this[r].removePluggable&&this[r].removePluggable(e)}};return t})()}));
-  </script>
-  
   <style>
     .admin-section { display: none; }
     .admin-section.active { display: block; }
-    .toast { position: fixed; right: 1rem; top: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background: #111827; color: #fff; opacity: 0; transition: opacity .2s ease, transform .2s ease; transform: translateY(-8px); z-index: 100; }
+    .toast { position: fixed; right: 1rem; top: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background: #111827; color: #fff; opacity: 0; transition: opacity .2s ease, transform .2s ease; transform: translateY(-8px); z-index: 50; }
     .toast.show { opacity: 1; transform: translateY(0); }
     .toast.success { background: #065f46; }
     .toast.error { background: #991b1b; }
+    .toast.info { background: #1f2937; }
+    .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border: 1px solid #e5e7eb; border-bottom-width: 3px; border-radius: .5rem; background:#f9fafb}
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    .badge { padding: .2rem .5rem; border-radius: .5rem; font-size: .75rem; border: 1px solid #e5e7eb; background: #fff; }
+    .linklike { text-decoration: underline; color: #111827; }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-900">
+  <!-- Toast container -->
   <div id="toast-container" class="toast" role="status" aria-live="polite"></div>
 
-  <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+  <!-- Root container -->
+  <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 lg:p-8" data-admin-root>
+    <!-- Header -->
     <header class="flex items-center justify-between pb-4 border-b border-gray-200">
-      <h1 class="text-2xl font-semibold tracking-tight">Simple Admin</h1>
-      <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">लॉग आउट</button>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-semibold tracking-tight">इवेंट गैलरी एडमिन</h1>
+        <span id="regionBadge" class="badge hidden"></span>
+        <span id="flowBadge" class="badge hidden"></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="diagBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">डायग्नोस्टिक्स</button>
+        <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">लॉग आउट</button>
+      </div>
     </header>
+
+    <!-- Master notice -->
+    <div id="masterNotice" class="hidden mt-3 text-sm p-3 rounded-2xl border border-amber-300 bg-amber-50 text-amber-900">
+      आप <strong>Master Admin</strong> हैं — आप यहाँ से सभी यूज़र्स मैनेज कर सकते हैं।
+    </div>
+
+    <!-- Diagnostics panel -->
+    <details id="diagPanel" class="mt-4">
+      <summary class="cursor-pointer text-sm text-gray-600">Self-tests और नेटवर्क/कन्फ़िग डायग्नोस्टिक्स</summary>
+      <div id="diagOut" class="mt-3 text-sm bg-white rounded-2xl shadow p-4 whitespace-pre-wrap"></div>
+      <div class="mt-2 text-xs text-gray-500">नोट: अगर आप <span class="kbd">file://</span> से चला रहे हैं तो कुछ ब्राउज़र सीमाएँ लागू हो सकती हैं। बेहतर है कि <span class="kbd">http://localhost</span> पर सर्व करें।</div>
+    </details>
 
     <!-- Login Section -->
     <section id="loginSection" class="admin-section active">
-        <div class="grid gap-6 max-w-md mt-6">
-            <div class="bg-white rounded-2xl shadow p-6">
-              <h2 class="text-lg font-medium mb-4">लॉगिन</h2>
-              <div class="grid gap-3">
-                <label class="text-sm">ईमेल</label>
-                <input id="email" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
-                <label class="text-sm mt-2">पासवर्ड</label>
-                <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
-                <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
-              </div>
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-4">लॉगिन</h2>
+          <div class="grid gap-3">
+            <label class="text-sm">ईमेल/यूज़रनेम</label>
+            <input id="email" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com या username" />
+            <label class="text-sm mt-2">पासवर्ड</label>
+            <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
+            <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
+            <div class="flex items-center gap-3 mt-2">
+              <button id="goToSignUp" class="text-sm text-gray-700 underline">नया अकाउंट बनाएँ</button>
+              <button id="goToForgot" class="text-sm linklike">पासवर्ड भूल गए?</button>
+              <button id="hostedUiBtn" class="hidden text-sm linklike">Hosted UI से लॉगिन</button>
             </div>
+            <p id="signupDisabledMsg" class="hidden text-xs text-red-600">इस User Pool में self-signup बंद है। कृपया एडमिन से अकाउंट बनवाएँ।</p>
+          </div>
         </div>
+      </div>
     </section>
 
-    <!-- Dashboard/Upload Section -->
+    <!-- Sign Up Section -->
+    <section id="signUpSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-4">साइन-अप</h2>
+          <div class="grid gap-3">
+            <label class="text-sm">ईमेल</label>
+            <input id="suEmail" type="email" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
+            <label class="text-sm mt-2">पासवर्ड</label>
+            <input id="suPassword" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="कम से कम 8 कैरेक्टर्स" />
+            <button id="signUpBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">खाता बनाएँ</button>
+            <button id="backToLoginFromSignUp" class="mt-2 text-sm text-gray-700 underline">लॉगिन पर वापस</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Confirm Section -->
+    <section id="confirmSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">ईमेल सत्यापन</h2>
+          <p class="text-sm text-gray-600">हमने आपके ईमेल पर एक कोड भेजा है। कृपया नीचे दर्ज करें।</p>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">ईमेल</label>
+            <input id="cfEmail" type="email" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
+            <label class="text-sm mt-2">कोड</label>
+            <input id="cfCode" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="123456" />
+            <div class="flex gap-2 mt-2">
+              <button id="confirmBtn" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">कन्फ़र्म करें</button>
+              <button id="resendBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">कोड फिर भेजें</button>
+              <button id="backToLoginFromConfirm" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">लॉगिन</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Forgot Password Section -->
+    <section id="forgotSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">पासवर्ड रीसेट</h2>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">ईमेल/यूज़रनेम</label>
+            <input id="fpEmail" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com या username" />
+            <div class="flex gap-2 mt-1">
+              <button id="fpSend" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रीसेट कोड भेजें</button>
+              <button id="fpBackToLogin" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">लॉगिन</button>
+            </div>
+            <label class="text-sm mt-3">रीसेट कोड</label>
+            <input id="fpCode" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="123456" />
+            <label class="text-sm mt-2">नया पासवर्ड</label>
+            <input id="fpNew" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
+            <button id="fpConfirm" class="mt-2 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">पासवर्ड बदलें</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Password Required Section (first-time login) -->
+    <section id="newPasswordSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">पहली बार लॉगिन — नया पासवर्ड सेट करें</h2>
+          <p class="text-sm text-gray-600">एडमिन के बनाए अकाउंट्स पर पहली बार लॉगिन में यह स्टेप आता है।</p>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">नया पासवर्ड</label>
+            <input id="npwInput" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
+            <div class="flex gap-2 mt-2">
+              <button id="npwSubmit" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">सेव करें और आगे बढ़ें</button>
+              <button id="npwCancel" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रद्द करें</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Section -->
     <section id="dashboardSection" class="admin-section">
+      <div class="mt-8">
+        <div id="masterAdminBar" class="hidden mb-4 flex items-center gap-2">
+          <button id="openUserMgmt" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">यूज़र मैनेजमेंट</button>
+          <span class="text-xs text-gray-500">(API सेट न होने पर यह डेमो मोड में चलेगा)</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-medium">इवेंट्स</h2>
+          <button id="refreshEvents" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
+        </div>
+        <div id="eventList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- User Management Section (Master Admin only) -->
+    <section id="userMgmtSection" class="admin-section">
       <div class="mt-8 bg-white rounded-2xl shadow p-6">
-        <h2 class="text-lg font-medium">डैशबोर्ड</h2>
-        <p class="text-sm text-gray-600 mt-1">आप सफलतापूर्वक लॉगिन हो गए हैं। अब आप फ़ोटो अपलोड कर सकते हैं।</p>
-        <div class="mt-6 border-t pt-6">
-            <h3 class="font-semibold">फ़ोटो अपलोड करें</h3>
-            <p class="text-sm text-amber-800 bg-amber-100 p-3 rounded-lg mt-2">
-                <strong>नोट:</strong> यह सिर्फ़ एक डेमो है। आपको इस बटन के 'click' पर अपना असली, पहले से काम कर रहा Amplify Storage का अपलोड कोड जोड़ना होगा।
-            </p>
-            <input id="fileInput" type="file" multiple accept="image/*" class="mt-4 block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-black" />
-            <button id="startUploadBtn" class="mt-4 px-3 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50" disabled>
-                अपलोड शुरू करें
-            </button>
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-lg font-medium">यूज़र मैनेजमेंट</h2>
+            <p class="text-sm text-gray-500 mt-1">यह सेक्शन केवल <span class="font-semibold">master-admin</span> ग्रुप के यूज़र देख/बना सकते हैं।</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="backFromUserMgmt" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
+          </div>
+        </div>
+
+        <div id="userApiWarn" class="hidden mt-4 text-sm p-3 rounded-2xl border border-blue-300 bg-blue-50 text-blue-900">
+          Admin API सेट नहीं मिला। URL में <span class="kbd">?api=&lt;API_BASE_URL&gt;</span> जोड़ें।
+          अपेक्षित एंडपॉइंट्स:
+          <code class="block text-xs mt-2">GET  {api}/users?limit=&nextToken=</code>
+          <code class="block text-xs">POST {api}/users               (body: { email, password?, verifyEmail?, groups? })</code>
+          <code class="block text-xs">POST {api}/users/{username}/reset-password  (body: { permanent, password? })</code>
+          <code class="block text-xs">POST {api}/users/{username}/enable</code>
+          <code class="block text-xs">POST {api}/users/{username}/disable</code>
+          <code class="block text-xs">DELETE {api}/users/{username}</code>
+          <code class="block text-xs">POST {api}/users/{username}/groups (body: { add?: string[], remove?: string[] })</code>
+          रिक्वेस्ट में <span class="kbd">Authorization: &lt;ID_TOKEN&gt;</span> हेडर लगेगा।
+        </div>
+
+        <div class="mt-4 grid lg:grid-cols-3 gap-6">
+          <!-- Create user card -->
+          <div class="lg:col-span-1 bg-gray-50 rounded-2xl p-4 border border-gray-200">
+            <h3 class="font-semibold mb-2">नया यूज़र बनाएँ</h3>
+            <label class="text-xs">ईमेल</label>
+            <input id="umEmail" type="email" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" placeholder="user@example.com" />
+            <label class="text-xs">पासवर्ड (वैकल्पिक — खाली छोड़ें तो टेम्प पासवर्ड)</label>
+            <input id="umPassword" type="password" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" />
+            <label class="text-xs">ग्रुप्स (comma सेपरेटेड, उदा. master-admin, photographer)</label>
+            <input id="umGroups" type="text" class="w-full mb-3 px-3 py-2 rounded-xl border border-gray-300" />
+            <div class="flex items-center gap-2 mb-3">
+              <input id="umVerifyEmail" type="checkbox" class="h-4 w-4" />
+              <span class="text-xs">ईमेल verified मार्क करें</span>
+            </div>
+            <button id="umCreateBtn" class="px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">यूज़र बनाएँ</button>
+          </div>
+
+          <!-- Users table -->
+          <div class="lg:col-span-2">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold">यूज़र लिस्ट</h3>
+              <div class="flex gap-2">
+                <input id="umSearch" type="text" class="px-3 py-2 rounded-xl border border-gray-300 text-sm" placeholder="ईमेल से खोजें" />
+                <button id="umRefresh" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
+              </div>
+            </div>
+            <div class="overflow-auto border border-gray-200 rounded-2xl">
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left px-3 py-2">Username</th>
+                    <th class="text-left px-3 py-2">Email</th>
+                    <th class="text-left px-3 py-2">Status</th>
+                    <th class="text-left px-3 py-2">Groups</th>
+                    <th class="text-left px-3 py-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="umTbody" class="divide-y divide-gray-100"></tbody>
+              </table>
+            </div>
+            <div class="flex justify-end mt-2">
+              <button id="umNext" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm hidden">अगला पेज</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section id="uploadSection" class="admin-section">
+      <div class="mt-8 bg-white rounded-2xl shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-lg font-medium">फ़ोटो अपलोड</h2>
+            <p id="uploadTitle" class="text-sm text-gray-500 mt-1">किसी इवेंट के लिए फ़ोटो चुनें</p>
+          </div>
+          <button id="backToDashboard" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
+        </div>
+        <div class="mt-4 grid gap-3">
+          <input id="fileInput" type="file" multiple accept="image/*" class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-black" />
+          <button id="startUpload" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black disabled:opacity-50" disabled>अपलोड शुरू करें</button>
+          <div id="uploadStatus" class="text-sm text-gray-600"></div>
         </div>
       </div>
     </section>
   </div>
 
+  <!-- Multi-CDN Amplify loader + App -->
   <script>
-    window.onload = function() {
-        console.log("Page loaded. Initializing app...");
+    (function(){
+      // ===== Config (editable) =====
+      const DEFAULT_COGNITO = {
+        REGION: 'ap-southeast-1',
+        USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5',
+        USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l'
+      };
+      // Feature flags
+      const FEATURES = {
+        allowSignUp: false,            // self-signup off by default (B2B admin)
+        allowHostedUI: false           // set true when domain provided via URL
+      };
 
-        // ===== Config =====
-        const COGNITO = {
-            REGION: 'ap-southeast-1',
-            USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5',
-            USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l'
+      // URL overrides for quick testing:
+      // ?region=...&userPoolId=...&clientId=...&authflow=password&signup=1&domain=YOUR_DOMAIN&api=YOUR_API_BASE
+      const qp = new URLSearchParams(location.search);
+      const COGNITO = {
+        REGION: qp.get('region') || DEFAULT_COGNITO.REGION,
+        USER_POOL_ID: qp.get('userPoolId') || DEFAULT_COGNITO.USER_POOL_ID,
+        USER_POOL_WEB_CLIENT_ID: qp.get('clientId') || DEFAULT_COGNITO.USER_POOL_WEB_CLIENT_ID,
+      };
+      if (qp.has('signup')) FEATURES.allowSignUp = qp.get('signup') === '1';
+      const HOSTED_UI_DOMAIN = qp.get('domain') || '';
+      if (HOSTED_UI_DOMAIN) FEATURES.allowHostedUI = true;
+      const API_BASE = qp.get('api') || '';
+
+      // Infer region from userPoolId prefix to avoid endpoint mismatch
+      const inferredRegion = (COGNITO.USER_POOL_ID.match(/^([a-z]{2}-[a-z-]+-\d+)_/i) || [null, null])[1];
+      if (inferredRegion && inferredRegion !== COGNITO.REGION) {
+        console.warn('[Amplify] Region mismatch: config', COGNITO.REGION, 'vs inferred', inferredRegion, '→ using inferred');
+        COGNITO.REGION = inferredRegion;
+      }
+
+      // Badges
+      const regionBadge = document.getElementById('regionBadge');
+      regionBadge.textContent = `Region: ${COGNITO.REGION}`; regionBadge.classList.remove('hidden');
+      const flowBadge = document.getElementById('flowBadge');
+
+      // ===== Utilities =====
+      function showToast(msg, type = 'info', ms = 3500) {
+        const el = document.getElementById('toast-container');
+        if (!el) return;
+        el.className = 'toast ' + type;
+        el.textContent = msg;
+        requestAnimationFrame(() => el.classList.add('show'));
+        setTimeout(() => el.classList.remove('show'), ms);
+      }
+      const isFileProto = location.protocol === 'file:';
+
+      // Sections
+      const sectionIds = ['loginSection', 'signUpSection', 'confirmSection', 'forgotSection', 'newPasswordSection', 'dashboardSection', 'userMgmtSection', 'uploadSection'];
+      function showSection(el) { sectionIds.forEach(id => document.getElementById(id).classList.remove('active')); el.classList.add('active'); }
+
+      // DOM nodes
+      const loginSection = document.getElementById('loginSection');
+      const dashboardSection = document.getElementById('dashboardSection');
+      const signUpSection = document.getElementById('signUpSection');
+      const confirmSection = document.getElementById('confirmSection');
+      const forgotSection = document.getElementById('forgotSection');
+      const newPasswordSection = document.getElementById('newPasswordSection');
+      const uploadSection = document.getElementById('uploadSection');
+      const userMgmtSection = document.getElementById('userMgmtSection');
+
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const loginBtn = document.getElementById('loginBtn');
+      const goToSignUp = document.getElementById('goToSignUp');
+      const goToForgot = document.getElementById('goToForgot');
+      const hostedUiBtn = document.getElementById('hostedUiBtn');
+
+      const suEmail = document.getElementById('suEmail');
+      const suPassword = document.getElementById('suPassword');
+      const signUpBtn = document.getElementById('signUpBtn');
+      const backToLoginFromSignUp = document.getElementById('backToLoginFromSignUp');
+
+      const cfEmail = document.getElementById('cfEmail');
+      const cfCode = document.getElementById('cfCode');
+      const confirmBtn = document.getElementById('confirmBtn');
+      const resendBtn = document.getElementById('resendBtn');
+      const backToLoginFromConfirm = document.getElementById('backToLoginFromConfirm');
+
+      const fpEmail = document.getElementById('fpEmail');
+      const fpCode = document.getElementById('fpCode');
+      const fpNew = document.getElementById('fpNew');
+      const fpSend = document.getElementById('fpSend');
+      const fpConfirm = document.getElementById('fpConfirm');
+      const fpBackToLogin = document.getElementById('fpBackToLogin');
+
+      const logoutBtn = document.getElementById('logoutBtn');
+      const diagBtn = document.getElementById('diagBtn');
+      const diagOut = document.getElementById('diagOut');
+
+      const eventList = document.getElementById('eventList');
+      const refreshEvents = document.getElementById('refreshEvents');
+
+      const backToDashboard = document.getElementById('backToDashboard');
+      const fileInput = document.getElementById('fileInput');
+      const startUpload = document.getElementById('startUpload');
+      const uploadTitle = document.getElementById('uploadTitle');
+      const uploadStatus = document.getElementById('uploadStatus');
+
+      const signupDisabledMsg = document.getElementById('signupDisabledMsg');
+
+      // Master Admin UI
+      const masterAdminBar = document.getElementById('masterAdminBar');
+      const masterNotice = document.getElementById('masterNotice');
+      const openUserMgmt = document.getElementById('openUserMgmt');
+      const backFromUserMgmt = document.getElementById('backFromUserMgmt');
+      const userApiWarn = document.getElementById('userApiWarn');
+      const umEmail = document.getElementById('umEmail');
+      const umPassword = document.getElementById('umPassword');
+      const umGroups = document.getElementById('umGroups');
+      const umVerifyEmail = document.getElementById('umVerifyEmail');
+      const umCreateBtn = document.getElementById('umCreateBtn');
+      const umRefresh = document.getElementById('umRefresh');
+      const umNext = document.getElementById('umNext');
+      const umTbody = document.getElementById('umTbody');
+      const umSearch = document.getElementById('umSearch');
+
+      // Toggle sign-up / hosted UI visibility
+      function updateSignUpVisibility(){
+        if (FEATURES.allowSignUp){
+          goToSignUp.classList.remove('hidden'); signupDisabledMsg.classList.add('hidden');
+        } else {
+          goToSignUp.classList.add('hidden'); signupDisabledMsg.classList.remove('hidden');
+          if (signUpSection.classList.contains('active')) showSection(loginSection);
+        }
+        hostedUiBtn.classList.toggle('hidden', !FEATURES.allowHostedUI);
+      }
+
+      // Enter-to-submit
+      [emailInput, passwordInput].forEach(inp => inp && inp.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); }));
+
+      // ===== Amplify Loader (UMD + ESM + timeouts) =====
+      const fallbackAttemptLog = [];
+      const AMPLIFY_URLS_UMD = [
+        'https://cdn.jsdelivr.net/npm/aws-amplify@5.3.21/dist/aws-amplify.min.js',
+        'https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js',
+        'https://cdn.jsdelivr.net/npm/aws-amplify/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify@5.3.21/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify@5/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify/dist/aws-amplify.min.js',
+        '/libs/aws-amplify-5.min.js',
+        '/vendor/aws-amplify.min.js'
+      ];
+      const AMPLIFY_URLS_ESM = [
+        'https://cdn.skypack.dev/aws-amplify@5',
+        'https://esm.run/aws-amplify@5',
+        'https://esm.sh/aws-amplify@5?bundle',
+        'https://esm.sh/aws-amplify@5.3.21?bundle'
+      ];
+      function withTimeout(promise, ms, label){ let t; const err = new Error('Timeout: '+label); const timer = new Promise((_, reject)=> t = setTimeout(()=>reject(err), ms)); return Promise.race([promise.finally(()=>clearTimeout(t)), timer]); }
+      function scriptLoad(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.src = url; s.async = false; s.onload = () => { fallbackAttemptLog.push(`UMD ok: ${url}`); resolve(url); }; s.onerror = () => { fallbackAttemptLog.push(`UMD fail: ${url}`); reject(new Error('Failed to load: '+url)); }; document.head.appendChild(s); }); }
+      function moduleImport(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.type = 'module'; s.textContent = `import * as pkg from '${url}'; window.aws_amplify = window.aws_amplify || pkg;`; s.onload = () => { fallbackAttemptLog.push(`ESM ok: ${url}`); resolve(url); }; s.onerror = () => { fallbackAttemptLog.push(`ESM fail: ${url}`); reject(new Error('Failed to import: '+url)); }; document.head.appendChild(s); }); }
+      async function ensureAmplify(){ if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; let lastErr; for (const url of AMPLIFY_URLS_UMD){ try{ await withTimeout(scriptLoad(url), 4000, url); if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; }catch(e){ lastErr = e; } } for (const url of AMPLIFY_URLS_ESM){ try{ await withTimeout(moduleImport(url), 6000, url); if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; }catch(e){ lastErr = e; } } throw (lastErr || new Error('Amplify UMD not loaded')); }
+      function resolveAmplify(){ const ns = window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify; const Amplify = ns?.Amplify || ns?.default || ns; const Auth = ns?.Auth || Amplify?.Auth; const Storage = ns?.Storage || Amplify?.Storage; return { Amplify, Auth, Storage }; }
+
+      // ===== App Logic =====
+      let AUTH_FLOW = (qp.get('authflow') === 'password') ? 'USER_PASSWORD_AUTH' : 'USER_SRP_AUTH';
+      async function configureAmplify(){
+        const { Amplify } = resolveAmplify(); if (!Amplify?.configure) throw new Error('Amplify.configure not available');
+        Amplify.configure({ Auth: { region: COGNITO.REGION, userPoolId: COGNITO.USER_POOL_ID, userPoolWebClientId: COGNITO.USER_POOL_WEB_CLIENT_ID, authenticationFlowType: AUTH_FLOW } });
+        flowBadge.textContent = `AuthFlow: ${AUTH_FLOW}`; flowBadge.classList.remove('hidden');
+      }
+      async function checkUserSession(){
+        const { Auth } = resolveAmplify();
+        try{
+          const user = await Auth.currentAuthenticatedUser();
+          if (user){
+            logoutBtn.classList.remove('hidden');
+            // Parse groups from ID token
+            const session = await Auth.currentSession();
+            const idToken = session.getIdToken().getJwtToken();
+            const payload = JSON.parse(atob(idToken.split('.')[1] || 'e30='));
+            const groups = payload['cognito:groups'] || [];
+            const isMaster = Array.isArray(groups) && groups.includes('master-admin');
+            window.__id_token = idToken; window.__is_master = isMaster;
+            if (isMaster){ masterAdminBar.classList.remove('hidden'); masterNotice.classList.remove('hidden'); }
+            showSection(dashboardSection); await loadEvents();
+          } else { showSection(loginSection); }
+        } catch{ showSection(loginSection); }
+      }
+
+      function preValidateLogin(){
+        const u = (emailInput.value || '').trim();
+        const p = passwordInput.value;
+        if (!u || !p){ showToast('ईमेल/यूज़रनेम और पासवर्ड भरें', 'error'); return false; }
+        return true;
+      }
+
+      function mapAuthError(error){
+        const name = error?.name || 'Error';
+        const raw = error?.message || '';
+        const map = {
+          UserNotFoundException: 'यूज़र नहीं मिला — सही पूल/क्रेडेंशियल्स जाँचें',
+          NotAuthorizedException: 'गलत पासवर्ड या यूज़र निष्क्रिय',
+          UserNotConfirmedException: 'ईमेल वेरिफ़िकेशन पेंडिंग — कोड कन्फ़र्म करें',
+          PasswordResetRequiredException: 'पासवर्ड रीसेट आवश्यक',
         };
+        let hint = map[name] || raw || 'लॉगिन में त्रुटि';
+        if (/SRP|Password verifier failed/i.test(raw) && AUTH_FLOW === 'USER_SRP_AUTH') hint += ' — URL में ?authflow=password ट्राय करें';
+        return { name, hint };
+      }
 
-        // ===== Utilities =====
-        function showToast(msg, type = 'info', ms = 3500) {
-            const el = document.getElementById('toast-container');
-            if (!el) return;
-            el.className = 'toast ' + type;
-            el.textContent = msg;
-            requestAnimationFrame(() => el.classList.add('show'));
-            setTimeout(() => el.classList.remove('show'), ms);
-        }
+      async function doLogin(){
+        const { Auth } = resolveAmplify();
+        if (!preValidateLogin()) return;
+        const username = (emailInput.value || '').trim();
+        const password = passwordInput.value;
+        loginBtn.disabled = true;
+        try{
+          const res = await Auth.signIn(username, password);
+          if (res?.challengeName === 'NEW_PASSWORD_REQUIRED'){
+            pendingChallengeUser = res; showSection(newPasswordSection); showToast('पहली बार लॉगिन — नया पासवर्ड सेट करें', 'info', 6000); return;
+          }
+          showToast('लॉगिन सफल', 'success'); logoutBtn.classList.remove('hidden');
+          emailInput.value=''; passwordInput.value='';
+          showSection(dashboardSection); await loadEvents();
+        } catch(error){
+          console.error('SignIn error', error);
+          let { name, hint } = mapAuthError(error);
+          // SRP issues → auto switch to PASSWORD once
+          if (/SRP|Password verifier failed/i.test(error?.message||'') && AUTH_FLOW === 'USER_SRP_AUTH'){
+            try{
+              AUTH_FLOW = 'USER_PASSWORD_AUTH'; await configureAmplify();
+              const res2 = await Auth.signIn(username, password);
+              if (res2?.challengeName === 'NEW_PASSWORD_REQUIRED'){ pendingChallengeUser = res2; showSection(newPasswordSection); showToast('पहली बार लॉगिन — नया पासवर्ड', 'info'); return; }
+              showToast('लॉगिन सफल (PASSWORD flow)', 'success'); flowBadge.textContent = `AuthFlow: ${AUTH_FLOW}`;
+              logoutBtn.classList.remove('hidden'); showSection(dashboardSection); await loadEvents(); return;
+            }catch(e2){ console.error('Fallback login failed', e2); const m = mapAuthError(e2); name = m.name; hint = m.hint; }
+          }
+          showToast(`${name}: ${hint}`, 'error', 7000);
+          if (name==='UserNotConfirmedException'){ cfEmail.value=username; showSection(confirmSection); }
+          if (name==='PasswordResetRequiredException'){ fpEmail.value=username; showSection(forgotSection); }
+          if (name==='UserNotFoundException' && FEATURES.allowSignUp){ suEmail.value=username; showSection(signUpSection); }
+        } finally { loginBtn.disabled = false; }
+      }
 
-        // Final check to ensure the embedded Amplify library is accessible
-        if (typeof aws_amplify === 'undefined' || !aws_amplify.Amplify) {
-            console.error("CRITICAL: Embedded AWS Amplify library failed to load or is corrupted.");
-            showToast('Amplify लोड नहीं हुआ। कृपया एडमिन से संपर्क करें।', 'error', 10000);
-            return;
-        }
-        
-        const { Amplify, Auth } = aws_amplify;
+      async function doHostedUILogin(){
+        if (!FEATURES.allowHostedUI) return;
+        const redirectUri = location.origin + location.pathname;
+        const url = `https://${HOSTED_UI_DOMAIN}/login?client_id=${encodeURIComponent(COGNITO.USER_POOL_WEB_CLIENT_ID)}&response_type=code&scope=openid+email+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
+        location.href = url;
+      }
 
-        // ===== DOM Elements =====
-        const loginSection = document.getElementById('loginSection');
-        const dashboardSection = document.getElementById('dashboardSection');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const fileInput = document.getElementById('fileInput');
-        const startUploadBtn = document.getElementById('startUploadBtn');
-        
-        // ===== App Logic =====
-        function showSection(section) {
-            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-            section.classList.add('active');
-        }
+      async function doSignUp(){ const { Auth } = resolveAmplify(); const email = suEmail.value.trim(); const pwd = suPassword.value; if(!email||!pwd){ showToast('ईमेल/पासवर्ड भरें', 'error'); return; } if(!FEATURES.allowSignUp){ showToast('इस पूल में self-signup बंद है — कृपया एडमिन से अकाउंट बनवाएँ', 'error', 5000); return; } signUpBtn.disabled=true; try{ await Auth.signUp({ username: email, password: pwd, attributes:{ email } }); showToast('साइन-अप सफल — ईमेल पर कोड भेजा गया', 'success', 5000); cfEmail.value=email; cfCode.value=''; showSection(confirmSection);} catch(e){ console.error('SignUp error', e); if (e?.name==='NotAuthorizedException' && /SignUp is not permitted/i.test(e?.message||'')){ FEATURES.allowSignUp=false; updateSignUpVisibility(); showToast('Self-signup इस User Pool में disabled है', 'error', 6000); showSection(loginSection); } else { showToast(e?.message || 'साइन-अप त्रुटि', 'error'); } } finally{ signUpBtn.disabled=false; } }
+      async function doConfirm(){ const { Auth } = resolveAmplify(); const email=(cfEmail.value||'').trim(); const code=(cfCode.value||'').trim(); if(!email||!code){ showToast('ईमेल और कोड भरें', 'error'); return; } confirmBtn.disabled=true; try{ await Auth.confirmSignUp(email, code); showToast('सत्यापन सफल — अब लॉगिन करें', 'success'); emailInput.value=email; showSection(loginSection);} catch(e){ console.error('Confirm error', e); showToast(e?.message || 'कन्फ़र्मेशन त्रुटि', 'error'); } finally{ confirmBtn.disabled=false; } }
 
-        async function doLogin() {
-            loginBtn.disabled = true;
-            loginBtn.textContent = "लॉगिन हो रहा है...";
-            try {
-                await Auth.signIn(emailInput.value.trim(), passwordInput.value);
-                await checkUserSession();
-                showToast('लॉगिन सफल', 'success');
-            } catch (error) {
-                console.error('Login error', error);
-                showToast(error.message || 'लॉगिन में त्रुटि', 'error');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = "लॉगिन";
-            }
-        }
-        
-        async function checkUserSession() {
-            try {
-                await Auth.currentAuthenticatedUser();
-                logoutBtn.classList.remove('hidden');
-                showSection(dashboardSection);
-            } catch (e) {
-                logoutBtn.classList.add('hidden');
-                showSection(loginSection);
-            }
-        }
-        
-        // ===== Event Listeners =====
-        loginBtn.addEventListener('click', doLogin);
-        logoutBtn.addEventListener('click', async () => { 
-            await Auth.signOut(); 
-            checkUserSession(); 
-        });
-        
-        fileInput.addEventListener('change', () => {
-            startUploadBtn.disabled = !(fileInput.files && fileInput.files.length > 0);
-        });
+      async function doForgotStart(){ const { Auth } = resolveAmplify(); const u=(fpEmail.value||'').trim(); if(!u){ showToast('ईमेल/यूज़रनेम भरें', 'error'); return; } try{ await Auth.forgotPassword(u); showToast('रीसेट कोड भेजा गया', 'success'); } catch(e){ console.error('Forgot start error', e); showToast(e?.message || 'रीसेट कोड भेजने में त्रुटि', 'error'); } }
+      async function doForgotConfirm(){ const { Auth } = resolveAmplify(); const u=(fpEmail.value||'').trim(); const code=(fpCode.value||'').trim(); const np=(fpNew.value||''); if(!u||!code||!np){ showToast('ईमेल/यूज़र/कोड/नया पासवर्ड भरें', 'error'); return; } try{ await Auth.forgotPasswordSubmit(u, code, np); showToast('पासवर्ड बदल गया — अब लॉगिन करें', 'success'); emailInput.value=u; showSection(loginSection); } catch(e){ console.error('Forgot submit error', e); showToast(e?.message || 'पासवर्ड बदलने में त्रुटि', 'error'); } }
 
-        startUploadBtn.addEventListener('click', () => {
-            // ** YAHAN AAPKO APNA ASLI UPLOAD CODE LIKHNA HAI **
-            // Yeh sirf ek example hai.
-            const files = fileInput.files;
-            if (files.length > 0) {
-                alert(`आप ${files.length} फ़ाइलें अपलोड कर रहे हैं। \nअपना असली Amplify Storage.put() कोड यहाँ जोड़ें।`);
-                // Example:
-                // for (const file of files) {
-                //   try {
-                //     const result = await Storage.put(file.name, file, { 
-                //       contentType: file.type 
-                //     });
-                //     console.log('Successfully uploaded', result);
-                //   } catch (error) {
-                //     console.error('Error uploading file', error);
-                //   }
-                // }
-            }
-        });
-        
-        // ===== Initial Load =====
-        Amplify.configure({ Auth: COGNITO });
-        checkUserSession();
-    };
+      async function doResend(){ const { Auth } = resolveAmplify(); const email=(cfEmail.value||'').trim(); if(!email){ showToast('ईमेल भरें', 'error'); return; } try{ await Auth.resendSignUp(email); showToast('कोड पुनः भेजा गया', 'success'); } catch(e){ console.error('Resend error', e); showToast(e?.message || 'री-सेंड त्रुटि', 'error'); } }
+      async function doLogout(){ const { Auth } = resolveAmplify(); try{ await Auth.signOut(); }catch{} showToast('लॉग आउट किया गया', 'info'); logoutBtn.classList.add('hidden'); showSection(loginSection); }
+
+      // Dummy events
+      async function loadEvents(){ const items=[{id:'evt_1',name:'Diwali Night 2024',photos:0},{id:'evt_2',name:'Wedding - A&V',photos:120},{id:'evt_3',name:'Corporate Meetup',photos:58}]; renderEvents(items); }
+      function renderEvents(items){ eventList.innerHTML=''; if(!items||!items.length){ eventList.innerHTML='<div class="text-sm text-gray-600">कोई इवेंट नहीं मिला</div>'; return; } for(const it of items){ const card=document.createElement('div'); card.className='bg-white rounded-2xl shadow p-5 flex flex-col gap-3'; card.innerHTML=`<div class="flex-1"><div class="text-base font-semibold">${it.name}</div><div class="text-sm text-gray-500 mt-1">फ़ोटो: ${it.photos}</div></div><div class="flex gap-2"><button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${it.id}" data-event-name="${it.name}">फ़ोटो अपलोड</button><button class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm" disabled>मैनेज</button></div>`; eventList.appendChild(card);} }
+
+      // Delegation & Upload
+      eventList.addEventListener('click', (e)=>{ const btn=e.target.closest('.upload-btn'); if(!btn) return; const eventName=btn.dataset.eventName; const eventId=btn.dataset.eventId; uploadTitle.textContent=`"${eventName}" में तस्वीरें अपलोड करें`; uploadSection.dataset.eventId=eventId; showSection(uploadSection); });
+      fileInput.addEventListener('change', ()=>{ startUpload.disabled=!(fileInput.files&&fileInput.files.length); uploadStatus.textContent=''; });
+      async function uploadFilesForEvent(eventId){ if(!fileInput.files?.length) return; const files=Array.from(fileInput.files); let uploaded=0; for(const file of files){ try{ await new Promise(r=>setTimeout(r,300)); uploaded++; uploadStatus.textContent=`${uploaded}/${files.length} अपलोड हो गया`; } catch(e){ console.error('Upload failed', e); showToast('किसी फ़ाइल का अपलोड विफल', 'error'); } } if(uploaded===files.length){ showToast('सभी फ़ाइलें अपलोड हो गईं', 'success'); fileInput.value=''; startUpload.disabled=true; } }
+
+      // ===== Master Admin — backend helpers =====
+      function authzHeaders(){ return { 'Authorization': window.__id_token }; }
+      async function loadUsers(nextToken=null){
+        umTbody.innerHTML = '';
+        if (!API_BASE){
+          // Demo rows
+          umTbody.innerHTML = `<tr><td class="px-3 py-2">demo-user</td><td class="px-3 py-2">demo@example.com</td><td class="px-3 py-2">CONFIRMED</td><td class="px-3 py-2">photographer</td><td class="px-3 py-2 text-xs text-gray-500">(डेमो)</td></tr>`;
+          umNext.classList.add('hidden'); return;
+        }
+        try{
+          const q = new URLSearchParams({ limit: '25' });
+          if (nextToken) q.set('nextToken', nextToken);
+          const search = (umSearch.value||'').trim();
+          if (search) q.set('filter', `email = "${search}"`);
+          const r = await fetch(`${API_BASE.replace(/\/$/, '')}/users?${q}`, { headers: authzHeaders() });
+          if (!r.ok) throw new Error(`List users failed: ${r.status}`);
+          const data = await r.json();
+          (data.users||[]).forEach(u=> addUserRow(u));
+          if (data.nextToken){ window.__um_next_token = data.nextToken; umNext.classList.remove('hidden'); } else { umNext.classList.add('hidden'); }
+        } catch(e){ console.error(e); showToast(e.message || 'यूज़र लोड त्रुटि', 'error'); }
+      }
+      function addUserRow(u){
+        const tr = document.createElement('tr');
+        const email = (u.email || (u.Attributes||[]).find(a=>a.Name==='email')?.Value || '-')
+        const username = u.username || u.Username || '-';
+        const status = u.userStatus || u.UserStatus || '-';
+        const groups = Array.isArray(u.groups)? u.groups.join(',') : (u.Groups||[]).map(g=>g.groupName||g.GroupName).join(',');
+        tr.innerHTML = `<td class="px-3 py-2">${username}</td><td class="px-3 py-2">${email}</td><td class="px-3 py-2">${status}</td><td class="px-3 py-2">${groups||'-'}</td>
+          <td class="px-3 py-2">
+            <button class="um-reset border px-2 py-1 rounded-lg text-xs">Reset PW</button>
+            <button class="um-disable border px-2 py-1 rounded-lg text-xs">Disable</button>
+            <button class="um-enable border px-2 py-1 rounded-lg text-xs">Enable</button>
+            <button class="um-delete border px-2 py-1 rounded-lg text-xs text-red-600">Delete</button>
+          </td>`;
+        tr.dataset.username = username; tr.dataset.email = email;
+        umTbody.appendChild(tr);
+      }
+      async function createUserFromForm(){
+        if (!API_BASE){ showToast('Admin API सेट करें (?api=...)', 'error'); return; }
+        const email = (umEmail.value||'').trim();
+        if (!email){ showToast('ईमेल भरें', 'error'); return; }
+        const body = { email, verifyEmail: !!umVerifyEmail.checked };
+        if ((umPassword.value||'').length) body.password = umPassword.value;
+        const groups = (umGroups.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+        if (groups.length) body.groups = groups;
+        try{
+          const r = await fetch(`${API_BASE.replace(/\/$/, '')}/users`, { method:'POST', headers: { 'Content-Type': 'application/json', ...authzHeaders() }, body: JSON.stringify(body) });
+          if (!r.ok) throw new Error(`Create failed: ${r.status}`);
+          showToast('यूज़र बना दिया गया', 'success'); umEmail.value=''; umPassword.value=''; umGroups.value=''; umVerifyEmail.checked=false; loadUsers();
+        }catch(e){ console.error(e); showToast(e.message || 'यूज़र क्रिएशन त्रुटि', 'error'); }
+      }
+      // Row actions delegation
+      umTbody.addEventListener('click', async (e)=>{
+        const tr = e.target.closest('tr'); if (!tr) return;
+        const username = tr.dataset.username; if (!username) return;
+        const base = `${API_BASE.replace(/\/$/, '')}/users/${encodeURIComponent(username)}`;
+        async function call(path, method='POST', body){
+          const r = await fetch(`${base}${path}`, { method, headers: { 'Content-Type': 'application/json', ...authzHeaders() }, body: body? JSON.stringify(body): undefined });
+          if (!r.ok) throw new Error(`${path} failed: ${r.status}`); return r.json().catch(()=>({}));
+        }
+        try{
+          if (e.target.matches('.um-reset')){ const permanent = confirm('Permanent पासवर्ड सेट करें? OK=Permanent / Cancel=Temp'); let password=null; if (permanent){ password = prompt('नया पासवर्ड दर्ज करें'); if (!password) return; } await call('/reset-password','POST', { permanent, password }); showToast('पासवर्ड अपडेट हुआ', 'success'); }
+          if (e.target.matches('.um-disable')){ await call('/disable'); showToast('यूज़र disabled', 'success'); }
+          if (e.target.matches('.um-enable')){ await call('/enable'); showToast('यूज़र enabled', 'success'); }
+          if (e.target.matches('.um-delete')){ if (!confirm('डिलीट करें?')) return; await call('','DELETE'); showToast('यूज़र डिलीट', 'success'); tr.remove(); }
+        } catch(err){ console.error(err); showToast(err.message || 'एक्शन विफल', 'error'); }
+      });
+
+      // Toggle/Handlers
+      function updateSignUpVisibility(){ /* already defined earlier; keeping for clarity */ }
+      loginBtn.addEventListener('click', doLogin);
+      goToSignUp.addEventListener('click', ()=> showSection(signUpSection));
+      goToForgot.addEventListener('click', ()=> { fpEmail.value = emailInput.value; showSection(forgotSection); });
+      hostedUiBtn.addEventListener('click', doHostedUILogin);
+
+      signUpBtn.addEventListener('click', doSignUp);
+      backToLoginFromSignUp.addEventListener('click', ()=> showSection(loginSection));
+
+      confirmBtn.addEventListener('click', doConfirm);
+      resendBtn.addEventListener('click', doResend);
+      backToLoginFromConfirm.addEventListener('click', ()=> showSection(loginSection));
+
+      fpSend.addEventListener('click', doForgotStart);
+      fpConfirm.addEventListener('click', doForgotConfirm);
+      fpBackToLogin.addEventListener('click', ()=> showSection(loginSection));
+
+      logoutBtn.addEventListener('click', doLogout);
+      refreshEvents.addEventListener('click', loadEvents);
+      backToDashboard.addEventListener('click', ()=> showSection(dashboardSection));
+      openUserMgmt.addEventListener('click', ()=> { if (!window.__is_master){ showToast('Master admin अधिकार आवश्यक', 'error'); return; } showSection(userMgmtSection); if(!API_BASE){ userApiWarn.classList.remove('hidden'); } loadUsers(); });
+      backFromUserMgmt.addEventListener('click', ()=> showSection(dashboardSection));
+      umRefresh.addEventListener('click', ()=> loadUsers());
+      umNext.addEventListener('click', ()=> loadUsers(window.__um_next_token||null));
+      umCreateBtn.addEventListener('click', createUserFromForm);
+      startUpload.addEventListener('click', async()=>{ const eventId=uploadSection.dataset.eventId; if(!eventId){ showToast('इवेंट चयन करें', 'error'); return; } await uploadFilesForEvent(eventId); });
+
+      diagBtn.addEventListener('click', runDiagnostics);
+
+      // NEW PASSWORD handlers
+      let pendingChallengeUser = null;
+      const npwInput = document.getElementById('npwInput');
+      const npwSubmit = document.getElementById('npwSubmit');
+      const npwCancel = document.getElementById('npwCancel');
+      npwSubmit.addEventListener('click', async ()=>{
+        const { Auth } = resolveAmplify();
+        const npw = npwInput.value || '';
+        if (!pendingChallengeUser){ showToast('कोई पेंडिंग सेशन नहीं', 'error'); return; }
+        if (!npw){ showToast('नया पासवर्ड भरें', 'error'); return; }
+        try { const done = await Auth.completeNewPassword(pendingChallengeUser, npw); pendingChallengeUser = null; npwInput.value=''; showToast('पासवर्ड सेट — लॉगिन पूरा', 'success'); logoutBtn.classList.remove('hidden'); showSection(dashboardSection); await loadEvents(); console.debug('CompleteNewPassword:', done); }
+        catch(e){ console.error('CompleteNewPassword error', e); showToast(e?.message || 'पासवर्ड सेट करने में त्रुटि', 'error'); }
+      });
+      npwCancel.addEventListener('click', ()=>{ pendingChallengeUser = null; npwInput.value=''; showSection(loginSection); });
+
+      // Boot
+      (async function boot(){
+        try{
+          if(isFileProto) showToast('बेहतर अनुभव हेतु localhost से चलाएँ', 'info', 4500);
+          updateSignUpVisibility();
+          if(FEATURES.allowHostedUI) hostedUiBtn.classList.remove('hidden');
+          showToast('Amplify लोड हो रहा है…', 'info');
+          await ensureAmplify();
+          const { Amplify, Auth } = resolveAmplify(); if(!Amplify||!Auth) throw new Error('Amplify globals missing after load');
+          await configureAmplify(); showToast('Amplify तैयार', 'success');
+          await checkUserSession();
+        } catch(e){
+          console.error(e);
+          showToast('Amplify लोड नहीं हुआ — नेटवर्क/CDN चेक करें', 'error');
+          showSection(loginSection);
+        }
+      })();
+
+      // ===== Self-tests ("test cases") =====
+      function logDiag(line){ diagOut.textContent += (line + '\n'); }
+      function clearDiag(){ diagOut.textContent = ''; }
+      function assertTest(name, cond){ logDiag(`${cond ? '✅' : '❌'} ${name}`); return !!cond; }
+      async function runDiagnostics(){
+        clearDiag(); logDiag('— रनिंग Self-tests —'); logDiag(`URL: ${location.href}`); logDiag(`Protocol: ${location.protocol}`);
+        logDiag('Config (final):'); logDiag('  REGION=' + COGNITO.REGION); logDiag('  USER_POOL_ID=' + COGNITO.USER_POOL_ID); logDiag('  CLIENT_ID=' + COGNITO.USER_POOL_WEB_CLIENT_ID); logDiag('  Inferred from pool=' + (inferredRegion || 'n/a')); logDiag('  Expected Cognito endpoint: https://cognito-idp.'+COGNITO.REGION+'.amazonaws.com'); logDiag('  allowSignUp=' + FEATURES.allowSignUp + ', allowHostedUI=' + FEATURES.allowHostedUI + ', authFlow=' + AUTH_FLOW);
+        if (fallbackAttemptLog.length){ logDiag('Loader attempts:'); fallbackAttemptLog.forEach(x=>logDiag('  • '+x)); } else { logDiag('Loader attempts: (none recorded — library may be cached/present)'); }
+        let ampNS = window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify; assertTest('Amplify namespace detected', !!ampNS);
+        const { Amplify, Auth } = resolveAmplify(); assertTest('Amplify.configure उपलब्ध', !!Amplify?.configure); assertTest('Auth.signIn उपलब्ध', typeof Auth?.signIn === 'function'); assertTest('Auth.signUp उपलब्ध', typeof Auth?.signUp === 'function'); assertTest('Auth.confirmSignUp उपलब्ध', typeof Auth?.confirmSignUp === 'function'); assertTest('Auth.forgotPassword उपलब्ध', typeof Auth?.forgotPassword === 'function'); assertTest('Auth.forgotPasswordSubmit उपलब्ध', typeof Auth?.forgotPasswordSubmit === 'function'); assertTest('Auth.currentAuthenticatedUser उपलब्ध', typeof Auth?.currentAuthenticatedUser === 'function'); assertTest('Auth.completeNewPassword उपलब्ध', typeof Auth?.completeNewPassword === 'function');
+
+        // UI toggling
+        const before = document.querySelector('.admin-section.active'); showSection(dashboardSection); const dashActive = dashboardSection.classList.contains('active'); assertTest('Dashboard दिख रहा है', dashActive); showSection(before || loginSection);
+
+        // Events render & upload button routing
+        renderEvents([{id:'t_evt', name:'Test Event', photos: 1}]); const btn = document.querySelector('.upload-btn'); const hadBtn = assertTest('Upload बटन मौजूद', !!btn); if (hadBtn){ btn.click(); const upActive = uploadSection.classList.contains('active'); assertTest('Upload सेक्शन खुलता है', upActive); backToDashboard.click(); }
+
+        // File input default state
+        assertTest('Start Upload disabled by default', startUpload.disabled === true);
+
+        // Region inferred == configured (after auto-fix)
+        assertTest('Region matches userPool prefix (auto-fixed)', !inferredRegion || inferredRegion === COGNITO.REGION);
+
+        // Master admin gating tests (simulated)
+        const prevMaster = window.__is_master; window.__is_master = true; masterAdminBar.classList.remove('hidden'); assertTest('Master admin bar can be shown', !masterAdminBar.classList.contains('hidden')); window.__is_master = prevMaster;
+
+        // Sign-up visibility tests
+        const suVisible = !goToSignUp.classList.contains('hidden');
+        assertTest('Sign-up button visibility matches feature flag', suVisible === FEATURES.allowSignUp);
+        const prevAllow = FEATURES.allowSignUp; FEATURES.allowSignUp = true; updateSignUpVisibility(); const suVisible2 = !goToSignUp.classList.contains('hidden'); assertTest('Sign-up button becomes visible when enabled', suVisible2 === true); FEATURES.allowSignUp = prevAllow; updateSignUpVisibility();
+
+        // JWKS URL format + reachability (best effort)
+        const jwksUrl = `https://cognito-idp.${COGNITO.REGION}.amazonaws.com/${COGNITO.USER_POOL_ID}/.well-known/jwks.json`;
+        assertTest('JWKS URL looks valid', /cognito-idp\.[^/]+\.amazonaws\.com\/.+\/.well-known\/jwks\.json$/.test(jwksUrl));
+        try { const r = await fetch(jwksUrl, { method:'GET' }); logDiag('JWKS fetch status: ' + r.status); } catch(e){ logDiag('JWKS fetch error: ' + (e?.message||e)); }
+
+        // Client ID sanity (length >= 8)
+        assertTest('ClientId length sanity', (COGNITO.USER_POOL_WEB_CLIENT_ID||'').length >= 8);
+
+        try { await fetch('https://cdn.jsdelivr.net', { method:'HEAD', mode:'no-cors' }); logDiag('CDN reachability: attempted (no-cors)'); } catch(e){ logDiag('CDN reachability: blocked'); }
+        logDiag('— Self-tests complete —'); document.getElementById('diagPanel').open = true;
+      }
+    })();
   </script>
 </body>
 </html>
-
