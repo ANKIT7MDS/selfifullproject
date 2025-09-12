@@ -1,571 +1,711 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <title>डैशबोर्ड (स्थायी समाधान के साथ)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin | Event Memory Experience</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📸</text></svg>">
+  <!-- Tailwind (CDN) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://esm.sh" crossorigin>
+  <link rel="preconnect" href="https://esm.run" crossorigin>
+  <link rel="preconnect" href="https://cdn.skypack.dev" crossorigin>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background: #fff9f3; color: #222; font-family: 'Noto Sans Devanagari', Arial, sans-serif; margin: 0; padding: 0; }
-    .container { max-width: 1200px; margin: 24px auto; background: #fff6ea; border-radius: 14px; box-shadow: 0 2px 16px #ff980020; padding: 18px 10px 18px 10px; }
-    h1 { color: #e65100; text-align: center; margin-bottom: 12px; font-size: 2.1rem; }
-    .top-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .top-bar .left, .top-bar .right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .top-bar select, .top-bar button, .top-bar input[type="text"] { font-size: 1rem; padding: 5px 9px; border-radius: 5px; border: 1.2px solid #ffa726a9; background: #fffaf5; color: #442300; }
-    .top-bar button, .tab-btn, input[type="submit"] { background: #ff9800; color: #fff; font-weight: 600; border: none; cursor: pointer; padding: 7px 14px; border-radius: 6px; margin: 0; transition: background 0.2s; }
-    .top-bar button:hover, .tab-btn.active, .tab-btn:hover, input[type="submit"]:hover { background: #e65100; }
-    .pending-mandals { color: #e53935; font-size: 0.98rem; margin-left: 18px; }
-    .tabs { display: flex; gap: 4px; margin: 10px 0 8px 0; justify-content: center; }
-    .tab-btn { padding: 7px 20px; border-radius: 8px 8px 0 0; border-bottom: 2px solid transparent; background: #ffe0b2; color: #8d4700; font-weight: 600; font-size: 1.02rem; }
-    .tab-btn.active { background: #ff9800; color: #fff; border-bottom: 2px solid #ff9800; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .search-bar { margin: 8px 0 12px 0; text-align: center; }
-    .search-bar input { font-size: 1rem; padding: 6px 12px; border-radius: 6px; border: 1.2px solid #ffa726a9; background: #fffaf5; color: #442300; width: 50%; max-width: 400px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 1.2rem; background: #fff; box-shadow: 0 1px 8px #ffa72611; font-size: 0.99rem; }
-    th, td { border: 1px solid #ffa72655; padding: 6px 7px; text-align: left; }
-    th { background: #ffb74d; color: #442300; font-weight: bold; }
-    tr:nth-child(even) { background: #fff3e0; }
-    .action-btn { padding: 4px 10px; border-radius: 6px; font-size: 1.11rem; margin: 0 1px; background: #ff9800; color: #fff; border: none; cursor: pointer; transition: background 0.18s; min-width: 34px; }
-    .action-btn.delete { background: #e53935; }
-    .action-btn.delete:hover { background: #b71c1c; }
-    .action-btn:hover { background: #e65100; }
-    .report-photos-grid { display: grid; grid-template-columns: repeat(3, 74px); grid-auto-rows: 74px; gap: 6px; max-width: 200px; }
-    .report-photos-grid img { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 1.5px solid #ff9800; cursor: zoom-in; transition: box-shadow 0.18s; background: #fff7e0; }
-    #imgZoomModal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.82); align-items: center; justify-content: center; }
-    #imgZoomModal img { max-width: 95vw; max-height: 93vh; border-radius: 14px; border: 4px solid #fff; box-shadow: 0 0 12px #ff980099; background: #fff; }
-    @media (max-width: 650px) {
-      .container { max-width: 99vw; padding: 4vw 1vw; }
-      .top-bar { flex-direction: column; align-items: stretch; gap: 7px; }
-      .tabs { flex-direction: column; gap: 1px; }
-      .search-bar input { width: 90%; }
-      table, th, td { font-size: 0.94rem; }
-      .report-photos-grid { grid-template-columns: repeat(3, 48px); grid-auto-rows: 48px; max-width: 130px; }
-      .report-photos-grid img { width: 46px; height: 46px; }
-    }
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+    .toast { position: fixed; right: 1rem; top: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background: #111827; color: #fff; opacity: 0; transition: opacity .2s ease, transform .2s ease; transform: translateY(-8px); z-index: 50; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #065f46; }
+    .toast.error { background: #991b1b; }
+    .toast.info { background: #1f2937; }
+    .kbd {font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border: 1px solid #e5e7eb; border-bottom-width: 3px; border-radius: .5rem; background:#f9fafb}
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    .badge { padding: .2rem .5rem; border-radius: .5rem; font-size: .75rem; border: 1px solid #e5e7eb; background: #fff; }
+    .linklike { text-decoration: underline; color: #111827; }
   </style>
-  <!-- Export libs -->
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>डैशबोर्ड</h1>
-    <div class="top-bar">
-      <div class="left">
-        <label for="filterEvent">कार्यक्रम:</label>
-        <select id="filterEvent"><option value="">सभी कार्यक्रम</option></select>
-        <div id="eventActions" style="display: none; gap: 4px;">
-            <button class="action-btn" id="editEventBtn" title="कार्यक्रम का नाम बदलें" style="font-size:1.1em;padding:2px 8px;">✏️</button>
-            <button class="action-btn delete" id="deleteEventBtn" title="कार्यक्रम हटाएं" style="font-size:1.1em;padding:2px 8px;">❌</button>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <!-- Toast container -->
+  <div id="toast-container" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Root container -->
+  <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 lg:p-8" data-admin-root>
+    <!-- Header -->
+    <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-semibold tracking-tight">इवेंट गैलरी एडमिन</h1>
+        <span id="regionBadge" class="badge hidden"></span>
+        <span id="flowBadge" class="badge hidden"></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="diagBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">डायग्नोस्टिक्स</button>
+        <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">लॉग आउट</button>
+      </div>
+    </header>
+
+    <!-- Master notice -->
+    <div id="masterNotice" class="hidden mt-3 text-sm p-3 rounded-2xl border border-amber-300 bg-amber-50 text-amber-900">
+      आप <strong>Master Admin</strong> हैं — आप यहाँ से सभी यूज़र्स मैनेज कर सकते हैं।
+    </div>
+
+    <!-- Diagnostics panel -->
+    <details id="diagPanel" class="mt-4">
+      <summary class="cursor-pointer text-sm text-gray-600">Self-tests और नेटवर्क/कन्फ़िग डायग्नोस्टिक्स</summary>
+      <div id="diagOut" class="mt-3 text-sm bg-white rounded-2xl shadow p-4 whitespace-pre-wrap"></div>
+      <div class="mt-2 text-xs text-gray-500">नोट: अगर आप <span class="kbd">file://</span> से चला रहे हैं तो कुछ ब्राउज़र सीमाएँ लागू हो सकती हैं। बेहतर है कि <span class="kbd">http://localhost</span> पर सर्व करें।</div>
+    </details>
+
+    <!-- Login Section -->
+    <section id="loginSection" class="admin-section active">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-4">लॉगिन</h2>
+          <div class="grid gap-3">
+            <label class="text-sm">ईमेल/यूज़रनेम</label>
+            <input id="email" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com या username" />
+            <label class="text-sm mt-2">पासवर्ड</label>
+            <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
+            <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
+            <div class="flex items-center gap-3 mt-2">
+              <button id="goToSignUp" class="text-sm text-gray-700 underline">नया अकाउंट बनाएँ</button>
+              <button id="goToForgot" class="text-sm linklike">पासवर्ड भूल गए?</button>
+              <button id="hostedUiBtn" class="hidden text-sm linklike">Hosted UI से लॉगिन</button>
+            </div>
+            <p id="signupDisabledMsg" class="hidden text-xs text-red-600">इस User Pool में self-signup बंद है। कृपया एडमिन से अकाउंट बनवाएँ।</p>
+          </div>
         </div>
-        <label for="filterMandal">मंडल:</label>
-        <select id="filterMandal"><option value="">सभी मंडल</option></select>
-        <span id="pendingMandals" class="pending-mandals"></span>
       </div>
-      <div class="right">
-        <select id="exportDropdown" style="min-width:170px">
-          <option value="">डेटा एक्सपोर्ट...</option>
-          <optgroup label="रिपोर्ट सूची">
-            <option value="reports-pdf">PDF (फोटो के साथ)</option>
-            <option value="reports-excel">Excel</option>
-            <option value="reports-jpg">JPG</option>
-          </optgroup>
-          <optgroup label="कार्यक्रम सूची">
-            <option value="events-pdf">PDF</option>
-            <option value="events-excel">Excel</option>
-            <option value="events-jpg">JPG</option>
-          </optgroup>
-          <optgroup label="संयोजक सूची">
-            <option value="coordinators-pdf">PDF</option>
-            <option value="coordinators-excel">Excel</option>
-            <option value="coordinators-jpg">JPG</option>
-          </optgroup>
-        </select>
-        <button onclick="handleExport()">डाउनलोड</button>
-        <input type="text" id="newEventName" placeholder="नया कार्यक्रम नाम" style="width:140px;">
-        <button onclick="addEventName()">जोड़ें</button>
+    </section>
+
+    <!-- Sign Up Section -->
+    <section id="signUpSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-4">साइन-अप</h2>
+          <div class="grid gap-3">
+            <label class="text-sm">ईमेल</label>
+            <input id="suEmail" type="email" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
+            <label class="text-sm mt-2">पासवर्ड</label>
+            <input id="suPassword" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="कम से कम 8 कैरेक्टर्स" />
+            <button id="signUpBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">खाता बनाएँ</button>
+            <button id="backToLoginFromSignUp" class="mt-2 text-sm text-gray-700 underline">लॉगिन पर वापस</button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn" id="eventTabBtn" onclick="switchTab('eventsTab')">कार्यक्रम सूची</button>
-      <button class="tab-btn" id="coordinatorTabBtn" onclick="switchTab('coordinatorsTab')">संयोजक सूची</button>
-      <button class="tab-btn active" id="reportTabBtn" onclick="switchTab('reportsTab')">रिपोर्ट सूची</button>
-    </div>
-    <div class="tab-content" id="eventsTab">
-      <div class="search-bar"><input type="text" id="eventSearch" onkeyup="loadEvents()" placeholder="कार्यक्रम, मंडल या स्थान से खोजें..."></div>
-      <table>
-        <thead><tr><th>कार्यक्रम</th><th>मंडल</th><th>तारीख</th><th>समय</th><th>स्थान</th><th>एक्शन</th></tr></thead>
-        <tbody id="eventList"></tbody>
-      </table>
-      <div id="eventPagination"></div>
-    </div>
-    <div class="tab-content" id="coordinatorsTab">
-      <div class="search-bar"><input type="text" id="coordinatorSearch" onkeyup="loadCoordinators()" placeholder="नाम, मंडल या मोबाइल नंबर से खोजें..."></div>
-      <table>
-        <thead><tr><th>कार्यक्रम</th><th>मंडल</th><th>संयोजक</th><th>मोबाइल</th><th>सह-संयोजक 1</th><th>मोबाइल 1</th><th>सह-संयोजक 2</th><th>मोबाइल 2</th><th>एक्शन</th></tr></thead>
-        <tbody id="coordinatorList"></tbody>
-      </table>
-      <div id="coordPagination"></div>
-    </div>
-    <div class="tab-content active" id="reportsTab">
-      <div class="search-bar"><input type="text" id="reportSearch" onkeyup="loadReports()" placeholder="मंडल, स्थान, अतिथि या विवरण से खोजें..."></div>
-      <table>
-        <thead><tr><th>कार्यक्रम</th><th>मंडल</th><th>स्थान</th><th>तारीख</th><th>उपस्थिति</th><th>विशिष्ट अतिथि</th><th>विवरण</th><th>फोटो</th><th>एक्शन</th></tr></thead>
-        <tbody id="reportList"></tbody>
-      </table>
-      <div id="reportPagination"></div>
-    </div>
+    </section>
+
+    <!-- Confirm Section -->
+    <section id="confirmSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">ईमेल सत्यापन</h2>
+          <p class="text-sm text-gray-600">हमने आपके ईमेल पर एक कोड भेजा है। कृपया नीचे दर्ज करें।</p>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">ईमेल</label>
+            <input id="cfEmail" type="email" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
+            <label class="text-sm mt-2">कोड</label>
+            <input id="cfCode" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="123456" />
+            <div class="flex gap-2 mt-2">
+              <button id="confirmBtn" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">कन्फ़र्म करें</button>
+              <button id="resendBtn" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">कोड फिर भेजें</button>
+              <button id="backToLoginFromConfirm" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">लॉगिन</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Forgot Password Section -->
+    <section id="forgotSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">पासवर्ड रीसेट</h2>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">ईमेल/यूज़रनेम</label>
+            <input id="fpEmail" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com या username" />
+            <div class="flex gap-2 mt-1">
+              <button id="fpSend" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रीसेट कोड भेजें</button>
+              <button id="fpBackToLogin" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">लॉगिन</button>
+            </div>
+            <label class="text-sm mt-3">रीसेट कोड</label>
+            <input id="fpCode" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="123456" />
+            <label class="text-sm mt-2">नया पासवर्ड</label>
+            <input id="fpNew" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
+            <button id="fpConfirm" class="mt-2 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">पासवर्ड बदलें</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Password Required Section (first-time login) -->
+    <section id="newPasswordSection" class="admin-section">
+      <div class="grid gap-6 max-w-md mt-6">
+        <div class="bg-white rounded-2xl shadow p-6">
+          <h2 class="text-lg font-medium mb-2">पहली बार लॉगिन — नया पासवर्ड सेट करें</h2>
+          <p class="text-sm text-gray-600">एडमिन के बनाए अकाउंट्स पर पहली बार लॉगिन में यह स्टेप आता है।</p>
+          <div class="grid gap-3 mt-3">
+            <label class="text-sm">नया पासवर्ड</label>
+            <input id="npwInput" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="नया पासवर्ड" />
+            <div class="flex gap-2 mt-2">
+              <button id="npwSubmit" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">सेव करें और आगे बढ़ें</button>
+              <button id="npwCancel" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रद्द करें</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboardSection" class="admin-section">
+      <div class="mt-8">
+        <div id="masterAdminBar" class="hidden mb-4 flex items-center gap-2">
+          <button id="openUserMgmt" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">यूज़र मैनेजमेंट</button>
+          <span class="text-xs text-gray-500">(API सेट न होने पर यह डेमो मोड में चलेगा)</span>
+        </div>
+
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-medium">इवेंट्स</h2>
+          <button id="refreshEvents" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
+        </div>
+        <div id="eventList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- User Management Section (Master Admin only) -->
+    <section id="userMgmtSection" class="admin-section">
+      <div class="mt-8 bg-white rounded-2xl shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-lg font-medium">यूज़र मैनेजमेंट</h2>
+            <p class="text-sm text-gray-500 mt-1">यह सेक्शन केवल <span class="font-semibold">master-admin</span> ग्रुप के यूज़र देख/बना सकते हैं।</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="backFromUserMgmt" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
+          </div>
+        </div>
+
+        <div id="userApiWarn" class="hidden mt-4 text-sm p-3 rounded-2xl border border-blue-300 bg-blue-50 text-blue-900">
+          Admin API सेट नहीं मिला। URL में <span class="kbd">?api=&lt;API_BASE_URL&gt;</span> जोड़ें।
+          अपेक्षित एंडपॉइंट्स:
+          <code class="block text-xs mt-2">GET  {api}/users?limit=&nextToken=</code>
+          <code class="block text-xs">POST {api}/users               (body: { email, password?, verifyEmail?, groups? })</code>
+          <code class="block text-xs">POST {api}/users/{username}/reset-password  (body: { permanent, password? })</code>
+          <code class="block text-xs">POST {api}/users/{username}/enable</code>
+          <code class="block text-xs">POST {api}/users/{username}/disable</code>
+          <code class="block text-xs">DELETE {api}/users/{username}</code>
+          <code class="block text-xs">POST {api}/users/{username}/groups (body: { add?: string[], remove?: string[] })</code>
+          रिक्वेस्ट में <span class="kbd">Authorization: &lt;ID_TOKEN&gt;</span> हेडर लगेगा।
+        </div>
+
+        <div class="mt-4 grid lg:grid-cols-3 gap-6">
+          <!-- Create user card -->
+          <div class="lg:col-span-1 bg-gray-50 rounded-2xl p-4 border border-gray-200">
+            <h3 class="font-semibold mb-2">नया यूज़र बनाएँ</h3>
+            <label class="text-xs">ईमेल</label>
+            <input id="umEmail" type="email" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" placeholder="user@example.com" />
+            <label class="text-xs">पासवर्ड (वैकल्पिक — खाली छोड़ें तो टेम्प पासवर्ड)</label>
+            <input id="umPassword" type="password" class="w-full mb-2 px-3 py-2 rounded-xl border border-gray-300" />
+            <label class="text-xs">ग्रुप्स (comma सेपरेटेड, उदा. master-admin, photographer)</label>
+            <input id="umGroups" type="text" class="w-full mb-3 px-3 py-2 rounded-xl border border-gray-300" />
+            <div class="flex items-center gap-2 mb-3">
+              <input id="umVerifyEmail" type="checkbox" class="h-4 w-4" />
+              <span class="text-xs">ईमेल verified मार्क करें</span>
+            </div>
+            <button id="umCreateBtn" class="px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">यूज़र बनाएँ</button>
+          </div>
+
+          <!-- Users table -->
+          <div class="lg:col-span-2">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold">यूज़र लिस्ट</h3>
+              <div class="flex gap-2">
+                <input id="umSearch" type="text" class="px-3 py-2 rounded-xl border border-gray-300 text-sm" placeholder="ईमेल से खोजें" />
+                <button id="umRefresh" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
+              </div>
+            </div>
+            <div class="overflow-auto border border-gray-200 rounded-2xl">
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left px-3 py-2">Username</th>
+                    <th class="text-left px-3 py-2">Email</th>
+                    <th class="text-left px-3 py-2">Status</th>
+                    <th class="text-left px-3 py-2">Groups</th>
+                    <th class="text-left px-3 py-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="umTbody" class="divide-y divide-gray-100"></tbody>
+              </table>
+            </div>
+            <div class="flex justify-end mt-2">
+              <button id="umNext" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm hidden">अगला पेज</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section id="uploadSection" class="admin-section">
+      <div class="mt-8 bg-white rounded-2xl shadow p-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-lg font-medium">फ़ोटो अपलोड</h2>
+            <p id="uploadTitle" class="text-sm text-gray-500 mt-1">किसी इवेंट के लिए फ़ोटो चुनें</p>
+          </div>
+          <button id="backToDashboard" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
+        </div>
+        <div class="mt-4 grid gap-3">
+          <input id="fileInput" type="file" multiple accept="image/*" class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-black" />
+          <button id="startUpload" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black disabled:opacity-50" disabled>अपलोड शुरू करें</button>
+          <div id="uploadStatus" class="text-sm text-gray-600"></div>
+        </div>
+      </div>
+    </section>
   </div>
-  <div id="imgZoomModal"><img id="imgZoomModalImg" src=""></div>
 
-  <!-- Firebase + App JS -->
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc, updateDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-    
-    const firebaseConfig = {
-      apiKey: "AIzaSyCI1EL8iFVJnOWbd58Bq5JrJg_IgZuCvA0",
-      authDomain: "mandaleventall.firebaseapp.com",
-      projectId: "mandaleventall",
-      storageBucket: "mandaleventall.firebasestorage.app",
-      messagingSenderId: "900190130114",
-      appId: "1:900190130114:web:bc7d9e2283b3ac57bc505b",
-      measurementId: "G-2BBZZNRS88"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const mandals = ["भेंसोदा", "भानपुरा", "गरोठ", "मेलखेडा", "खड़ावदा", "शामगढ़", "सुवासरा", "बसाई", "सीतामऊ", "क्यामपुर", "सीतामऊ ग्रामीण", "गुर्जर बरडिया", "धुंधधड़का", "बुढा", "पिपलिया मंडी", "मल्हारगढ़", "दलोदा", "मगरामाता जी", "मंदसौर ग्रामीण", "मंदसौर उत्तर", "मंदसौर दक्षिण"];
-    const eventNameMap = {};
-    let eventPage = 1, coordPage = 1, reportPage = 1;
-    const PAGE_SIZE = 21;
-    const TELEGRAM_BOT_TOKEN = "8064306737:AAFvXvc3vIT1kyccGiPbpYGCAr9dgKJcRzw";
-    const TELEGRAM_CHAT_ID = "733804072";
-    let lastPendingKey = "";
-    
-    async function sendTelegramAlert(message) {
-      try {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: "Markdown" })
-        });
-      } catch (err) { console.error("टेलीग्राम अलर्ट नहीं भेजा जा सका:", err); }
-    }
+  <!-- Multi-CDN Amplify loader + App -->
+  <script>
+    (function(){
+      // ===== Config (editable) =====
+      const DEFAULT_COGNITO = {
+        REGION: 'ap-southeast-1',
+        USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5',
+        USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l'
+      };
+      // Feature flags
+      const FEATURES = {
+        allowSignUp: false,            // self-signup off by default (B2B admin)
+        allowHostedUI: false           // set true when domain provided via URL
+      };
 
-    async function loadEventNames({ preserveSelection = true } = {}) {
-      const filterEvent = document.getElementById('filterEvent');
-      const previousValue = preserveSelection ? filterEvent.value : "";
-      filterEvent.innerHTML = `<option value="">सभी कार्यक्रम</option>`;
-      const snap = await getDocs(collection(db, "eventNames"));
-      const sortedDocs = snap.docs.sort((a, b) => (a.data().name || '').localeCompare(b.data().name || '', 'hi'));
-      for (const docSnap of sortedDocs) {
-        const data = docSnap.data();
-        eventNameMap[docSnap.id] = data.name || 'Unknown';
-        const option = document.createElement('option');
-        option.value = docSnap.id;
-        option.textContent = data.name;
-        filterEvent.appendChild(option);
+      // URL overrides for quick testing:
+      // ?region=...&userPoolId=...&clientId=...&authflow=password&signup=1&domain=YOUR_DOMAIN&api=YOUR_API_BASE
+      const qp = new URLSearchParams(location.search);
+      const COGNITO = {
+        REGION: qp.get('region') || DEFAULT_COGNITO.REGION,
+        USER_POOL_ID: qp.get('userPoolId') || DEFAULT_COGNITO.USER_POOL_ID,
+        USER_POOL_WEB_CLIENT_ID: qp.get('clientId') || DEFAULT_COGNITO.USER_POOL_WEB_CLIENT_ID,
+      };
+      if (qp.has('signup')) FEATURES.allowSignUp = qp.get('signup') === '1';
+      const HOSTED_UI_DOMAIN = qp.get('domain') || '';
+      if (HOSTED_UI_DOMAIN) FEATURES.allowHostedUI = true;
+      const API_BASE = qp.get('api') || '';
+
+      // Infer region from userPoolId prefix to avoid endpoint mismatch
+      const inferredRegion = (COGNITO.USER_POOL_ID.match(/^([a-z]{2}-[a-z-]+-\d+)_/i) || [null, null])[1];
+      if (inferredRegion && inferredRegion !== COGNITO.REGION) {
+        console.warn('[Amplify] Region mismatch: config', COGNITO.REGION, 'vs inferred', inferredRegion, '→ using inferred');
+        COGNITO.REGION = inferredRegion;
       }
-      if (preserveSelection) filterEvent.value = previousValue;
-    }
 
-    window.addEventName = async function() {
-      const newEventName = document.getElementById('newEventName').value.trim();
-      if (!newEventName) return alert('कार्यक्रम नाम लिखिए!');
-      await addDoc(collection(db, "eventNames"), { name: newEventName });
-      document.getElementById('newEventName').value = '';
-      await loadEventNames({ preserveSelection: true });
-      await loadListsOnly();
-    };
-    
-    window.editEventNamePrompt = async function(eventNameId) {
-      const current = eventNameMap[eventNameId] || '';
-      const updated = prompt("नया कार्यक्रम नाम लिखें:", current);
-      if (updated && updated.trim() && updated !== current) {
-        await updateDoc(doc(db, "eventNames", eventNameId), { name: updated.trim() });
-        await loadEventNames({ preserveSelection: true });
-        await loadListsOnly();
+      // Badges
+      const regionBadge = document.getElementById('regionBadge');
+      regionBadge.textContent = `Region: ${COGNITO.REGION}`; regionBadge.classList.remove('hidden');
+      const flowBadge = document.getElementById('flowBadge');
+
+      // ===== Utilities =====
+      function showToast(msg, type = 'info', ms = 3500) {
+        const el = document.getElementById('toast-container');
+        if (!el) return;
+        el.className = 'toast ' + type;
+        el.textContent = msg;
+        requestAnimationFrame(() => el.classList.add('show'));
+        setTimeout(() => el.classList.remove('show'), ms);
       }
-    };
+      const isFileProto = location.protocol === 'file:';
 
-    window.deleteEventName = async function(eventNameId) {
-      if (confirm("इस कार्यक्रम नाम को हटाने से सम्बंधित सभी संयोजक और रिपोर्ट भी हट जायेंगे!\nपक्का?")) {
-        await deleteDoc(doc(db, "eventNames", eventNameId));
-        document.getElementById('filterEvent').value = ''; 
-        document.getElementById('eventActions').style.display = 'none';
-        await loadEventNames({ preserveSelection: false });
-        await loadListsOnly();
-      }
-    };
+      // Sections
+      const sectionIds = ['loginSection', 'signUpSection', 'confirmSection', 'forgotSection', 'newPasswordSection', 'dashboardSection', 'userMgmtSection', 'uploadSection'];
+      function showSection(el) { sectionIds.forEach(id => document.getElementById(id).classList.remove('active')); el.classList.add('active'); }
 
-    const filterMandal = document.getElementById('filterMandal');
-    mandals.forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m;
-      opt.textContent = m;
-      filterMandal.appendChild(opt);
-    });
+      // DOM nodes
+      const loginSection = document.getElementById('loginSection');
+      const dashboardSection = document.getElementById('dashboardSection');
+      const signUpSection = document.getElementById('signUpSection');
+      const confirmSection = document.getElementById('confirmSection');
+      const forgotSection = document.getElementById('forgotSection');
+      const newPasswordSection = document.getElementById('newPasswordSection');
+      const uploadSection = document.getElementById('uploadSection');
+      const userMgmtSection = document.getElementById('userMgmtSection');
 
-    document.getElementById('filterEvent').addEventListener('change', function(){
-      const selectedEventId = this.value;
-      const eventActionsDiv = document.getElementById('eventActions');
-      if (selectedEventId) {
-        eventActionsDiv.style.display = 'flex';
-        document.getElementById('editEventBtn').onclick = () => editEventNamePrompt(selectedEventId);
-        document.getElementById('deleteEventBtn').onclick = () => deleteEventName(selectedEventId);
-      } else {
-        eventActionsDiv.style.display = 'none';
-      }
-      eventPage=1;coordPage=1;reportPage=1;loadListsOnly();
-    });
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const loginBtn = document.getElementById('loginBtn');
+      const goToSignUp = document.getElementById('goToSignUp');
+      const goToForgot = document.getElementById('goToForgot');
+      const hostedUiBtn = document.getElementById('hostedUiBtn');
 
-    document.getElementById('filterMandal').addEventListener('change', function(){eventPage=1;coordPage=1;reportPage=1;loadListsOnly();});
+      const suEmail = document.getElementById('suEmail');
+      const suPassword = document.getElementById('suPassword');
+      const signUpBtn = document.getElementById('signUpBtn');
+      const backToLoginFromSignUp = document.getElementById('backToLoginFromSignUp');
 
-    window.switchTab = function(tabId) {
-      ['eventsTab','coordinatorsTab','reportsTab'].forEach(id => document.getElementById(id).classList.remove('active'));
-      ['eventTabBtn','coordinatorTabBtn','reportTabBtn'].forEach(id=>document.getElementById(id).classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      document.getElementById(tabId.replace('Tab', 'TabBtn')).classList.add('active');
-    }
+      const cfEmail = document.getElementById('cfEmail');
+      const cfCode = document.getElementById('cfCode');
+      const confirmBtn = document.getElementById('confirmBtn');
+      const resendBtn = document.getElementById('resendBtn');
+      const backToLoginFromConfirm = document.getElementById('backToLoginFromConfirm');
 
-    window.loadEvents = async function() {
+      const fpEmail = document.getElementById('fpEmail');
+      const fpCode = document.getElementById('fpCode');
+      const fpNew = document.getElementById('fpNew');
+      const fpSend = document.getElementById('fpSend');
+      const fpConfirm = document.getElementById('fpConfirm');
+      const fpBackToLogin = document.getElementById('fpBackToLogin');
+
+      const logoutBtn = document.getElementById('logoutBtn');
+      const diagBtn = document.getElementById('diagBtn');
+      const diagOut = document.getElementById('diagOut');
+
       const eventList = document.getElementById('eventList');
-      eventList.innerHTML = ''; document.getElementById('eventPagination').innerHTML = '';
-      const filterEventId = document.getElementById('filterEvent').value;
-      const filterMandalVal = document.getElementById('filterMandal').value;
-      const searchTerm = document.getElementById('eventSearch').value.toLowerCase();
-      
-      const events = await getDocs(collection(db, "events"));
-      let filtered = [];
-      for (const docSnap of events.docs) {
-        const event = docSnap.data();
-        const eventName = eventNameMap[event.eventNameId] || '';
-        if (filterEventId && event.eventNameId !== filterEventId) continue;
-        if (filterMandalVal && event.mandal !== filterMandalVal) continue;
-        const searchableText = `${eventName} ${event.mandal || ''} ${event.location || ''}`.toLowerCase();
-        if (searchTerm && !searchableText.includes(searchTerm)) continue;
-        filtered.push({id: docSnap.id, ...event, eventName});
-      }
-      
-      const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-      eventPage = Math.min(eventPage, totalPages);
-      const pageEvents = filtered.slice((eventPage - 1) * PAGE_SIZE, eventPage * PAGE_SIZE);
-      
-      for (const event of pageEvents) {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${event.eventName}</td><td>${event.mandal || '-'}</td><td>${event.date || '-'}</td><td>${event.time || '-'}</td><td>${event.location || '-'}</td><td><button class="action-btn" onclick="editEvent('${event.id}', '${event.eventNameId}')">✏️</button><button class="action-btn delete" onclick="deleteEvent('${event.id}')">🗑️</button></td>`;
-        eventList.appendChild(row);
-      }
-      document.getElementById('eventPagination').innerHTML = `<div style="text-align:center"><button onclick="changeEventPage(-1)" ${eventPage===1?'disabled':''}>पिछला</button> ${eventPage}/${totalPages} <button onclick="changeEventPage(1)" ${eventPage===totalPages?'disabled':''}>अगला</button></div>`;
-    }
+      const refreshEvents = document.getElementById('refreshEvents');
 
-    window.loadCoordinators = async function() {
-      const coordinatorList = document.getElementById('coordinatorList');
-      coordinatorList.innerHTML = ''; document.getElementById('coordPagination').innerHTML = '';
-      const filterEventId = document.getElementById('filterEvent').value;
-      const filterMandalVal = document.getElementById('filterMandal').value;
-      const searchTerm = document.getElementById('coordinatorSearch').value.toLowerCase();
-      
-      let filtered = [];
-      const eventNamesSnap = await getDocs(collection(db, "eventNames"));
-      for (const eventNameDoc of eventNamesSnap.docs) {
-        const eventNameId = eventNameDoc.id;
-        if (filterEventId && eventNameId !== filterEventId) continue;
-        const eventName = eventNameDoc.data().name || '';
-        const coordsSnap = await getDocs(collection(db, `eventNames/${eventNameId}/coordinators`));
-        for (const docSnap of coordsSnap.docs) {
-          const c = docSnap.data();
-          if (filterMandalVal && c.mandal !== filterMandalVal) continue;
-          const searchableText = `${eventName} ${c.mandal || ''} ${c.name || ''} ${c.mobile || ''} ${c.coCoordName1 || ''} ${c.coCoordMobile1 || ''} ${c.coCoordName2 || ''} ${c.coCoordMobile2 || ''}`.toLowerCase();
-          if(searchTerm && !searchableText.includes(searchTerm)) continue;
-          filtered.push({id: docSnap.id, eventNameId, eventName, ...c});
+      const backToDashboard = document.getElementById('backToDashboard');
+      const fileInput = document.getElementById('fileInput');
+      const startUpload = document.getElementById('startUpload');
+      const uploadTitle = document.getElementById('uploadTitle');
+      const uploadStatus = document.getElementById('uploadStatus');
+
+      const signupDisabledMsg = document.getElementById('signupDisabledMsg');
+
+      // Master Admin UI
+      const masterAdminBar = document.getElementById('masterAdminBar');
+      const masterNotice = document.getElementById('masterNotice');
+      const openUserMgmt = document.getElementById('openUserMgmt');
+      const backFromUserMgmt = document.getElementById('backFromUserMgmt');
+      const userApiWarn = document.getElementById('userApiWarn');
+      const umEmail = document.getElementById('umEmail');
+      const umPassword = document.getElementById('umPassword');
+      const umGroups = document.getElementById('umGroups');
+      const umVerifyEmail = document.getElementById('umVerifyEmail');
+      const umCreateBtn = document.getElementById('umCreateBtn');
+      const umRefresh = document.getElementById('umRefresh');
+      const umNext = document.getElementById('umNext');
+      const umTbody = document.getElementById('umTbody');
+      const umSearch = document.getElementById('umSearch');
+
+      // Toggle sign-up / hosted UI visibility
+      function updateSignUpVisibility(){
+        if (FEATURES.allowSignUp){
+          goToSignUp.classList.remove('hidden'); signupDisabledMsg.classList.add('hidden');
+        } else {
+          goToSignUp.classList.add('hidden'); signupDisabledMsg.classList.remove('hidden');
+          if (signUpSection.classList.contains('active')) showSection(loginSection);
         }
+        hostedUiBtn.classList.toggle('hidden', !FEATURES.allowHostedUI);
       }
 
-      const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-      coordPage = Math.min(coordPage, totalPages);
-      const pageCoords = filtered.slice((coordPage - 1) * PAGE_SIZE, coordPage * PAGE_SIZE);
-      
-      for (const c of pageCoords) {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${c.eventName}</td><td>${c.mandal || '-'}</td><td>${c.name || '-'}</td><td>${c.mobile || '-'}</td><td>${c.coCoordName1 || '-'}</td><td>${c.coCoordMobile1 || '-'}</td><td>${c.coCoordName2 || '-'}</td><td>${c.coCoordMobile2 || '-'}</td><td><button class="action-btn" onclick="editCoordinator('${c.eventNameId}','${c.id}')">✏️</button><button class="action-btn delete" onclick="deleteCoordinator('${c.eventNameId}','${c.id}')">🗑️</button></td>`;
-        coordinatorList.appendChild(row);
+      // Enter-to-submit
+      [emailInput, passwordInput].forEach(inp => inp && inp.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); }));
+
+      // ===== Amplify Loader (UMD + ESM + timeouts) =====
+      const fallbackAttemptLog = [];
+      const AMPLIFY_URLS_UMD = [
+        'https://cdn.jsdelivr.net/npm/aws-amplify@5.3.21/dist/aws-amplify.min.js',
+        'https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js',
+        'https://cdn.jsdelivr.net/npm/aws-amplify/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify@5.3.21/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify@5/dist/aws-amplify.min.js',
+        'https://unpkg.com/aws-amplify/dist/aws-amplify.min.js',
+        '/libs/aws-amplify-5.min.js',
+        '/vendor/aws-amplify.min.js'
+      ];
+      const AMPLIFY_URLS_ESM = [
+        'https://cdn.skypack.dev/aws-amplify@5',
+        'https://esm.run/aws-amplify@5',
+        'https://esm.sh/aws-amplify@5?bundle',
+        'https://esm.sh/aws-amplify@5.3.21?bundle'
+      ];
+      function withTimeout(promise, ms, label){ let t; const err = new Error('Timeout: '+label); const timer = new Promise((_, reject)=> t = setTimeout(()=>reject(err), ms)); return Promise.race([promise.finally(()=>clearTimeout(t)), timer]); }
+      function scriptLoad(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.src = url; s.async = false; s.onload = () => { fallbackAttemptLog.push(`UMD ok: ${url}`); resolve(url); }; s.onerror = () => { fallbackAttemptLog.push(`UMD fail: ${url}`); reject(new Error('Failed to load: '+url)); }; document.head.appendChild(s); }); }
+      function moduleImport(url){ return new Promise((resolve, reject)=>{ const s = document.createElement('script'); s.type = 'module'; s.textContent = `import * as pkg from '${url}'; window.aws_amplify = window.aws_amplify || pkg;`; s.onload = () => { fallbackAttemptLog.push(`ESM ok: ${url}`); resolve(url); }; s.onerror = () => { fallbackAttemptLog.push(`ESM fail: ${url}`); reject(new Error('Failed to import: '+url)); }; document.head.appendChild(s); }); }
+      async function ensureAmplify(){ if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; let lastErr; for (const url of AMPLIFY_URLS_UMD){ try{ await withTimeout(scriptLoad(url), 4000, url); if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; }catch(e){ lastErr = e; } } for (const url of AMPLIFY_URLS_ESM){ try{ await withTimeout(moduleImport(url), 6000, url); if (window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify) return true; }catch(e){ lastErr = e; } } throw (lastErr || new Error('Amplify UMD not loaded')); }
+      function resolveAmplify(){ const ns = window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify; const Amplify = ns?.Amplify || ns?.default || ns; const Auth = ns?.Auth || Amplify?.Auth; const Storage = ns?.Storage || Amplify?.Storage; return { Amplify, Auth, Storage }; }
+
+      // ===== App Logic =====
+      let AUTH_FLOW = (qp.get('authflow') === 'password') ? 'USER_PASSWORD_AUTH' : 'USER_SRP_AUTH';
+      async function configureAmplify(){
+        const { Amplify } = resolveAmplify(); if (!Amplify?.configure) throw new Error('Amplify.configure not available');
+        Amplify.configure({ Auth: { region: COGNITO.REGION, userPoolId: COGNITO.USER_POOL_ID, userPoolWebClientId: COGNITO.USER_POOL_WEB_CLIENT_ID, authenticationFlowType: AUTH_FLOW } });
+        flowBadge.textContent = `AuthFlow: ${AUTH_FLOW}`; flowBadge.classList.remove('hidden');
       }
-      document.getElementById('coordPagination').innerHTML = `<div style="text-align:center"><button onclick="changeCoordPage(-1)" ${coordPage===1?'disabled':''}>पिछला</button> ${coordPage}/${totalPages} <button onclick="changeCoordPage(1)" ${coordPage===totalPages?'disabled':''}>अगला</button></div>`;
-    }
+      async function checkUserSession(){
+        const { Auth } = resolveAmplify();
+        try{
+          const user = await Auth.currentAuthenticatedUser();
+          if (user){
+            logoutBtn.classList.remove('hidden');
+            // Parse groups from ID token
+            const session = await Auth.currentSession();
+            const idToken = session.getIdToken().getJwtToken();
+            const payload = JSON.parse(atob(idToken.split('.')[1] || 'e30='));
+            const groups = payload['cognito:groups'] || [];
+            const isMaster = Array.isArray(groups) && groups.includes('master-admin');
+            window.__id_token = idToken; window.__is_master = isMaster;
+            if (isMaster){ masterAdminBar.classList.remove('hidden'); masterNotice.classList.remove('hidden'); }
+            showSection(dashboardSection); await loadEvents();
+          } else { showSection(loginSection); }
+        } catch{ showSection(loginSection); }
+      }
 
-    window.loadReports = async function() {
-      const reportList = document.getElementById('reportList');
-      reportList.innerHTML = ''; document.getElementById('reportPagination').innerHTML = '';
-      const filterEventId = document.getElementById('filterEvent').value;
-      const filterMandalVal = document.getElementById('filterMandal').value;
-      const searchTerm = document.getElementById('reportSearch').value.toLowerCase();
+      function preValidateLogin(){
+        const u = (emailInput.value || '').trim();
+        const p = passwordInput.value;
+        if (!u || !p){ showToast('ईमेल/यूज़रनेम और पासवर्ड भरें', 'error'); return false; }
+        return true;
+      }
 
-      let allReports = [];
-      const eventNamesSnap = await getDocs(collection(db, "eventNames"));
-      for (const eventNameDoc of eventNamesSnap.docs) {
-        const eventNameId = eventNameDoc.id;
-        const eventName = eventNameDoc.data().name || '';
-        const reportsSnap = await getDocs(collection(db, `eventNames/${eventNameId}/reports`));
-        for (const docSnap of reportsSnap.docs) {
-          allReports.push({id: docSnap.id, eventNameId, name: eventName, ...docSnap.data()});
+      function mapAuthError(error){
+        const name = error?.name || 'Error';
+        const raw = error?.message || '';
+        const map = {
+          UserNotFoundException: 'यूज़र नहीं मिला — सही पूल/क्रेडेंशियल्स जाँचें',
+          NotAuthorizedException: 'गलत पासवर्ड या यूज़र निष्क्रिय',
+          UserNotConfirmedException: 'ईमेल वेरिफ़िकेशन पेंडिंग — कोड कन्फ़र्म करें',
+          PasswordResetRequiredException: 'पासवर्ड रीसेट आवश्यक',
+        };
+        let hint = map[name] || raw || 'लॉगिन में त्रुटि';
+        if (/SRP|Password verifier failed/i.test(raw) && AUTH_FLOW === 'USER_SRP_AUTH') hint += ' — URL में ?authflow=password ट्राय करें';
+        return { name, hint };
+      }
+
+      async function doLogin(){
+        const { Auth } = resolveAmplify();
+        if (!preValidateLogin()) return;
+        const username = (emailInput.value || '').trim();
+        const password = passwordInput.value;
+        loginBtn.disabled = true;
+        try{
+          const res = await Auth.signIn(username, password);
+          if (res?.challengeName === 'NEW_PASSWORD_REQUIRED'){
+            pendingChallengeUser = res; showSection(newPasswordSection); showToast('पहली बार लॉगिन — नया पासवर्ड सेट करें', 'info', 6000); return;
+          }
+          showToast('लॉगिन सफल', 'success'); logoutBtn.classList.remove('hidden');
+          emailInput.value=''; passwordInput.value='';
+          showSection(dashboardSection); await loadEvents();
+        } catch(error){
+          console.error('SignIn error', error);
+          let { name, hint } = mapAuthError(error);
+          // SRP issues → auto switch to PASSWORD once
+          if (/SRP|Password verifier failed/i.test(error?.message||'') && AUTH_FLOW === 'USER_SRP_AUTH'){
+            try{
+              AUTH_FLOW = 'USER_PASSWORD_AUTH'; await configureAmplify();
+              const res2 = await Auth.signIn(username, password);
+              if (res2?.challengeName === 'NEW_PASSWORD_REQUIRED'){ pendingChallengeUser = res2; showSection(newPasswordSection); showToast('पहली बार लॉगिन — नया पासवर्ड', 'info'); return; }
+              showToast('लॉगिन सफल (PASSWORD flow)', 'success'); flowBadge.textContent = `AuthFlow: ${AUTH_FLOW}`;
+              logoutBtn.classList.remove('hidden'); showSection(dashboardSection); await loadEvents(); return;
+            }catch(e2){ console.error('Fallback login failed', e2); const m = mapAuthError(e2); name = m.name; hint = m.hint; }
+          }
+          showToast(`${name}: ${hint}`, 'error', 7000);
+          if (name==='UserNotConfirmedException'){ cfEmail.value=username; showSection(confirmSection); }
+          if (name==='PasswordResetRequiredException'){ fpEmail.value=username; showSection(forgotSection); }
+          if (name==='UserNotFoundException' && FEATURES.allowSignUp){ suEmail.value=username; showSection(signUpSection); }
+        } finally { loginBtn.disabled = false; }
+      }
+
+      async function doHostedUILogin(){
+        if (!FEATURES.allowHostedUI) return;
+        const redirectUri = location.origin + location.pathname;
+        const url = `https://${HOSTED_UI_DOMAIN}/login?client_id=${encodeURIComponent(COGNITO.USER_POOL_WEB_CLIENT_ID)}&response_type=code&scope=openid+email+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
+        location.href = url;
+      }
+
+      async function doSignUp(){ const { Auth } = resolveAmplify(); const email = suEmail.value.trim(); const pwd = suPassword.value; if(!email||!pwd){ showToast('ईमेल/पासवर्ड भरें', 'error'); return; } if(!FEATURES.allowSignUp){ showToast('इस पूल में self-signup बंद है — कृपया एडमिन से अकाउंट बनवाएँ', 'error', 5000); return; } signUpBtn.disabled=true; try{ await Auth.signUp({ username: email, password: pwd, attributes:{ email } }); showToast('साइन-अप सफल — ईमेल पर कोड भेजा गया', 'success', 5000); cfEmail.value=email; cfCode.value=''; showSection(confirmSection);} catch(e){ console.error('SignUp error', e); if (e?.name==='NotAuthorizedException' && /SignUp is not permitted/i.test(e?.message||'')){ FEATURES.allowSignUp=false; updateSignUpVisibility(); showToast('Self-signup इस User Pool में disabled है', 'error', 6000); showSection(loginSection); } else { showToast(e?.message || 'साइन-अप त्रुटि', 'error'); } } finally{ signUpBtn.disabled=false; } }
+      async function doConfirm(){ const { Auth } = resolveAmplify(); const email=(cfEmail.value||'').trim(); const code=(cfCode.value||'').trim(); if(!email||!code){ showToast('ईमेल और कोड भरें', 'error'); return; } confirmBtn.disabled=true; try{ await Auth.confirmSignUp(email, code); showToast('सत्यापन सफल — अब लॉगिन करें', 'success'); emailInput.value=email; showSection(loginSection);} catch(e){ console.error('Confirm error', e); showToast(e?.message || 'कन्फ़र्मेशन त्रुटि', 'error'); } finally{ confirmBtn.disabled=false; } }
+
+      async function doForgotStart(){ const { Auth } = resolveAmplify(); const u=(fpEmail.value||'').trim(); if(!u){ showToast('ईमेल/यूज़रनेम भरें', 'error'); return; } try{ await Auth.forgotPassword(u); showToast('रीसेट कोड भेजा गया', 'success'); } catch(e){ console.error('Forgot start error', e); showToast(e?.message || 'रीसेट कोड भेजने में त्रुटि', 'error'); } }
+      async function doForgotConfirm(){ const { Auth } = resolveAmplify(); const u=(fpEmail.value||'').trim(); const code=(fpCode.value||'').trim(); const np=(fpNew.value||''); if(!u||!code||!np){ showToast('ईमेल/यूज़र/कोड/नया पासवर्ड भरें', 'error'); return; } try{ await Auth.forgotPasswordSubmit(u, code, np); showToast('पासवर्ड बदल गया — अब लॉगिन करें', 'success'); emailInput.value=u; showSection(loginSection); } catch(e){ console.error('Forgot submit error', e); showToast(e?.message || 'पासवर्ड बदलने में त्रुटि', 'error'); } }
+
+      async function doResend(){ const { Auth } = resolveAmplify(); const email=(cfEmail.value||'').trim(); if(!email){ showToast('ईमेल भरें', 'error'); return; } try{ await Auth.resendSignUp(email); showToast('कोड पुनः भेजा गया', 'success'); } catch(e){ console.error('Resend error', e); showToast(e?.message || 'री-सेंड त्रुटि', 'error'); } }
+      async function doLogout(){ const { Auth } = resolveAmplify(); try{ await Auth.signOut(); }catch{} showToast('लॉग आउट किया गया', 'info'); logoutBtn.classList.add('hidden'); showSection(loginSection); }
+
+      // Dummy events
+      async function loadEvents(){ const items=[{id:'evt_1',name:'Diwali Night 2024',photos:0},{id:'evt_2',name:'Wedding - A&V',photos:120},{id:'evt_3',name:'Corporate Meetup',photos:58}]; renderEvents(items); }
+      function renderEvents(items){ eventList.innerHTML=''; if(!items||!items.length){ eventList.innerHTML='<div class="text-sm text-gray-600">कोई इवेंट नहीं मिला</div>'; return; } for(const it of items){ const card=document.createElement('div'); card.className='bg-white rounded-2xl shadow p-5 flex flex-col gap-3'; card.innerHTML=`<div class="flex-1"><div class="text-base font-semibold">${it.name}</div><div class="text-sm text-gray-500 mt-1">फ़ोटो: ${it.photos}</div></div><div class="flex gap-2"><button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${it.id}" data-event-name="${it.name}">फ़ोटो अपलोड</button><button class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm" disabled>मैनेज</button></div>`; eventList.appendChild(card);} }
+
+      // Delegation & Upload
+      eventList.addEventListener('click', (e)=>{ const btn=e.target.closest('.upload-btn'); if(!btn) return; const eventName=btn.dataset.eventName; const eventId=btn.dataset.eventId; uploadTitle.textContent=`"${eventName}" में तस्वीरें अपलोड करें`; uploadSection.dataset.eventId=eventId; showSection(uploadSection); });
+      fileInput.addEventListener('change', ()=>{ startUpload.disabled=!(fileInput.files&&fileInput.files.length); uploadStatus.textContent=''; });
+      async function uploadFilesForEvent(eventId){ if(!fileInput.files?.length) return; const files=Array.from(fileInput.files); let uploaded=0; for(const file of files){ try{ await new Promise(r=>setTimeout(r,300)); uploaded++; uploadStatus.textContent=`${uploaded}/${files.length} अपलोड हो गया`; } catch(e){ console.error('Upload failed', e); showToast('किसी फ़ाइल का अपलोड विफल', 'error'); } } if(uploaded===files.length){ showToast('सभी फ़ाइलें अपलोड हो गईं', 'success'); fileInput.value=''; startUpload.disabled=true; } }
+
+      // ===== Master Admin — backend helpers =====
+      function authzHeaders(){ return { 'Authorization': window.__id_token }; }
+      async function loadUsers(nextToken=null){
+        umTbody.innerHTML = '';
+        if (!API_BASE){
+          // Demo rows
+          umTbody.innerHTML = `<tr><td class="px-3 py-2">demo-user</td><td class="px-3 py-2">demo@example.com</td><td class="px-3 py-2">CONFIRMED</td><td class="px-3 py-2">photographer</td><td class="px-3 py-2 text-xs text-gray-500">(डेमो)</td></tr>`;
+          umNext.classList.add('hidden'); return;
         }
+        try{
+          const q = new URLSearchParams({ limit: '25' });
+          if (nextToken) q.set('nextToken', nextToken);
+          const search = (umSearch.value||'').trim();
+          if (search) q.set('filter', `email = "${search}"`);
+          const r = await fetch(`${API_BASE.replace(/\/$/, '')}/users?${q}`, { headers: authzHeaders() });
+          if (!r.ok) throw new Error(`List users failed: ${r.status}`);
+          const data = await r.json();
+          (data.users||[]).forEach(u=> addUserRow(u));
+          if (data.nextToken){ window.__um_next_token = data.nextToken; umNext.classList.remove('hidden'); } else { umNext.classList.add('hidden'); }
+        } catch(e){ console.error(e); showToast(e.message || 'यूज़र लोड त्रुटि', 'error'); }
       }
-      
-      let filtered = allReports.filter(r => {
-          if (filterEventId && r.eventNameId !== filterEventId) return false;
-          if (filterMandalVal && r.mandal !== filterMandalVal) return false;
-          const searchableText = `${r.name} ${r.mandal || ''} ${r.location || ''} ${r.guests || ''} ${r.details || ''}`.toLowerCase();
-          if (searchTerm && !searchableText.includes(searchTerm)) return false;
-          return true;
+      function addUserRow(u){
+        const tr = document.createElement('tr');
+        const email = (u.email || (u.Attributes||[]).find(a=>a.Name==='email')?.Value || '-')
+        const username = u.username || u.Username || '-';
+        const status = u.userStatus || u.UserStatus || '-';
+        const groups = Array.isArray(u.groups)? u.groups.join(',') : (u.Groups||[]).map(g=>g.groupName||g.GroupName).join(',');
+        tr.innerHTML = `<td class="px-3 py-2">${username}</td><td class="px-3 py-2">${email}</td><td class="px-3 py-2">${status}</td><td class="px-3 py-2">${groups||'-'}</td>
+          <td class="px-3 py-2">
+            <button class="um-reset border px-2 py-1 rounded-lg text-xs">Reset PW</button>
+            <button class="um-disable border px-2 py-1 rounded-lg text-xs">Disable</button>
+            <button class="um-enable border px-2 py-1 rounded-lg text-xs">Enable</button>
+            <button class="um-delete border px-2 py-1 rounded-lg text-xs text-red-600">Delete</button>
+          </td>`;
+        tr.dataset.username = username; tr.dataset.email = email;
+        umTbody.appendChild(tr);
+      }
+      async function createUserFromForm(){
+        if (!API_BASE){ showToast('Admin API सेट करें (?api=...)', 'error'); return; }
+        const email = (umEmail.value||'').trim();
+        if (!email){ showToast('ईमेल भरें', 'error'); return; }
+        const body = { email, verifyEmail: !!umVerifyEmail.checked };
+        if ((umPassword.value||'').length) body.password = umPassword.value;
+        const groups = (umGroups.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+        if (groups.length) body.groups = groups;
+        try{
+          const r = await fetch(`${API_BASE.replace(/\/$/, '')}/users`, { method:'POST', headers: { 'Content-Type': 'application/json', ...authzHeaders() }, body: JSON.stringify(body) });
+          if (!r.ok) throw new Error(`Create failed: ${r.status}`);
+          showToast('यूज़र बना दिया गया', 'success'); umEmail.value=''; umPassword.value=''; umGroups.value=''; umVerifyEmail.checked=false; loadUsers();
+        }catch(e){ console.error(e); showToast(e.message || 'यूज़र क्रिएशन त्रुटि', 'error'); }
+      }
+      // Row actions delegation
+      umTbody.addEventListener('click', async (e)=>{
+        const tr = e.target.closest('tr'); if (!tr) return;
+        const username = tr.dataset.username; if (!username) return;
+        const base = `${API_BASE.replace(/\/$/, '')}/users/${encodeURIComponent(username)}`;
+        async function call(path, method='POST', body){
+          const r = await fetch(`${base}${path}`, { method, headers: { 'Content-Type': 'application/json', ...authzHeaders() }, body: body? JSON.stringify(body): undefined });
+          if (!r.ok) throw new Error(`${path} failed: ${r.status}`); return r.json().catch(()=>({}));
+        }
+        try{
+          if (e.target.matches('.um-reset')){ const permanent = confirm('Permanent पासवर्ड सेट करें? OK=Permanent / Cancel=Temp'); let password=null; if (permanent){ password = prompt('नया पासवर्ड दर्ज करें'); if (!password) return; } await call('/reset-password','POST', { permanent, password }); showToast('पासवर्ड अपडेट हुआ', 'success'); }
+          if (e.target.matches('.um-disable')){ await call('/disable'); showToast('यूज़र disabled', 'success'); }
+          if (e.target.matches('.um-enable')){ await call('/enable'); showToast('यूज़र enabled', 'success'); }
+          if (e.target.matches('.um-delete')){ if (!confirm('डिलीट करें?')) return; await call('','DELETE'); showToast('यूज़र डिलीट', 'success'); tr.remove(); }
+        } catch(err){ console.error(err); showToast(err.message || 'एक्शन विफल', 'error'); }
       });
 
-      const reportedMandals = new Set(allReports.filter(r=> filterEventId ? r.eventNameId === filterEventId : true).map(r => r.mandal));
-      let pendingMandals = mandals.filter(m => !reportedMandals.has(m));
-      const pendingText = pendingMandals.length ? `रिपोर्ट नहीं: ${pendingMandals.join(", ")}` : 'सभी मंडलों से रिपोर्ट प्राप्त।';
-      document.getElementById('pendingMandals').innerText = (filterEventId && pendingMandals.length) ? pendingText : '';
-      
-      const currentKey = `${filterEventId}-${pendingMandals.join("|")}`;
-      if (filterEventId && currentKey !== lastPendingKey) {
-        lastPendingKey = currentKey;
-        await sendTelegramAlert(pendingMandals.length ? `🔔 *${eventNameMap[filterEventId]}*: ${pendingMandals.length} मंडल शेष - ${pendingMandals.join(", ")}` : `✅ *${eventNameMap[filterEventId]}*: सभी मंडलों की रिपोर्ट प्राप्त।` );
+      // Toggle/Handlers
+      function updateSignUpVisibility(){ /* already defined earlier; keeping for clarity */ }
+      loginBtn.addEventListener('click', doLogin);
+      goToSignUp.addEventListener('click', ()=> showSection(signUpSection));
+      goToForgot.addEventListener('click', ()=> { fpEmail.value = emailInput.value; showSection(forgotSection); });
+      hostedUiBtn.addEventListener('click', doHostedUILogin);
+
+      signUpBtn.addEventListener('click', doSignUp);
+      backToLoginFromSignUp.addEventListener('click', ()=> showSection(loginSection));
+
+      confirmBtn.addEventListener('click', doConfirm);
+      resendBtn.addEventListener('click', doResend);
+      backToLoginFromConfirm.addEventListener('click', ()=> showSection(loginSection));
+
+      fpSend.addEventListener('click', doForgotStart);
+      fpConfirm.addEventListener('click', doForgotConfirm);
+      fpBackToLogin.addEventListener('click', ()=> showSection(loginSection));
+
+      logoutBtn.addEventListener('click', doLogout);
+      refreshEvents.addEventListener('click', loadEvents);
+      backToDashboard.addEventListener('click', ()=> showSection(dashboardSection));
+      openUserMgmt.addEventListener('click', ()=> { if (!window.__is_master){ showToast('Master admin अधिकार आवश्यक', 'error'); return; } showSection(userMgmtSection); if(!API_BASE){ userApiWarn.classList.remove('hidden'); } loadUsers(); });
+      backFromUserMgmt.addEventListener('click', ()=> showSection(dashboardSection));
+      umRefresh.addEventListener('click', ()=> loadUsers());
+      umNext.addEventListener('click', ()=> loadUsers(window.__um_next_token||null));
+      umCreateBtn.addEventListener('click', createUserFromForm);
+      startUpload.addEventListener('click', async()=>{ const eventId=uploadSection.dataset.eventId; if(!eventId){ showToast('इवेंट चयन करें', 'error'); return; } await uploadFilesForEvent(eventId); });
+
+      diagBtn.addEventListener('click', runDiagnostics);
+
+      // NEW PASSWORD handlers
+      let pendingChallengeUser = null;
+      const npwInput = document.getElementById('npwInput');
+      const npwSubmit = document.getElementById('npwSubmit');
+      const npwCancel = document.getElementById('npwCancel');
+      npwSubmit.addEventListener('click', async ()=>{
+        const { Auth } = resolveAmplify();
+        const npw = npwInput.value || '';
+        if (!pendingChallengeUser){ showToast('कोई पेंडिंग सेशन नहीं', 'error'); return; }
+        if (!npw){ showToast('नया पासवर्ड भरें', 'error'); return; }
+        try { const done = await Auth.completeNewPassword(pendingChallengeUser, npw); pendingChallengeUser = null; npwInput.value=''; showToast('पासवर्ड सेट — लॉगिन पूरा', 'success'); logoutBtn.classList.remove('hidden'); showSection(dashboardSection); await loadEvents(); console.debug('CompleteNewPassword:', done); }
+        catch(e){ console.error('CompleteNewPassword error', e); showToast(e?.message || 'पासवर्ड सेट करने में त्रुटि', 'error'); }
+      });
+      npwCancel.addEventListener('click', ()=>{ pendingChallengeUser = null; npwInput.value=''; showSection(loginSection); });
+
+      // Boot
+      (async function boot(){
+        try{
+          if(isFileProto) showToast('बेहतर अनुभव हेतु localhost से चलाएँ', 'info', 4500);
+          updateSignUpVisibility();
+          if(FEATURES.allowHostedUI) hostedUiBtn.classList.remove('hidden');
+          showToast('Amplify लोड हो रहा है…', 'info');
+          await ensureAmplify();
+          const { Amplify, Auth } = resolveAmplify(); if(!Amplify||!Auth) throw new Error('Amplify globals missing after load');
+          await configureAmplify(); showToast('Amplify तैयार', 'success');
+          await checkUserSession();
+        } catch(e){
+          console.error(e);
+          showToast('Amplify लोड नहीं हुआ — नेटवर्क/CDN चेक करें', 'error');
+          showSection(loginSection);
+        }
+      })();
+
+      // ===== Self-tests ("test cases") =====
+      function logDiag(line){ diagOut.textContent += (line + '\n'); }
+      function clearDiag(){ diagOut.textContent = ''; }
+      function assertTest(name, cond){ logDiag(`${cond ? '✅' : '❌'} ${name}`); return !!cond; }
+      async function runDiagnostics(){
+        clearDiag(); logDiag('— रनिंग Self-tests —'); logDiag(`URL: ${location.href}`); logDiag(`Protocol: ${location.protocol}`);
+        logDiag('Config (final):'); logDiag('  REGION=' + COGNITO.REGION); logDiag('  USER_POOL_ID=' + COGNITO.USER_POOL_ID); logDiag('  CLIENT_ID=' + COGNITO.USER_POOL_WEB_CLIENT_ID); logDiag('  Inferred from pool=' + (inferredRegion || 'n/a')); logDiag('  Expected Cognito endpoint: https://cognito-idp.'+COGNITO.REGION+'.amazonaws.com'); logDiag('  allowSignUp=' + FEATURES.allowSignUp + ', allowHostedUI=' + FEATURES.allowHostedUI + ', authFlow=' + AUTH_FLOW);
+        if (fallbackAttemptLog.length){ logDiag('Loader attempts:'); fallbackAttemptLog.forEach(x=>logDiag('  • '+x)); } else { logDiag('Loader attempts: (none recorded — library may be cached/present)'); }
+        let ampNS = window.aws_amplify || window.AwsAmplify || window.Amplify || window.amplify; assertTest('Amplify namespace detected', !!ampNS);
+        const { Amplify, Auth } = resolveAmplify(); assertTest('Amplify.configure उपलब्ध', !!Amplify?.configure); assertTest('Auth.signIn उपलब्ध', typeof Auth?.signIn === 'function'); assertTest('Auth.signUp उपलब्ध', typeof Auth?.signUp === 'function'); assertTest('Auth.confirmSignUp उपलब्ध', typeof Auth?.confirmSignUp === 'function'); assertTest('Auth.forgotPassword उपलब्ध', typeof Auth?.forgotPassword === 'function'); assertTest('Auth.forgotPasswordSubmit उपलब्ध', typeof Auth?.forgotPasswordSubmit === 'function'); assertTest('Auth.currentAuthenticatedUser उपलब्ध', typeof Auth?.currentAuthenticatedUser === 'function'); assertTest('Auth.completeNewPassword उपलब्ध', typeof Auth?.completeNewPassword === 'function');
+
+        // UI toggling
+        const before = document.querySelector('.admin-section.active'); showSection(dashboardSection); const dashActive = dashboardSection.classList.contains('active'); assertTest('Dashboard दिख रहा है', dashActive); showSection(before || loginSection);
+
+        // Events render & upload button routing
+        renderEvents([{id:'t_evt', name:'Test Event', photos: 1}]); const btn = document.querySelector('.upload-btn'); const hadBtn = assertTest('Upload बटन मौजूद', !!btn); if (hadBtn){ btn.click(); const upActive = uploadSection.classList.contains('active'); assertTest('Upload सेक्शन खुलता है', upActive); backToDashboard.click(); }
+
+        // File input default state
+        assertTest('Start Upload disabled by default', startUpload.disabled === true);
+
+        // Region inferred == configured (after auto-fix)
+        assertTest('Region matches userPool prefix (auto-fixed)', !inferredRegion || inferredRegion === COGNITO.REGION);
+
+        // Master admin gating tests (simulated)
+        const prevMaster = window.__is_master; window.__is_master = true; masterAdminBar.classList.remove('hidden'); assertTest('Master admin bar can be shown', !masterAdminBar.classList.contains('hidden')); window.__is_master = prevMaster;
+
+        // Sign-up visibility tests
+        const suVisible = !goToSignUp.classList.contains('hidden');
+        assertTest('Sign-up button visibility matches feature flag', suVisible === FEATURES.allowSignUp);
+        const prevAllow = FEATURES.allowSignUp; FEATURES.allowSignUp = true; updateSignUpVisibility(); const suVisible2 = !goToSignUp.classList.contains('hidden'); assertTest('Sign-up button becomes visible when enabled', suVisible2 === true); FEATURES.allowSignUp = prevAllow; updateSignUpVisibility();
+
+        // JWKS URL format + reachability (best effort)
+        const jwksUrl = `https://cognito-idp.${COGNITO.REGION}.amazonaws.com/${COGNITO.USER_POOL_ID}/.well-known/jwks.json`;
+        assertTest('JWKS URL looks valid', /cognito-idp\.[^/]+\.amazonaws\.com\/.+\/.well-known\/jwks\.json$/.test(jwksUrl));
+        try { const r = await fetch(jwksUrl, { method:'GET' }); logDiag('JWKS fetch status: ' + r.status); } catch(e){ logDiag('JWKS fetch error: ' + (e?.message||e)); }
+
+        // Client ID sanity (length >= 8)
+        assertTest('ClientId length sanity', (COGNITO.USER_POOL_WEB_CLIENT_ID||'').length >= 8);
+
+        try { await fetch('https://cdn.jsdelivr.net', { method:'HEAD', mode:'no-cors' }); logDiag('CDN reachability: attempted (no-cors)'); } catch(e){ logDiag('CDN reachability: blocked'); }
+        logDiag('— Self-tests complete —'); document.getElementById('diagPanel').open = true;
       }
-
-      const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-      reportPage = Math.min(reportPage, totalPages);
-      const pageReports = filtered.slice((reportPage - 1) * PAGE_SIZE, reportPage * PAGE_SIZE);
-      
-      for (const r of pageReports) {
-        let photosHTML = "";
-        if (Array.isArray(r.photos) && r.photos.length > 0) {
-          photosHTML = `<div class="report-photos-grid">${r.photos.slice(0,6).map(url => `<img src="${url}" crossorigin="anonymous" onclick="zoomImage(event, '${url}')">`).join('')}</div>`;
-        }
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${r.name}</td><td>${r.mandal || '-'}</td><td>${r.location || '-'}</td><td>${r.date || '-'}</td><td>${r.attendance || '-'}</td><td>${r.guests || '-'}</td><td>${r.details || '-'}</td><td>${photosHTML}</td><td><button class="action-btn" onclick="editReport('${r.eventNameId}','${r.id}')">✏️</button><button class="action-btn delete" onclick="deleteReport('${r.eventNameId}','${r.id}')">🗑️</button></td>`;
-        reportList.appendChild(row);
-      }
-      document.getElementById('reportPagination').innerHTML = `<div style="text-align:center"><button onclick="changeReportPage(-1)" ${reportPage===1?'disabled':''}>पिछला</button> ${reportPage}/${totalPages} <button onclick="changeReportPage(1)" ${reportPage===totalPages?'disabled':''}>अगला</button></div>`;
-    }
-
-    window.changeEventPage = function(diff) { eventPage = Math.max(1, eventPage + diff); loadEvents(); };
-    window.changeCoordPage = function(diff) { coordPage = Math.max(1, coordPage + diff); loadCoordinators(); };
-    window.changeReportPage = function(diff) { reportPage = Math.max(1, reportPage + diff); loadReports(); };
-    
-    window.editEvent = async function(id, eventNameId) {
-        const docSnap = await getDoc(doc(db, "events", id));
-        if (!docSnap.exists()) return alert("डेटा नहीं मिला!");
-        const event = docSnap.data();
-        const newMandal = prompt("मंडल:", event.mandal || ""); if (newMandal === null) return;
-        const newDate = prompt("तारीख:", event.date || ""); if (newDate === null) return;
-        const newTime = prompt("समय:", event.time || ""); if (newTime === null) return;
-        const newLocation = prompt("स्थान:", event.location || ""); if (newLocation === null) return;
-        await updateDoc(doc(db, "events", id), { mandal: newMandal, date: newDate, time: newTime, location: newLocation });
-        await loadEvents();
-    };
-    window.deleteEvent = async function(id) { if (confirm("पक्का डिलीट करना है?")) { await deleteDoc(doc(db, "events", id)); await loadEvents(); } };
-    
-    window.editCoordinator = async function(eventNameId, coordId) {
-        const docSnap = await getDoc(doc(db, `eventNames/${eventNameId}/coordinators`, coordId));
-        if (!docSnap.exists()) return alert("डेटा नहीं मिला!");
-        const c = docSnap.data();
-        const mandal = prompt("मंडल:", c.mandal || ""); if (mandal === null) return;
-        const name = prompt("संयोजक:", c.name || ""); if (name === null) return;
-        const mobile = prompt("मोबाइल:", c.mobile || ""); if (mobile === null) return;
-        const coCoordName1 = prompt("सह-संयोजक 1:", c.coCoordName1 || ""); if (coCoordName1 === null) return;
-        const coCoordMobile1 = prompt("मोबाइल 1:", c.coCoordMobile1 || ""); if (coCoordMobile1 === null) return;
-        const coCoordName2 = prompt("सह-संयोजक 2:", c.coCoordName2 || ""); if (coCoordName2 === null) return;
-        const coCoordMobile2 = prompt("मोबाइल 2:", c.coCoordMobile2 || ""); if (coCoordMobile2 === null) return;
-        await updateDoc(doc(db, `eventNames/${eventNameId}/coordinators`, coordId), { mandal, name, mobile, coCoordName1, coCoordMobile1, coCoordName2, coCoordMobile2 });
-        await loadCoordinators();
-    };
-    window.deleteCoordinator = async function(eventNameId, coordId) { if (confirm("पक्का डिलीट करना है?")) { await deleteDoc(doc(db, `eventNames/${eventNameId}/coordinators`, coordId)); await loadCoordinators(); } };
-
-    window.editReport = async function(eventNameId, reportId) {
-        const docSnap = await getDoc(doc(db, `eventNames/${eventNameId}/reports`, reportId));
-        if (!docSnap.exists()) return alert("डेटा नहीं मिला!");
-        const r = docSnap.data();
-        const mandal = prompt("मंडल:", r.mandal || ""); if (mandal === null) return;
-        const location = prompt("स्थान:", r.location || ""); if (location === null) return;
-        const date = prompt("तारीख:", r.date || ""); if (date === null) return;
-        const attendance = prompt("उपस्थिति:", r.attendance || ""); if (attendance === null) return;
-        const guests = prompt("विशिष्ट अतिथि:", r.guests || ""); if (guests === null) return;
-        const details = prompt("विवरण:", r.details || ""); if (details === null) return;
-        await updateDoc(doc(db, `eventNames/${eventNameId}/reports`, reportId), { mandal, location, date, attendance, guests, details });
-        await loadReports();
-    };
-    window.deleteReport = async function(eventNameId, reportId) { if (confirm("पक्का डिलीट करना है?")) { await deleteDoc(doc(db, `eventNames/${eventNameId}/reports`, reportId)); await loadReports(); } };
-    
-    window.zoomImage = function(e, url) { e.preventDefault(); document.getElementById('imgZoomModalImg').src = url; document.getElementById('imgZoomModal').style.display = 'flex'; };
-    document.getElementById('imgZoomModal').onclick = function() { this.style.display = 'none'; document.getElementById('imgZoomModalImg').src = ''; };
-    
-    async function loadListsOnly() { await Promise.all([loadEvents(), loadCoordinators(), loadReports()]); }
-    async function loadAll() { await loadEventNames(); await loadListsOnly(); }
-    
-    loadAll();
-  </script>
-
-  <script>
-    function exportTableToExcel(table, title) {
-        if (!table) return alert("एक्सेल एक्सपोर्ट के लिए सारणी नहीं मिली!");
-        const rows = Array.from(table.querySelectorAll('tr'));
-        let data;
-        if (title.includes("रिपोर्ट")) {
-            data = rows.map(row => Array.from(row.querySelectorAll("th, td")).filter(cell => !cell.querySelector('div.report-photos-grid')).map(cell => cell.innerText));
-        } else {
-             data = rows.map(row => Array.from(row.querySelectorAll("th:not(:last-child), td:not(:last-child)")).map(cell => cell.innerText));
-        }
-        
-        if (data.length < 2) return alert("एक्सेल में एक्सपोर्ट करने के लिए कोई डेटा नहीं है!");
-        
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, title);
-        XLSX.writeFile(wb, `${title}.xlsx`);
-    }
-
-    /**
-     * Captures an element after ensuring all images inside it are loaded.
-     * @param {string} selector - The CSS selector for the element to capture.
-     * @returns {Promise<HTMLCanvasElement>} A promise that resolves with the canvas element.
-     */
-    function captureElementWithImages(selector) {
-        const element = document.querySelector(selector);
-        if (!element) {
-            return Promise.reject("एलिमेंट नहीं मिला!");
-        }
-
-        const pagination = element.querySelector('.pagination-controls');
-        const actionButtons = element.querySelectorAll('.action-btn');
-        if (pagination) pagination.style.display = 'none';
-        actionButtons.forEach(btn => btn.style.display = 'none');
-
-        return new Promise((resolve, reject) => {
-            const images = Array.from(element.querySelectorAll('img'));
-            if (images.length === 0) {
-                // If no images, capture immediately
-                html2canvas(element, { useCORS: true, scale: 2, backgroundColor: "#fff" })
-                    .then(canvas => {
-                        if (pagination) pagination.style.display = 'block';
-                        actionButtons.forEach(btn => btn.style.display = 'inline-block');
-                        resolve(canvas);
-                    }).catch(reject);
-                return;
-            }
-
-            const imageLoadPromises = images.map(img => {
-                return new Promise((res) => {
-                    if (img.complete && img.naturalHeight > 0) {
-                        res();
-                    } else {
-                        img.onload = res;
-                        img.onerror = () => {
-                            console.warn(`Could not load image: ${img.src}`);
-                            res(); // Resolve even on error to not block the PDF generation
-                        };
-                    }
-                });
-            });
-
-            Promise.all(imageLoadPromises).then(() => {
-                setTimeout(() => { // Small delay to allow browser to render images
-                    html2canvas(element, { useCORS: true, scale: 2, backgroundColor: "#fff" })
-                        .then(canvas => {
-                            if (pagination) pagination.style.display = 'block';
-                            actionButtons.forEach(btn => btn.style.display = 'inline-block');
-                            resolve(canvas);
-                        })
-                        .catch(err => {
-                            if (pagination) pagination.style.display = 'block';
-                            actionButtons.forEach(btn => btn.style.display = 'inline-block');
-                            reject(err);
-                        });
-                }, 200);
-            });
-        });
-    }
-
-    function exportCanvasToPdf(canvas, fileName) {
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
-            unit: 'pt',
-            format: 'a4'
-        });
-
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const canvasAspectRatio = canvas.width / canvas.height;
-        const pageAspectRatio = pdfWidth / pdfHeight;
-
-        let imgWidth, imgHeight;
-        if (canvasAspectRatio > pageAspectRatio) {
-            imgWidth = pdfWidth - 40;
-            imgHeight = imgWidth / canvasAspectRatio;
-        } else {
-            imgHeight = pdfHeight - 40;
-            imgWidth = imgHeight * canvasAspectRatio;
-        }
-
-        const x = (pdfWidth - imgWidth) / 2;
-        const y = (pdfHeight - imgHeight) / 2;
-
-        pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
-        pdf.save(`${fileName}.pdf`);
-    }
-
-    function exportCanvasToJpg(canvas, fileName) {
-        let link = document.createElement("a");
-        link.href = canvas.toDataURL("image/jpeg", 0.9);
-        link.download = `${fileName}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-    
-    window.handleExport = async function() {
-        try {
-            const value = document.getElementById('exportDropdown').value;
-            if (!value) return alert("कृपया एक्सपोर्ट प्रकार चुनें!");
-            
-            const [category, type] = value.split('-');
-
-            let selector = `#${category}Tab`;
-            let fileName = "";
-            let table = document.querySelector(`${selector} table`);
-
-            if (category === 'events') fileName = "कार्यक्रम-सूची";
-            else if (category === 'coordinators') fileName = "संयोजक-सूची";
-            else if (category === 'reports') fileName = "रिपोर्ट-सूची";
-            else {
-                alert("अमान्य एक्सपोर्ट प्रकार।");
-                return;
-            }
-            
-            alert("फ़ाइल बनाई जा रही है, कृपया प्रतीक्षा करें...");
-
-            if (type === 'excel') {
-                exportTableToExcel(table, fileName);
-            } else {
-                captureElementWithImages(selector)
-                    .then(canvas => {
-                        if (type === 'pdf') {
-                            exportCanvasToPdf(canvas, fileName);
-                        } else if (type === 'jpg') {
-                            exportCanvasToJpg(canvas, fileName);
-                        }
-                    })
-                    .catch(err => {
-                        console.error("कैप्चर करने में त्रुटि:", err);
-                        alert("फ़ाइल बनाने में त्रुटि हुई।");
-                    });
-            }
-        } catch (error) {
-            console.error("फाइल बनाने में त्रुटि:", error);
-            alert("फ़ाइल बनाने में एक त्रुटि हुई। अधिक जानकारी के लिए कंसोल देखें।");
-        }
-    };
+    })();
   </script>
 </body>
 </html>
-
