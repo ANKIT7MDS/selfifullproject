@@ -3,49 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin | Event Memory Experience</title>
+  <title>Admin Portal | Event Memory Experience</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📸</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .admin-section { display: none; }
     .admin-section.active { display: block; }
-    .toast { position: fixed; right: 1rem; top: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background: #111827; color: #fff; opacity: 0; transition: opacity .2s ease, transform .2s ease; transform: translateY(-8px); z-index: 50; }
+    .toast { position: fixed; right: 1rem; top: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background: #111827; color: #fff; opacity: 0; transition: opacity .2s ease, transform .2s ease; transform: translateY(-8px); z-index: 100; }
     .toast.show { opacity: 1; transform: translateY(0); }
     .toast.success { background: #065f46; }
     .toast.error { background: #991b1b; }
     .toast.info { background: #1f2937; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 90; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-900">
-  <!-- Toast container -->
   <div id="toast-container" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- Root container -->
   <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 lg:p-8" data-admin-root>
-    <!-- Header -->
     <header class="flex items-center justify-between pb-4 border-b border-gray-200">
-      <div class="flex items-center gap-3">
-        <h1 class="text-2xl font-semibold tracking-tight">इवेंट गैलरी एडमिन</h1>
-      </div>
-      <div class="flex items-center gap-2">
-        <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">लॉग आउट</button>
-      </div>
+      <h1 class="text-2xl font-semibold tracking-tight">इवेंट गैलरी एडमिन</h1>
+      <button id="logoutBtn" class="hidden px-3 py-2 rounded-xl bg-gray-900 text-white text-sm hover:bg-black">लॉग आउट</button>
     </header>
 
     <!-- Login Section -->
     <section id="loginSection" class="admin-section active">
-      <div class="grid gap-6 max-w-md mt-6">
-        <div class="bg-white rounded-2xl shadow p-6">
-          <h2 class="text-lg font-medium mb-4">लॉगिन</h2>
-          <div class="grid gap-3">
-            <label class="text-sm">ईमेल/यूज़रनेम</label>
-            <input id="email" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
-            <label class="text-sm mt-2">पासवर्ड</label>
-            <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
-            <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
-          </div>
+        <!-- Login form HTML from previous version... -->
+        <div class="grid gap-6 max-w-md mt-6">
+            <div class="bg-white rounded-2xl shadow p-6">
+              <h2 class="text-lg font-medium mb-4">लॉगिन</h2>
+              <div class="grid gap-3">
+                <label class="text-sm">ईमेल/यूज़रनेम</label>
+                <input id="email" type="text" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="you@example.com" />
+                <label class="text-sm mt-2">पासवर्ड</label>
+                <input id="password" type="password" class="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="••••••••" />
+                <button id="loginBtn" class="mt-4 px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">लॉगिन</button>
+              </div>
+            </div>
         </div>
-      </div>
     </section>
 
     <!-- Dashboard Section -->
@@ -53,9 +49,14 @@
       <div class="mt-8">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-medium">इवेंट्स</h2>
-          <button id="refreshEvents" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
+          <div class="flex items-center gap-2">
+            <button id="openCreateEventModal" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">नया इवेंट बनाएँ</button>
+            <button id="refreshEvents" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">रिफ्रेश</button>
+          </div>
         </div>
-        <div id="eventList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="eventList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="text-center col-span-full p-8 text-gray-500">लोड हो रहा है...</div>
+        </div>
       </div>
     </section>
 
@@ -65,214 +66,314 @@
         <div class="flex items-start justify-between">
           <div>
             <h2 class="text-lg font-medium">फ़ोटो अपलोड</h2>
-            <p id="uploadTitle" class="text-sm text-gray-500 mt-1">किसी इवेंट के लिए फ़ोटो चुनें</p>
+            <p id="uploadTitle" class="text-sm text-gray-500 mt-1"></p>
           </div>
           <button id="backToDashboard" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm">बैक</button>
         </div>
         <div class="mt-4 grid gap-3">
           <input id="fileInput" type="file" multiple accept="image/*" class="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-black" />
+          <div id="uploadProgressContainer" class="hidden w-full bg-gray-200 rounded-full h-2.5">
+            <div id="uploadProgressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+          </div>
           <button id="startUpload" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black disabled:opacity-50" disabled>अपलोड शुरू करें</button>
-          <div id="uploadProgressContainer" class="text-sm text-gray-600 space-y-3 mt-2"></div>
+          <div id="uploadStatus" class="text-sm text-gray-600"></div>
         </div>
       </div>
     </section>
+
+    <!-- Create Event Modal -->
+    <div id="createEventModal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+            <h3 class="text-lg font-medium mb-4">नया इवेंट बनाएँ</h3>
+            <label class="text-sm">इवेंट का नाम</label>
+            <input id="newEventName" type="text" class="w-full mt-1 px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900" placeholder="जैसे, Diwali Celebration 2025" />
+            <div class="flex gap-2 mt-4">
+                <button id="createEventBtn" class="px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black">बनाएँ</button>
+                <button id="cancelCreateEvent" class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100">रद्द करें</button>
+            </div>
+        </div>
+    </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js"></script>
-  
-  <script>
-    // ===== 1. Configuration (editable) =====
-    const COGNITO_CONFIG = { 
-        region: 'ap-southeast-1', 
-        userPoolId: 'ap-southeast-1_YGZSUnSf5', 
-        userPoolWebClientId: '1mecg9v8gfau80k08arpofgl4l' 
-    };
-    const S3_CONFIG = { 
-        bucket: 'abstudios-photoapp-820345', 
-        region: 'ap-southeast-1' 
-    };
-
-    // ===== 2. Define ALL functions first =====
-    function showToast(msg, type = 'info', ms = 3500) {
-        const el = document.getElementById('toast-container');
-        if (!el) return;
-        el.className = `toast ${type} show`;
-        el.textContent = msg;
-        setTimeout(() => el.classList.remove('show'), ms);
-    }
-
-    function showSection(sectionId) {
-        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-        const sectionToShow = document.getElementById(sectionId);
-        if (sectionToShow) {
-            sectionToShow.classList.add('active');
+  <script type="module">
+    // ===== Amplify Loader (for authentication) =====
+    // This script will dynamically load the AWS Amplify library for Cognito authentication.
+    async function loadAmplify() {
+        if (window.aws_amplify) return window.aws_amplify;
+        try {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/aws-amplify@5/dist/aws-amplify.min.js';
+            document.head.appendChild(script);
+            await new Promise((resolve, reject) => {
+                script.onload = resolve;
+                script.onerror = reject;
+            });
+            return window.aws_amplify;
+        } catch (e) {
+            console.error("Could not load Amplify", e);
+            throw e;
         }
     }
-    
-    // ===== 3. The Main Application Code, wrapped in window.onload =====
-    window.onload = function() {
-        console.log("Page fully loaded. Starting app...");
-        
-        // Now it's safe to get Amplify and DOM elements
-        const { Amplify, Auth, Storage } = window.aws_amplify;
 
-        // Get all DOM elements
+    (async function app() {
+        // ===== Config =====
+        const qp = new URLSearchParams(location.search);
+        const API_BASE = qp.get('api') || '';
+        const COGNITO = {
+            REGION: 'ap-southeast-1',
+            USER_POOL_ID: 'ap-southeast-1_YGZSUnSf5',
+            USER_POOL_WEB_CLIENT_ID: '1mecg9v8gfau80k08arpofgl4l'
+        };
+
+        // ===== Utilities =====
+        function showToast(msg, type = 'info', ms = 3500) { /* ... toast implementation ... */ 
+            const el = document.getElementById('toast-container');
+            if (!el) return;
+            el.className = 'toast ' + type;
+            el.textContent = msg;
+            requestAnimationFrame(() => el.classList.add('show'));
+            setTimeout(() => el.classList.remove('show'), ms);
+        }
+
+        async function authFetch(path, options = {}) {
+            if (!API_BASE) {
+                showToast('API URL not configured. Use ?api=... in URL.', 'error');
+                throw new Error('API URL is not configured.');
+            }
+            const { Auth } = window.aws_amplify;
+            const session = await Auth.currentSession();
+            const idToken = session.getIdToken().getJwtToken();
+            
+            const headers = {
+                ...options.headers,
+                'Authorization': idToken,
+                'Content-Type': 'application/json'
+            };
+
+            const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        }
+
+        // ===== DOM Elements =====
+        const loginSection = document.getElementById('loginSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const uploadSection = document.getElementById('uploadSection');
+        const eventList = document.getElementById('eventList');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
-        const eventList = document.getElementById('eventList');
-        const refreshEventsBtn = document.getElementById('refreshEvents');
-        const fileInput = document.getElementById('fileInput');
-        const startUploadBtn = document.getElementById('startUpload');
-        const uploadProgressContainer = document.getElementById('uploadProgressContainer');
-        const backToDashboardBtn = document.getElementById('backToDashboard');
-        const uploadTitle = document.getElementById('uploadTitle');
-        const uploadSection = document.getElementById('uploadSection');
-
-        if (!loginBtn) {
-            console.error("FATAL: loginBtn not found. Script cannot continue.");
-            alert("Application failed to load critical components.");
-            return;
-        }
-
-        // Configure Amplify
-        Amplify.configure({ 
-            Auth: COGNITO_CONFIG,
-            Storage: { AWSS3: S3_CONFIG }
-        });
-        showToast('Amplify तैयार', 'success');
-
-        // --- Application Logic Functions ---
+        const refreshEvents = document.getElementById('refreshEvents');
         
-        async function checkUserSession() {
-            try {
-                await Auth.currentAuthenticatedUser();
-                showSection('dashboardSection');
-                logoutBtn.classList.remove('hidden');
-                loadEvents();
-            } catch {
-                showSection('loginSection');
-                logoutBtn.classList.add('hidden');
-            }
+        // Modal elements
+        const createEventModal = document.getElementById('createEventModal');
+        const openCreateEventModal = document.getElementById('openCreateEventModal');
+        const cancelCreateEvent = document.getElementById('cancelCreateEvent');
+        const createEventBtn = document.getElementById('createEventBtn');
+        const newEventName = document.getElementById('newEventName');
+
+        // Upload elements
+        const backToDashboard = document.getElementById('backToDashboard');
+        const fileInput = document.getElementById('fileInput');
+        const startUpload = document.getElementById('startUpload');
+        const uploadTitle = document.getElementById('uploadTitle');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+        const uploadProgressBar = document.getElementById('uploadProgressBar');
+
+
+        // ===== App Logic =====
+        function showSection(section) {
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            section.classList.add('active');
         }
 
-        async function doLogin() {
-            const username = emailInput.value.trim();
-            const password = passwordInput.value;
-            if (!username || !password) {
-                showToast('ईमेल और पासवर्ड भरें', 'error');
-                return;
-            }
+        async function doLogin(Auth) {
             loginBtn.disabled = true;
             try {
-                await Auth.signIn(username, password);
-                await checkUserSession();
+                await Auth.signIn(emailInput.value.trim(), passwordInput.value);
+                await checkUserSession(Auth);
+                showToast('लॉगिन सफल', 'success');
             } catch (error) {
+                console.error('Login error', error);
                 showToast(error.message || 'लॉगिन में त्रुटि', 'error');
             } finally {
                 loginBtn.disabled = false;
             }
         }
-
-        async function doLogout() {
-            try { await Auth.signOut(); } catch {}
-            showToast('लॉग आउट किया गया', 'info');
-            await checkUserSession();
+        
+        async function loadEvents() {
+            eventList.innerHTML = '<div class="text-center col-span-full p-8 text-gray-500">इवेंट्स लोड हो रहे हैं...</div>';
+            try {
+                const data = await authFetch('/events');
+                renderEvents(data.events || []);
+            } catch (error) {
+                console.error('Failed to load events', error);
+                showToast('इवेंट्स लोड करने में विफल: ' + error.message, 'error');
+                eventList.innerHTML = `<div class="text-center col-span-full p-8 text-red-500">त्रुटि: ${error.message}</div>`;
+            }
         }
         
         function renderEvents(items) {
             eventList.innerHTML = '';
             if (!items || !items.length) {
-                eventList.innerHTML = '<div class="text-sm text-gray-600">कोई इवेंट नहीं मिला</div>';
+                eventList.innerHTML = '<div class="text-center col-span-full p-8 text-gray-500">कोई इवेंट नहीं मिला। एक नया बनाएँ!</div>';
                 return;
             }
-            items.forEach(it => {
+            for (const item of items) {
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-2xl shadow p-5 flex flex-col gap-3';
                 card.innerHTML = `
                     <div class="flex-1">
-                        <div class="text-base font-semibold">${it.name}</div>
-                        <div class="text-sm text-gray-500 mt-1">फ़ोटो: ${it.photos}</div>
+                        <div class="text-base font-semibold">${item.name}</div>
+                        <div class="text-sm text-gray-500 mt-1">ID: ${item.id}</div>
                     </div>
                     <div class="flex gap-2">
-                        <button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${it.id}" data-event-name="${it.name}">फ़ोटो अपलोड</button>
+                        <button class="upload-btn px-3 py-2 rounded-xl bg-gray-900 text-white hover:bg-black text-sm" data-event-id="${item.id}" data-event-name="${item.name}">फ़ोटो अपलोड</button>
+                        <button class="px-3 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-sm" disabled>मैनेज</button>
                     </div>`;
                 eventList.appendChild(card);
-            });
+            }
         }
 
-        async function loadEvents() {
-            // Using dummy data for now
-            const items = [{ id: 'evt_1', name: 'Diwali Night 2024', photos: 0 }, { id: 'evt_2', name: 'Wedding - A&V', photos: 120 }];
-            renderEvents(items);
+        async function handleCreateEvent() {
+            const name = newEventName.value.trim();
+            if (!name) {
+                showToast('कृपया इवेंट का नाम दर्ज करें', 'error');
+                return;
+            }
+            createEventBtn.disabled = true;
+            try {
+                await authFetch('/events', {
+                    method: 'POST',
+                    body: JSON.stringify({ name })
+                });
+                showToast('इवेंट सफलतापूर्वक बन गया', 'success');
+                newEventName.value = '';
+                createEventModal.classList.remove('active');
+                await loadEvents();
+            } catch (error) {
+                console.error('Failed to create event', error);
+                showToast('इवेंट बनाने में विफल: ' + error.message, 'error');
+            } finally {
+                createEventBtn.disabled = false;
+            }
         }
 
         async function uploadFilesForEvent(eventId) {
             if (!fileInput.files?.length) return;
             const files = Array.from(fileInput.files);
-            startUploadBtn.disabled = true;
-            startUploadBtn.textContent = 'अपलोड हो रहा है...';
-            uploadProgressContainer.innerHTML = '';
+            startUpload.disabled = true;
+            uploadProgressContainer.classList.remove('hidden');
+            uploadProgressBar.style.width = '0%';
             
-            for (const file of files) {
-                const fileName = `${eventId}/${Date.now()}-${file.name}`;
-                const progressElement = document.createElement('div');
-                progressElement.innerHTML = `<div class="flex justify-between items-center text-sm"><p class="truncate w-60">${file.name}</p><p class="progress-text font-semibold">0%</p></div><div class="w-full bg-gray-200 rounded-full h-2 mt-1"><div class="progress-bar bg-indigo-600 h-2 rounded-full" style="width: 0%"></div></div>`;
-                uploadProgressContainer.appendChild(progressElement);
+            let uploadedCount = 0;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
                 try {
-                    await Storage.put(fileName, file, {
-                        contentType: file.type,
-                        progressCallback(progress) {
-                            const percent = Math.round((progress.loaded / progress.total) * 100);
-                            progressElement.querySelector('.progress-bar').style.width = `${percent}%`;
-                            progressElement.querySelector('.progress-text').textContent = `${percent}%`;
-                        },
+                    uploadStatus.textContent = `(${i + 1}/${files.length}) ${file.name} के लिए URL प्राप्त हो रहा है...`;
+                    
+                    // 1. Get pre-signed URL from our backend
+                    const { uploadURL, key } = await authFetch(`/events/${eventId}/upload-url`, {
+                        method: 'POST',
+                        body: JSON.stringify({ fileName: file.name, contentType: file.type })
                     });
-                    progressElement.querySelector('.progress-text').textContent = '✅ पूरा हुआ';
+
+                    // 2. Upload file directly to S3
+                    uploadStatus.textContent = `(${i + 1}/${files.length}) ${file.name} अपलोड हो रहा है...`;
+                    const uploadResponse = await fetch(uploadURL, {
+                        method: 'PUT',
+                        body: file,
+                        headers: { 'Content-Type': file.type }
+                    });
+
+                    if (!uploadResponse.ok) throw new Error('S3 upload failed');
+                    
+                    uploadedCount++;
+                    const progress = (uploadedCount / files.length) * 100;
+                    uploadProgressBar.style.width = `${progress}%`;
+
                 } catch (error) {
-                    progressElement.querySelector('.progress-text').textContent = '❌ विफल';
-                    showToast(`'${file.name}' अपलोड विफल रहा।`, 'error');
+                    console.error(`Upload failed for ${file.name}`, error);
+                    showToast(`${file.name} का अपलोड विफल: ${error.message}`, 'error');
+                    // Stop on first error
+                    uploadStatus.textContent = `त्रुटि: ${file.name} अपलोड नहीं हो सका।`;
+                    startUpload.disabled = false;
+                    return; 
                 }
             }
-            showToast('सभी चयनित फ़ाइलें प्रोसेस हो गईं।', 'success');
-            fileInput.value = '';
-            startUploadBtn.textContent = 'अपलोड शुरू करें';
+            
+            uploadStatus.textContent = `सभी ${files.length} फ़ाइलें सफलतापूर्वक अपलोड हो गईं!`;
+            showToast('सभी फ़ाइलें अपलोड हो गईं', 'success');
+            setTimeout(() => {
+                fileInput.value = '';
+                uploadProgressContainer.classList.add('hidden');
+                uploadStatus.textContent = '';
+                showSection(dashboardSection);
+            }, 2000);
         }
 
-        // --- Attach all Event Listeners ---
-        console.log("Attaching event listeners...");
-        loginBtn.addEventListener('click', doLogin);
-        logoutBtn.addEventListener('click', doLogout);
-        refreshEventsBtn.addEventListener('click', loadEvents);
-
-        fileInput.addEventListener('change', () => {
-            startUploadBtn.disabled = !(fileInput.files && fileInput.files.length > 0);
-        });
-        
-        startUploadBtn.addEventListener('click', () => {
-            const eventId = uploadSection.dataset.eventId;
-            if (eventId) {
-                uploadFilesForEvent(eventId);
+        async function checkUserSession(Auth) {
+            try {
+                await Auth.currentAuthenticatedUser();
+                logoutBtn.classList.remove('hidden');
+                showSection(dashboardSection);
+                await loadEvents();
+            } catch (e) {
+                logoutBtn.classList.add('hidden');
+                showSection(loginSection);
             }
+        }
+        
+        // ===== Event Listeners =====
+        loginBtn.addEventListener('click', () => doLogin(window.aws_amplify.Auth));
+        logoutBtn.addEventListener('click', async () => {
+            await window.aws_amplify.Auth.signOut();
+            await checkUserSession(window.aws_amplify.Auth);
         });
+        refreshEvents.addEventListener('click', loadEvents);
 
+        // Modal listeners
+        openCreateEventModal.addEventListener('click', () => createEventModal.classList.add('active'));
+        cancelCreateEvent.addEventListener('click', () => createEventModal.classList.remove('active'));
+        createEventBtn.addEventListener('click', handleCreateEvent);
+        
+        // Upload listeners
         eventList.addEventListener('click', (e) => {
             const btn = e.target.closest('.upload-btn');
-            if (btn) {
-                uploadSection.dataset.eventId = btn.dataset.eventId;
-                uploadTitle.textContent = `"${btn.dataset.eventName}" में तस्वीरें अपलोड करें`;
-                showSection('uploadSection');
-            }
+            if (!btn) return;
+            uploadTitle.textContent = `"${btn.dataset.eventName}" में तस्वीरें अपलोड करें`;
+            uploadSection.dataset.eventId = btn.dataset.eventId;
+            fileInput.value = '';
+            startUpload.disabled = true;
+            uploadStatus.textContent = '';
+            showSection(uploadSection);
         });
-        
-        backToDashboardBtn.addEventListener('click', () => showSection('dashboardSection'));
-        console.log("Event listeners attached successfully.");
+        fileInput.addEventListener('change', () => {
+            startUpload.disabled = !(fileInput.files && fileInput.files.length > 0);
+        });
+        startUpload.addEventListener('click', () => {
+            const eventId = uploadSection.dataset.eventId;
+            if (eventId) uploadFilesForEvent(eventId);
+        });
+        backToDashboard.addEventListener('click', () => showSection(dashboardSection));
 
-        // --- Initial Start ---
-        checkUserSession();
-    };
+        // ===== Initial Load =====
+        try {
+            showToast('प्रारंभ हो रहा है...', 'info');
+            const { Amplify, Auth } = await loadAmplify();
+            Amplify.configure({ Auth: COGNITO });
+            await checkUserSession(Auth);
+        } catch (e) {
+            showToast('प्रारंभ करने में विफल', 'error');
+            showSection(loginSection);
+        }
+    })();
   </script>
 </body>
 </html>
-
